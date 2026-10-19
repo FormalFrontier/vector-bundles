@@ -1,0 +1,102 @@
+version: v0.4
+project:
+  name: Vector bundles
+  authors:
+    - Formal Frontier Agents
+  license: Apache-2.0
+  description: >-
+    Compatible Hermitian and real fiber metrics on finite-dimensional vector bundles;
+    orthogonal subbundles, addition homeomorphisms and continuous projections for a
+    supplied metric; pairing-preserving local coordinates; and fiberwise linear
+    isomorphisms, supported by linear-chart and finite-dimensional operator APIs.
+repository:
+  role: substantive-development
+sources:
+  - title: Vector Bundles and K-Theory
+    authors:
+      - Allen Hatcher
+    id: https://pi.math.cornell.edu/~hatcher/VBKT/VBpage.html
+    type: book
+    location: >-
+      Version 2.2 (November 2017), section 1.1: Lemma 1.1, Proposition 1.2
+      and its Hermitian remark, and supplied-metric ingredients of Proposition 1.3.
+    relationship: adapts
+    note: >-
+      Uses the mathematical constructions, not copied book text. Metric existence
+      is separated from supplied-metric splitting; no classification or
+      stable-triviality theorem is asserted.
+  - title: Mathlib
+    authors:
+      - The Mathlib Community
+    id: https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5
+    type: software
+    location: >-
+      Topology.VectorBundle; module topology and continuous linear maps;
+      inner products and orthogonal complements; partitions of unity;
+      continuous functional calculus.
+    relationship: adapts
+    license: Apache-2.0
+    note: >-
+      Extends the existing bundle structures, Hom topologies and Riemannian metric
+      formalization. Module documentation preserves the specific authors and
+      formalization approaches reused or followed.
+related_formalizations:
+  - id: https://github.com/leanprover-community/mathlib4
+    relationship: builds-on
+    note: >-
+      Uses Mathlib's mathematical namespaces, original topologies and canonical
+      bundle structures, including real Riemannian metric data.
+classification:
+  arxiv:
+    - math.AT
+    - math.FA
+  msc2020:
+    - 55R25
+    - 46M20
+automation:
+  methods:
+    - method: agent
+      tool_setup: Lean 4 and Mathlib
+  notes: AI agents contributed to the formalization and documentation.
+status:
+  scope: >-
+    Foundational metrics, supplied-metric orthogonal splitting and local
+    coordinates, fiberwise isomorphisms, and their full standard and boundary
+    examples.
+  main_results:
+    - declaration: VectorBundle.continuousHermitianMetric
+      file: VectorBundles/Topology/VectorBundle/MetricExistence.lean
+    - declaration: VectorBundle.continuousRiemannianMetric
+      file: VectorBundles/Topology/VectorBundle/Metric.lean
+    - declaration: Bundle.ContinuousHermitianMetric.orthogonalBundle
+      file: VectorBundles/Topology/VectorBundle/OrthogonalComplement.lean
+    - declaration: Bundle.ContinuousHermitianMetric.orthogonalAdditionHomeomorph
+      file: VectorBundles/Topology/VectorBundle/OrthogonalAddition.lean
+    - declaration: Bundle.ContinuousHermitianMetric.orthogonalProjectionTotal
+      file: VectorBundles/Topology/VectorBundle/OrthogonalProjection.lean
+    - declaration: Bundle.ContinuousHermitianMetric.orthogonalComplementProjectionTotal
+      file: VectorBundles/Topology/VectorBundle/OrthogonalProjection.lean
+    - declaration: Bundle.ContinuousHermitianMetric.orthonormalizeTrivialization
+      file: VectorBundles/Topology/VectorBundle/OrthonormalTrivialization.lean
+    - declaration: VectorBundle.homeomorphOfFiberwiseLinearEquivOfIsModuleTopology
+      file: VectorBundles/Topology/VectorBundle/Isomorphism.lean
+    - declaration: VectorBundle.of_isLinear
+      file: VectorBundles/Topology/VectorBundle/CoordinateMap.lean
+fidelity:
+  divergences: >-
+    Hermitian forms are conjugate-linear in the first argument. Metric and splitting
+    constructions use RCLike scalars and retain original fiber topologies; the
+    model norm need not arise from an inner product. Supplied-metric splitting
+    needs an embedded intrinsic subbundle and finite-dimensional ambient model
+    but no separation or paracompactness of the base. The isomorphism criterion
+    works over incomplete nontrivially normed fields with finite-dimensional
+    source model and target module topology, as well as under the complete-field
+    specialization. See the README and declarations for precise hypotheses.
+review:
+  status: agent-reviewed
+acknowledgements: >-
+  Hatcher's geometric constructions and the Mathlib contributors' formalizations
+  underlie this library. In particular, the metric and semilinear APIs follow
+  work by Sébastien Gouëzel, Heather Macbeth, Floris van Doorn, Sophie Morel and
+  Yury Kudryashov. Additional contributor credits and authentic third-party
+  notices remain in the individual modules.

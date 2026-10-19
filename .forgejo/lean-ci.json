@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "mode": "strict",
+  "projects": [
+    {
+      "path": ".",
+      "targets": [
+        "VectorBundles",
+        "VectorBundlesTest",
+        "VectorBundles.Analysis.InnerProductSpace.PositiveForm",
+        "VectorBundles.Analysis.Normed.Ring.Units",
+        "VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator",
+        "VectorBundles.Topology.VectorBundle.CoordinateMap",
+        "VectorBundles.Topology.VectorBundle.FiniteSum",
+        "VectorBundles.Topology.VectorBundle.HermitianMetric",
+        "VectorBundles.Topology.VectorBundle.Isomorphism",
+        "VectorBundles.Topology.VectorBundle.Metric",
+        "VectorBundles.Topology.VectorBundle.MetricExistence",
+        "VectorBundles.Topology.VectorBundle.MetricModel",
+        "VectorBundles.Topology.VectorBundle.OrthogonalAddition",
+        "VectorBundles.Topology.VectorBundle.OrthogonalComplement",
+        "VectorBundles.Topology.VectorBundle.OrthogonalProjection",
+        "VectorBundles.Topology.VectorBundle.OrthonormalTrivialization",
+        "VectorBundles.Topology.VectorBundle.SemilinearEvaluation",
+        "VectorBundles.Topology.VectorBundle.WeightedForm",
+        "VectorBundlesTest.Topology.VectorBundle.HermitianMetric",
+        "VectorBundlesTest.Topology.VectorBundle.Isomorphism",
+        "VectorBundlesTest.Topology.VectorBundle.Metric",
+        "VectorBundlesTest.Topology.VectorBundle.OrthogonalAddition",
+        "VectorBundlesTest.Topology.VectorBundle.OrthogonalComplement",
+        "VectorBundlesTest.Topology.VectorBundle.OrthogonalProjection",
+        "VectorBundlesTest.Topology.VectorBundle.OrthonormalTrivialization",
+        "VectorBundlesTest.Topology.VectorBundle.SemilinearEvaluation"
+      ],
+      "source_dir": ".",
+      "exclude": {}
+    }
+  ],
+  "docs_only_paths": [
+    "README.md"
+  ]
+}
