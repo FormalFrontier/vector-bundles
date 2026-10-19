@@ -21,6 +21,7 @@ public import VectorBundlesTest.Topology.VectorBundle.SemilinearEvaluation
 public import VectorBundlesTest.Topology.FiberBundle.ClosedCylinder
 public import VectorBundlesTest.Topology.FiberBundle.Prod
 public import VectorBundlesTest.Topology.FiberBundle.Pullback
+public import VectorBundlesTest.Topology.FiberBundle.Pullback.Proper
 public import VectorBundlesTest.Topology.FiberBundle.SupportedTransport
 public import VectorBundlesTest.Topology.VectorBundle.Cylinder
 public import VectorBundlesTest.Topology.VectorBundle.FiniteComplement

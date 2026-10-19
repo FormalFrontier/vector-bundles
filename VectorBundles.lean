@@ -32,6 +32,7 @@ public import VectorBundles.Data.Bundle
 public import VectorBundles.Topology.FiberBundle.ClosedCylinder
 public import VectorBundles.Topology.FiberBundle.Prod
 public import VectorBundles.Topology.FiberBundle.Pullback
+public import VectorBundles.Topology.FiberBundle.Pullback.Proper
 public import VectorBundles.Topology.FiberBundle.SupportedTransport
 public import VectorBundles.Topology.MetricSpace.Antilipschitz
 public import VectorBundles.Topology.VectorBundle.Cylinder

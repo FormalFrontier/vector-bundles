@@ -25,6 +25,15 @@ topological fiber bundles.
   criterion. Properness is Mathlib's `IsProperMap` (continuity and universal
   closedness). No separation, local compactness or nonempty-base assumption is
   required; an empty base does not require a compact model.
+- **Proper canonical pullback lifts.**
+  [`Bundle.Pullback.isProperMap_lift`](VectorBundles/Topology/FiberBundle/Pullback/Proper.lean)
+  gives a proper lift from a proper base map and continuity of the original bundle
+  projection. It retains the canonical pullback and original total-space topologies,
+  with independent universes and no fiber topology, local triviality or separation
+  assumptions. The [two direct examples](VectorBundlesTest/Topology/FiberBundle/Pullback/Proper.lean)
+  exhibit the proper noninjective base map `ℝ × Fin 2 → ℝ`, continuity of the original
+  trivial-bundle projection and a noninjective proper lift, together with an
+  empty-original-fiber boundary.
 - **Compactness of fiber bundles without separation assumptions.**
   [`FiberBundle.compactSpace_totalSpace`](VectorBundles/Topology/FiberBundle/Proper.lean)
   gives compact total space from a compact base and compact model, including empty spaces.
@@ -210,6 +219,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.FiberBundle.ClosedCylinder`](VectorBundles/Topology/FiberBundle/ClosedCylinder.lean) | Gluing two supplied charts across a closed cylinder cut |
 | [`Topology.FiberBundle.Prod`](VectorBundles/Topology/FiberBundle/Prod.lean) | Symmetry, associativity and pullback comparison of fiberwise products |
 | [`Topology.FiberBundle.Pullback`](VectorBundles/Topology/FiberBundle/Pullback.lean) | Compatible-pair total spaces and universal pullback maps |
+| [`Topology.FiberBundle.Pullback.Proper`](VectorBundles/Topology/FiberBundle/Pullback/Proper.lean) | Proper canonical lifts from proper base maps and continuity of the original projection; [two direct examples](VectorBundlesTest/Topology/FiberBundle/Pullback/Proper.lean) for a noninjective two-sheeted base and empty original fibers |
 | [`Topology.FiberBundle.SupportedTransport`](VectorBundles/Topology/FiberBundle/SupportedTransport.lean) | Pullback transport localized to one chart by a closed subset |
 | [`Topology.MetricSpace.Antilipschitz`](VectorBundles/Topology/MetricSpace/Antilipschitz.lean) | Product embeddings from locally uniform antilipschitz bounds |
 | [`Topology.VectorBundle.Cylinder`](VectorBundles/Topology/VectorBundle/Cylinder.lean) | Linear charts near a compact interval cylinder |
