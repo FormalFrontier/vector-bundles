@@ -53,10 +53,9 @@ theorem orthogonalProjectionsTotal_coordinate_units (b : B) :
   have h := orthogonalAdditionHomeomorph_coordinate_units 𝕜 B b
   obtain ⟨s, c, hs, hc, hns, hnc, _⟩ := h
   refine ⟨s, c, hs, hc, hns, hnc, ?_, ?_⟩
-  · simpa only [hs, hc] using
-      ContinuousHermitianMetric.orthogonalProjectionTotal_apply_add
-        (ContinuousHermitianMetric.trivial 𝕜 B (EuclideanSpace 𝕜 (Fin 2)))
-        (G := line 𝕜) (fun _ : B ↦ line 𝕜) (isEmbedding_inclusion 𝕜 B) b s c
+  · rw [ContinuousHermitianMetric.orthogonalProjectionTotal_apply, ← hs, ← hc]
+    simp only [map_add, Submodule.projectionOnto_apply_left,
+      Submodule.projectionOnto_apply_right, add_zero]
   · simpa only [hs, hc] using
       ContinuousHermitianMetric.orthogonalComplementProjectionTotal_apply_add
         (ContinuousHermitianMetric.trivial 𝕜 B (EuclideanSpace 𝕜 (Fin 2)))

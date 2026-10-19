@@ -9,6 +9,8 @@ project:
     orthogonal subbundles, addition homeomorphisms and continuous projections for a
     supplied metric; pairing-preserving local coordinates; and fiberwise linear
     isomorphisms, supported by linear-chart and finite-dimensional operator APIs.
+    Products, pullbacks, cylinder charts, frames, finite model-power embeddings,
+    range bundles and finite-dimensional complements over compact normal bases.
 repository:
   role: substantive-development
 sources:
@@ -19,12 +21,14 @@ sources:
     type: book
     location: >-
       Version 2.2 (November 2017), section 1.1: Lemma 1.1, Proposition 1.2
-      and its Hermitian remark, and supplied-metric ingredients of Proposition 1.3.
+      and its Hermitian remark, supplied-metric ingredients of Proposition 1.3,
+      finite complements in Proposition 1.4, pullbacks in Proposition 1.5, and
+      the two preliminary cylinder facts used in Proposition 1.7.
     relationship: adapts
     note: >-
       Uses the mathematical constructions, not copied book text. Metric existence
-      is separated from supplied-metric splitting; no classification or
-      stable-triviality theorem is asserted.
+      is separated from supplied-metric splitting. The finite complement need not
+      be complementary to a prescribed embedding. No classification theorem is asserted.
   - title: Mathlib
     authors:
       - The Mathlib Community
@@ -61,8 +65,9 @@ automation:
 status:
   scope: >-
     Foundational metrics, supplied-metric orthogonal splitting and local
-    coordinates, fiberwise isomorphisms, and their full standard and boundary
-    examples.
+    coordinates, fiberwise isomorphisms, products, pullbacks, cylinder charts,
+    frames, finite embeddings, ranges and finite complements, with full standard
+    and boundary examples.
   main_results:
     - declaration: VectorBundle.continuousHermitianMetric
       file: VectorBundles/Topology/VectorBundle/MetricExistence.lean
@@ -82,6 +87,8 @@ status:
       file: VectorBundles/Topology/VectorBundle/Isomorphism.lean
     - declaration: VectorBundle.of_isLinear
       file: VectorBundles/Topology/VectorBundle/CoordinateMap.lean
+    - declaration: VectorBundle.finiteComplement
+      file: VectorBundles/Topology/VectorBundle/FiniteComplement.lean
 fidelity:
   divergences: >-
     Hermitian forms are conjugate-linear in the first argument. Metric and splitting

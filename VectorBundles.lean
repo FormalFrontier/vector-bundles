@@ -7,23 +7,53 @@ module
 public import VectorBundles.Analysis.InnerProductSpace.PositiveForm
 public import VectorBundles.Analysis.Normed.Ring.Units
 public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
+public import VectorBundles.Topology.FiberBundle.Projection
+public import VectorBundles.Topology.FiberBundle.Proper
+public import VectorBundles.Topology.FiberBundle.LocallyCompact
 public import VectorBundles.Topology.VectorBundle.CoordinateMap
 public import VectorBundles.Topology.VectorBundle.FiniteSum
 public import VectorBundles.Topology.VectorBundle.HermitianMetric
 public import VectorBundles.Topology.VectorBundle.Isomorphism
 public import VectorBundles.Topology.VectorBundle.Metric
+public import VectorBundles.Topology.VectorBundle.MetricPullback
 public import VectorBundles.Topology.VectorBundle.MetricExistence
 public import VectorBundles.Topology.VectorBundle.MetricModel
 public import VectorBundles.Topology.VectorBundle.OrthogonalAddition
 public import VectorBundles.Topology.VectorBundle.OrthogonalComplement
+public import VectorBundles.Topology.VectorBundle.OrthogonalComparison
 public import VectorBundles.Topology.VectorBundle.OrthogonalProjection
 public import VectorBundles.Topology.VectorBundle.OrthonormalTrivialization
 public import VectorBundles.Topology.VectorBundle.SemilinearEvaluation
 public import VectorBundles.Topology.VectorBundle.WeightedForm
 
-/-!
-# Bundle metrics, splitting and isomorphisms
+public import VectorBundles.Analysis.Normed.Operator.Factorization
+public import VectorBundles.Analysis.Normed.Operator.LowerBound
+public import VectorBundles.Data.Bundle
+public import VectorBundles.Topology.FiberBundle.ClosedCylinder
+public import VectorBundles.Topology.FiberBundle.Prod
+public import VectorBundles.Topology.FiberBundle.Pullback
+public import VectorBundles.Topology.FiberBundle.SupportedTransport
+public import VectorBundles.Topology.MetricSpace.Antilipschitz
+public import VectorBundles.Topology.VectorBundle.Cylinder
+public import VectorBundles.Topology.VectorBundle.Embedding
+public import VectorBundles.Topology.VectorBundle.FiniteComplement
+public import VectorBundles.Topology.VectorBundle.FiniteEmbedding
+public import VectorBundles.Topology.VectorBundle.Frame
+public import VectorBundles.Topology.VectorBundle.KernelProjection
+public import VectorBundles.Topology.VectorBundle.Range
+public import VectorBundles.Topology.VectorBundle.TrivialMetric
 
-This root reexports the metric, orthogonal-splitting, coordinate-operator and fiberwise
-isomorphism modules.
+public import VectorBundles.Topology.Bornology.Bounded
+public import VectorBundles.Topology.VectorBundle.Section
+public import VectorBundles.Topology.VectorBundle.HermitianMetric.Operations
+
+/-!
+# Geometry of topological vector bundles
+
+This root reexports bundle metrics, orthogonal splitting, fiberwise isomorphisms,
+products, pullbacks, cylinder charts, frames, finite embeddings, ranges and complements,
+together with pullbacks of supplied Hermitian metrics and canonical comparisons of their
+orthogonal complements. The projection modules give open-embedding criteria by subsingleton
+fibers, canonical projection homeomorphisms when every fiber is also nonempty, and the
+proper-projection criterion by compactness of every fiber.
 -/
