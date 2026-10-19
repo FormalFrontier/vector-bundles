@@ -68,6 +68,16 @@ topological fiber bundles.
   structure, with independent base, model and fiber universes and no separation assumptions.
   Preconnectedness allows empty models; `ConnectedSpace` includes nonemptiness.
   Connected total space need not imply a connected model.
+- **Second countability of fiber-bundle total spaces.**
+  [`FiberBundle.secondCountableTopology`](VectorBundles/Topology/FiberBundle/Countability.lean)
+  gives a second-countable total space from a second-countable base and model, retaining
+  the original topologies and fiber-bundle structure. Base, model and fibers may lie in
+  independent universes; no nonemptiness, separation or vector-space assumption is needed.
+  The [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Countability.lean)
+  apply the instance directly. From a second-countable total space, Mathlib's embedding
+  and homeomorphism APIs recover second countability of the model at a specified base
+  point; its open-quotient API recovers second countability of the base when the model
+  is nonempty.
 - **Compatible fiber metrics.**
   [`VectorBundle.continuousHermitianMetric`](VectorBundles/Topology/VectorBundle/MetricExistence.lean)
   constructs a continuous positive-definite Hermitian metric on a finite-dimensional
@@ -212,6 +222,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.FiberBundle.Connected`](VectorBundles/Topology/FiberBundle/Connected.lean) | Preconnected projection preimages and preconnected/connected total spaces; [real and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Connected.lean) |
 | [`Topology.FiberBundle.Projection`](VectorBundles/Topology/FiberBundle/Projection.lean) | Sharp projection criteria, canonical homeomorphism and inverse/zero-section formulas |
 | [`Topology.FiberBundle.Proper`](VectorBundles/Topology/FiberBundle/Proper.lean) | Proper projection exactly when every fiber is compact; compactness transfer and equivalence without separation |
+| [`Topology.FiberBundle.Countability`](VectorBundles/Topology/FiberBundle/Countability.lean) | `FiberBundle.secondCountableTopology`: second-countable total space from second-countable base and model, with original topologies and no nonemptiness or separation assumptions; [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Countability.lean) use the instance and Mathlib's converse APIs |
 | [`Topology.VectorBundle.CoordinateMap`](VectorBundles/Topology/VectorBundle/CoordinateMap.lean) | Linear-chart evaluations, operators and linear-atlas criterion |
 | [`Topology.VectorBundle.FiniteSum`](VectorBundles/Topology/VectorBundle/FiniteSum.lean) | Locally finite sums of continuous sections |
 | [`Topology.VectorBundle.SemilinearEvaluation`](VectorBundles/Topology/VectorBundle/SemilinearEvaluation.lean) | One- and two-argument evaluation on Mathlib's Hom topology |

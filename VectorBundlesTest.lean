@@ -8,6 +8,7 @@ public import VectorBundlesTest.Topology.FiberBundle.Connected
 public import VectorBundlesTest.Topology.FiberBundle.Projection
 public import VectorBundlesTest.Topology.FiberBundle.Proper
 public import VectorBundlesTest.Topology.FiberBundle.LocallyCompact
+public import VectorBundlesTest.Topology.FiberBundle.Countability
 public import VectorBundlesTest.Topology.VectorBundle.HermitianMetric
 public import VectorBundlesTest.Topology.VectorBundle.Isomorphism
 public import VectorBundlesTest.Topology.VectorBundle.Metric
