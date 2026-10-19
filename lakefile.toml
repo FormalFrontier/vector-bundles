@@ -24,6 +24,7 @@ globs = [
   "VectorBundles.Topology.FiberBundle.Proper",
   "VectorBundles.Topology.FiberBundle.LocallyCompact",
   "VectorBundles.Topology.FiberBundle.Countability",
+  "VectorBundles.Topology.FiberBundle.Metrizable",
   "VectorBundles.Topology.VectorBundle.CoordinateMap",
   "VectorBundles.Topology.VectorBundle.FiniteSum",
   "VectorBundles.Topology.VectorBundle.HermitianMetric",
@@ -68,6 +69,7 @@ globs = [
   "VectorBundlesTest.Topology.FiberBundle.Proper",
   "VectorBundlesTest.Topology.FiberBundle.LocallyCompact",
   "VectorBundlesTest.Topology.FiberBundle.Countability",
+  "VectorBundlesTest.Topology.FiberBundle.Metrizable",
   "VectorBundlesTest.Topology.VectorBundle.HermitianMetric",
   "VectorBundlesTest.Topology.VectorBundle.Isomorphism",
   "VectorBundlesTest.Topology.VectorBundle.Metric",
@@ -95,3 +97,8 @@ globs = [
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4.git"
 rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
+
+[[require]]
+name = "metrization"
+git = "https://github.com/FormalFrontier/metrization.git"
+rev = "4dcc0f6f903ba4d0c66f230d21f7ac4c31d4ea57"

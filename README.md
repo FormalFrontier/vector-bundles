@@ -78,6 +78,15 @@ topological fiber bundles.
   and homeomorphism APIs recover second countability of the model at a specified base
   point; its open-quotient API recovers second countability of the base when the model
   is nonempty.
+- **Metrizability of fiber bundles.**
+  [`FiberBundle.metrizableSpace_totalSpace`](VectorBundles/Topology/FiberBundle/Metrizable.lean)
+  gives a metrizable total space from a metrizable base and model, with their original
+  topologies and fiber-bundle structure. `FiberBundle.metrizableSpace_model` recovers
+  metrizability of the model from the total space at a specified base point.
+  Base, model and fibers have independent universes; neither result requires an inhabited
+  model or scalar or vector-space structure. The [real-plane and empty-base examples](VectorBundlesTest/Topology/FiberBundle/Metrizable.lean)
+  show the uses and the need for a base point in the model conclusion. No converse for the
+  base is asserted.
 - **Compatible fiber metrics.**
   [`VectorBundle.continuousHermitianMetric`](VectorBundles/Topology/VectorBundle/MetricExistence.lean)
   constructs a continuous positive-definite Hermitian metric on a finite-dimensional
@@ -196,10 +205,12 @@ The raw product model has its sup norm, which is not an inner-product norm.
 
 ## Building
 
-Lean is pinned to `leanprover/lean4:v4.34.0-rc2`; the sole direct dependency is
+Lean is pinned to `leanprover/lean4:v4.34.0-rc2`. The direct dependencies are
 [Mathlib](https://github.com/leanprover-community/mathlib4) at
-`83abb3e776bdefcbc447a1e44d0debe4010039e5`. Its upstream dependencies are pinned
-in `lake-manifest.json`.
+`83abb3e776bdefcbc447a1e44d0debe4010039e5` and
+[Metrization](https://github.com/FormalFrontier/metrization) at
+`4dcc0f6f903ba4d0c66f230d21f7ac4c31d4ea57`, with the same Mathlib revision.
+Their upstream dependencies are pinned in `lake-manifest.json`.
 
 ```sh
 lake exe cache get
@@ -223,6 +234,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.FiberBundle.Projection`](VectorBundles/Topology/FiberBundle/Projection.lean) | Sharp projection criteria, canonical homeomorphism and inverse/zero-section formulas |
 | [`Topology.FiberBundle.Proper`](VectorBundles/Topology/FiberBundle/Proper.lean) | Proper projection exactly when every fiber is compact; compactness transfer and equivalence without separation |
 | [`Topology.FiberBundle.Countability`](VectorBundles/Topology/FiberBundle/Countability.lean) | `FiberBundle.secondCountableTopology`: second-countable total space from second-countable base and model, with original topologies and no nonemptiness or separation assumptions; [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Countability.lean) use the instance and Mathlib's converse APIs |
+| [`Topology.FiberBundle.Metrizable`](VectorBundles/Topology/FiberBundle/Metrizable.lean) | Metrizable total space from metrizable base and model; model metrizability at a specified base point; [real-plane and empty-base examples](VectorBundlesTest/Topology/FiberBundle/Metrizable.lean) |
 | [`Topology.VectorBundle.CoordinateMap`](VectorBundles/Topology/VectorBundle/CoordinateMap.lean) | Linear-chart evaluations, operators and linear-atlas criterion |
 | [`Topology.VectorBundle.FiniteSum`](VectorBundles/Topology/VectorBundle/FiniteSum.lean) | Locally finite sums of continuous sections |
 | [`Topology.VectorBundle.SemilinearEvaluation`](VectorBundles/Topology/VectorBundle/SemilinearEvaluation.lean) | One- and two-argument evaluation on Mathlib's Hom topology |
@@ -304,4 +316,6 @@ Macbeth and Floris van Doorn; quotient-complement equivalences and projections
 follow Yury Kudryashov's Mathlib formalization.
 The Hermitian and semilinear APIs extend those prior formalizations; the other
 modules document their own mathematical and formalization sources.
+Fiber-bundle metrizability follows the original formalization by Formal Frontier Agents
+and uses Metrization's locally finite closed-neighbourhood-cover criterion.
 Licensed under Apache-2.0; see [LICENSE](LICENSE).

@@ -13,6 +13,7 @@ public import VectorBundles.Topology.FiberBundle.Projection
 public import VectorBundles.Topology.FiberBundle.Proper
 public import VectorBundles.Topology.FiberBundle.LocallyCompact
 public import VectorBundles.Topology.FiberBundle.Countability
+public import VectorBundles.Topology.FiberBundle.Metrizable
 public import VectorBundles.Topology.VectorBundle.CoordinateMap
 public import VectorBundles.Topology.VectorBundle.FiniteSum
 public import VectorBundles.Topology.VectorBundle.HermitianMetric
