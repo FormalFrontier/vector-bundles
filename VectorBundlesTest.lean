@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundlesTest.Topology.FiberBundle.Connected
+public import VectorBundlesTest.Topology.FiberBundle.Separable
 public import VectorBundlesTest.Topology.FiberBundle.Projection
 public import VectorBundlesTest.Topology.FiberBundle.Proper
 public import VectorBundlesTest.Topology.FiberBundle.LocallyCompact

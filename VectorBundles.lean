@@ -8,7 +8,9 @@ public import VectorBundles.Analysis.InnerProductSpace.PositiveForm
 public import VectorBundles.Analysis.Normed.Ring.Units
 public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
 public import VectorBundles.Topology.Connected.Basic
+public import VectorBundles.Topology.Separable.Basic
 public import VectorBundles.Topology.FiberBundle.Connected
+public import VectorBundles.Topology.FiberBundle.Separable
 public import VectorBundles.Topology.FiberBundle.Projection
 public import VectorBundles.Topology.FiberBundle.Proper
 public import VectorBundles.Topology.FiberBundle.LocallyCompact

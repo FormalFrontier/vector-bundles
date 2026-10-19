@@ -87,6 +87,26 @@ topological fiber bundles.
   model or scalar or vector-space structure. The [real-plane and empty-base examples](VectorBundlesTest/Topology/FiberBundle/Metrizable.lean)
   show the uses and the need for a base point in the model conclusion. No converse for the
   base is asserted.
+- **Ambient-separable preimages under open maps.**
+  [`TopologicalSpace.IsSeparable.preimage_of_isOpenMap_of_isSeparable_fibers`](VectorBundles/Topology/Separable/Basic.lean)
+  gives ambient-separable `f ⁻¹' s` from ambient-separable `s`, an open map `f : X → Y`,
+  and ambient separability of `f ⁻¹' {y}` for every `y : Y`. Ambient countable
+  witnesses need not lie in the sets they approximate. The original topologies
+  and independent universes are retained; no continuity, surjectivity, range
+  condition, nonemptiness or separation assumption is required.
+- **Separable domains of open maps.**
+  [`IsOpenMap.separableSpace_of_isSeparable_fibers`](VectorBundles/Topology/Separable/Basic.lean)
+  gives `SeparableSpace X` from `SeparableSpace Y`, openness of `f : X → Y`
+  and ambient separability of every original fiber, with no continuity or
+  surjectivity assumption.
+- **Separability of fiber-bundle total spaces.**
+  [`FiberBundle.separableSpace_totalSpace`](VectorBundles/Topology/FiberBundle/Separable.lean)
+  gives a separable total space from a separable base and model, using the
+  given fiber-bundle data and all four original topologies. The base, model
+  and fiber universes are independent; no second-countability, separation or
+  nonemptiness assumption is required. The
+  [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Separable.lean)
+  include an empty model over the same nonempty real base.
 - **Compatible fiber metrics.**
   [`VectorBundle.continuousHermitianMetric`](VectorBundles/Topology/VectorBundle/MetricExistence.lean)
   constructs a continuous positive-definite Hermitian metric on a finite-dimensional
@@ -231,6 +251,8 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
 | [`Topology.Connected.Basic`](VectorBundles/Topology/Connected/Basic.lean) | Preconnected preimages under open maps with preconnected fibers over a preconnected subset of the range |
 | [`Topology.FiberBundle.Connected`](VectorBundles/Topology/FiberBundle/Connected.lean) | Preconnected projection preimages and preconnected/connected total spaces; [real and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Connected.lean) |
+| [`Topology.Separable.Basic`](VectorBundles/Topology/Separable/Basic.lean) | Ambient-separable preimages of ambient-separable sets under open maps with all ambient fibers separable; separable domains for separable targets |
+| [`Topology.FiberBundle.Separable`](VectorBundles/Topology/FiberBundle/Separable.lean) | Separable total spaces from separable base and model with given topologies and fiber-bundle data; [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Separable.lean) |
 | [`Topology.FiberBundle.Projection`](VectorBundles/Topology/FiberBundle/Projection.lean) | Sharp projection criteria, canonical homeomorphism and inverse/zero-section formulas |
 | [`Topology.FiberBundle.Proper`](VectorBundles/Topology/FiberBundle/Proper.lean) | Proper projection exactly when every fiber is compact; compactness transfer and equivalence without separation |
 | [`Topology.FiberBundle.Countability`](VectorBundles/Topology/FiberBundle/Countability.lean) | `FiberBundle.secondCountableTopology`: second-countable total space from second-countable base and model, with original topologies and no nonemptiness or separation assumptions; [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Countability.lean) use the instance and Mathlib's converse APIs |
@@ -270,7 +292,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.VectorBundle.KernelProjection`](VectorBundles/Topology/VectorBundle/KernelProjection.lean) | Local continuous kernel projections with a common complement |
 | [`Topology.VectorBundle.Range`](VectorBundles/Topology/VectorBundle/Range.lean) | Range bundles with original subtype and induced total topologies |
 | [`Topology.VectorBundle.TrivialMetric`](VectorBundles/Topology/VectorBundle/TrivialMetric.lean) | Constant metrics from supplied compatible Hermitian model forms |
-| [`VectorBundlesTest`](VectorBundlesTest.lean) | Full examples: projection and properness boundaries, connectedness, isomorphisms, metrics, semilinear evaluation, Hermitian metrics, metric pullbacks, shear-metric complement comparison, orthogonal complement/addition/projection, orthonormal charts, products, pullbacks, cylinder charts, frames, embeddings, ranges and finite complements |
+| [`VectorBundlesTest`](VectorBundlesTest.lean) | Full examples: projection and properness boundaries, connectedness, separability, isomorphisms, metrics, semilinear evaluation, Hermitian metrics, metric pullbacks, shear-metric complement comparison, orthogonal complement/addition/projection, orthonormal charts, products, pullbacks, cylinder charts, frames, embeddings, ranges and finite complements |
 
 ## Conventions and limitations
 
