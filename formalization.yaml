@@ -37,7 +37,8 @@ sources:
     location: >-
       Topology.VectorBundle; module topology and continuous linear maps;
       inner products and orthogonal complements; partitions of unity;
-      continuous functional calculus.
+      continuous functional calculus; sigma-compact spaces, compact refinements
+      of finite open covers and bundle trivialization homeomorphisms.
     relationship: adapts
     license: Apache-2.0
     note: >-
@@ -67,7 +68,8 @@ status:
     Foundational metrics, supplied-metric orthogonal splitting and local
     coordinates, fiberwise isomorphisms, products, pullbacks, cylinder charts,
     frames, finite embeddings, ranges and finite complements, with full standard
-    and boundary examples.
+    and boundary examples. Sigma-compactness of fiber-bundle total spaces over
+    R₁ sigma-compact bases with sigma-compact models.
   main_results:
     - declaration: VectorBundle.continuousHermitianMetric
       file: VectorBundles/Topology/VectorBundle/MetricExistence.lean
@@ -89,6 +91,8 @@ status:
       file: VectorBundles/Topology/VectorBundle/CoordinateMap.lean
     - declaration: VectorBundle.finiteComplement
       file: VectorBundles/Topology/VectorBundle/FiniteComplement.lean
+    - declaration: FiberBundle.sigmaCompactSpace
+      file: VectorBundles/Topology/FiberBundle/SigmaCompact.lean
 fidelity:
   divergences: >-
     Hermitian forms are conjugate-linear in the first argument. Metric and splitting
@@ -98,7 +102,10 @@ fidelity:
     but no separation or paracompactness of the base. The isomorphism criterion
     works over incomplete nontrivially normed fields with finite-dimensional
     source model and target module topology, as well as under the complete-field
-    specialization. See the README and declarations for precise hypotheses.
+    specialization. Sigma-compactness of total spaces uses general topological
+    bundle APIs with an R₁ base and sigma-compact base and model, not vector-space
+    structure; it requires neither nonemptiness nor local compactness nor separation
+    of the model or total space. See the README and declarations for precise hypotheses.
 review:
   status: agent-reviewed
 acknowledgements: >-
