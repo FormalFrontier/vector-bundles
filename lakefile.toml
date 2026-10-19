@@ -18,6 +18,8 @@ globs = [
   "VectorBundles.Analysis.InnerProductSpace.PositiveForm",
   "VectorBundles.Analysis.Normed.Ring.Units",
   "VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator",
+  "VectorBundles.Topology.Connected.Basic",
+  "VectorBundles.Topology.FiberBundle.Connected",
   "VectorBundles.Topology.FiberBundle.Projection",
   "VectorBundles.Topology.FiberBundle.Proper",
   "VectorBundles.Topology.FiberBundle.LocallyCompact",
@@ -60,6 +62,7 @@ name = "VectorBundlesTest"
 globs = [
   "VectorBundlesTest",
   "VectorBundlesTest.Topology.VectorBundle.HermitianMetric.Operations",
+  "VectorBundlesTest.Topology.FiberBundle.Connected",
   "VectorBundlesTest.Topology.FiberBundle.Projection",
   "VectorBundlesTest.Topology.FiberBundle.Proper",
   "VectorBundlesTest.Topology.FiberBundle.LocallyCompact",

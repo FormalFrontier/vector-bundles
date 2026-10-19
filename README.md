@@ -53,6 +53,21 @@ topological fiber bundles.
   The construction from locally compact base and model is Mathlib's existing
   `ChartedSpace.locallyCompactSpace`. All results retain the original topologies and
   fiber-bundle structure, with no separation assumptions.
+- **Preconnected preimages under open maps.**
+  [`IsPreconnected.preimage_of_isOpenMap_of_isPreconnected_fibers`](VectorBundles/Topology/Connected/Basic.lean)
+  gives preconnected `f ⁻¹' s` when `f` is open, `s` is preconnected and contained
+  in `Set.range f`, and `f ⁻¹' {y}` is preconnected for every `y ∈ s`.
+  No continuity, global surjectivity or separation assumptions are required.
+- **Connectedness of fiber bundles.**
+  [`FiberBundle.isPreconnected_preimage_proj`](VectorBundles/Topology/FiberBundle/Connected.lean)
+  gives preconnected projection preimages of preconnected base subsets when the
+  model is preconnected. `FiberBundle.preconnectedSpace_totalSpace` and
+  `FiberBundle.connectedSpace_totalSpace` give the corresponding total-space
+  conclusions from preconnected, respectively connected, base and model.
+  These use the given base, model, fiber and total-space topologies and fiber-bundle
+  structure, with independent base, model and fiber universes and no separation assumptions.
+  Preconnectedness allows empty models; `ConnectedSpace` includes nonemptiness.
+  Connected total space need not imply a connected model.
 - **Compatible fiber metrics.**
   [`VectorBundle.continuousHermitianMetric`](VectorBundles/Topology/VectorBundle/MetricExistence.lean)
   constructs a continuous positive-definite Hermitian metric on a finite-dimensional
@@ -193,6 +208,8 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Analysis.InnerProductSpace.PositiveForm`](VectorBundles/Analysis/InnerProductSpace/PositiveForm.lean) | Bounded positive-form unit sublevels in the original topology |
 | [`Analysis.Normed.Ring.Units`](VectorBundles/Analysis/Normed/Ring/Units.lean) | Value embedding for units of a seminormed ring |
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
+| [`Topology.Connected.Basic`](VectorBundles/Topology/Connected/Basic.lean) | Preconnected preimages under open maps with preconnected fibers over a preconnected subset of the range |
+| [`Topology.FiberBundle.Connected`](VectorBundles/Topology/FiberBundle/Connected.lean) | Preconnected projection preimages and preconnected/connected total spaces; [real and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Connected.lean) |
 | [`Topology.FiberBundle.Projection`](VectorBundles/Topology/FiberBundle/Projection.lean) | Sharp projection criteria, canonical homeomorphism and inverse/zero-section formulas |
 | [`Topology.FiberBundle.Proper`](VectorBundles/Topology/FiberBundle/Proper.lean) | Proper projection exactly when every fiber is compact; compactness transfer and equivalence without separation |
 | [`Topology.VectorBundle.CoordinateMap`](VectorBundles/Topology/VectorBundle/CoordinateMap.lean) | Linear-chart evaluations, operators and linear-atlas criterion |
@@ -230,7 +247,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.VectorBundle.KernelProjection`](VectorBundles/Topology/VectorBundle/KernelProjection.lean) | Local continuous kernel projections with a common complement |
 | [`Topology.VectorBundle.Range`](VectorBundles/Topology/VectorBundle/Range.lean) | Range bundles with original subtype and induced total topologies |
 | [`Topology.VectorBundle.TrivialMetric`](VectorBundles/Topology/VectorBundle/TrivialMetric.lean) | Constant metrics from supplied compatible Hermitian model forms |
-| [`VectorBundlesTest`](VectorBundlesTest.lean) | Full examples: projection and properness boundaries, isomorphisms, metrics, semilinear evaluation, Hermitian metrics, metric pullbacks, shear-metric complement comparison, orthogonal complement/addition/projection, orthonormal charts, products, pullbacks, cylinder charts, frames, embeddings, ranges and finite complements |
+| [`VectorBundlesTest`](VectorBundlesTest.lean) | Full examples: projection and properness boundaries, connectedness, isomorphisms, metrics, semilinear evaluation, Hermitian metrics, metric pullbacks, shear-metric complement comparison, orthogonal complement/addition/projection, orthonormal charts, products, pullbacks, cylinder charts, frames, embeddings, ranges and finite complements |
 
 ## Conventions and limitations
 
