@@ -25,6 +25,8 @@ public import VectorBundles.Topology.FiberBundle.Trivialization.SigmaCompact
 public import VectorBundles.Topology.FiberBundle.SigmaCompact.LocallyCompactBase
 public import VectorBundles.Topology.FiberBundle.SigmaCompact.Proper
 public import VectorBundles.Topology.FiberBundle.Lindelof
+public import VectorBundles.Topology.FiberBundle.Trivialization.Lindelof
+public import VectorBundles.Topology.FiberBundle.Lindelof.LocallyCompactBase
 public import VectorBundles.Topology.FiberBundle.Lindelof.Proper
 public import VectorBundles.Topology.FiberBundle.Lindelof.Reflection
 public import VectorBundles.Topology.FiberBundle.Paracompact

@@ -19,6 +19,7 @@ public import VectorBundlesTest.Topology.FiberBundle.SigmaCompact.Proper
 public import VectorBundlesTest.Topology.FiberBundle.SigmaCompactKernel
 public import VectorBundlesTest.Topology.FiberBundle.SigmaCompact.LocallyCompactBase
 public import VectorBundlesTest.Topology.FiberBundle.Lindelof
+public import VectorBundlesTest.Topology.FiberBundle.Lindelof.LocallyCompactBase
 public import VectorBundlesTest.Topology.FiberBundle.Lindelof.Proper
 public import VectorBundlesTest.Topology.FiberBundle.Lindelof.Reflection
 public import VectorBundlesTest.Topology.FiberBundle.Paracompact
