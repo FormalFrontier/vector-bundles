@@ -7,6 +7,7 @@ module
 public import VectorBundles.Analysis.InnerProductSpace.PositiveForm
 public import VectorBundles.Analysis.Normed.Ring.Units
 public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
+public import VectorBundles.Topology.Compactness.Lindelof
 public import VectorBundles.Topology.Connected.Basic
 public import VectorBundles.Topology.Separable.Basic
 public import VectorBundles.Topology.FiberBundle.Connected
@@ -17,6 +18,7 @@ public import VectorBundles.Topology.FiberBundle.LocallyCompact
 public import VectorBundles.Topology.FiberBundle.Countability
 public import VectorBundles.Topology.FiberBundle.Metrizable
 public import VectorBundles.Topology.FiberBundle.SigmaCompact
+public import VectorBundles.Topology.FiberBundle.Lindelof
 public import VectorBundles.Topology.VectorBundle.CoordinateMap
 public import VectorBundles.Topology.VectorBundle.FiniteSum
 public import VectorBundles.Topology.VectorBundle.HermitianMetric

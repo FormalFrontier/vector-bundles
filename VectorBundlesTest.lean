@@ -12,6 +12,7 @@ public import VectorBundlesTest.Topology.FiberBundle.LocallyCompact
 public import VectorBundlesTest.Topology.FiberBundle.Countability
 public import VectorBundlesTest.Topology.FiberBundle.Metrizable
 public import VectorBundlesTest.Topology.FiberBundle.SigmaCompact
+public import VectorBundlesTest.Topology.FiberBundle.Lindelof
 public import VectorBundlesTest.Topology.VectorBundle.HermitianMetric
 public import VectorBundlesTest.Topology.VectorBundle.MetricComap
 public import VectorBundlesTest.Topology.VectorBundle.Isomorphism

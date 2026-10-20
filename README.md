@@ -11,6 +11,17 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Lindelöf products and fiber bundles.**
+  [Lindelöf sets times compact or σ-compact sets](VectorBundles/Topology/Compactness/Lindelof.lean)
+  are Lindelöf in arbitrary topological spaces.
+  [`FiberBundle.lindelofSpace_of_countable_trivializationAt_cover`](VectorBundles/Topology/FiberBundle/Lindelof.lean)
+  gives a Lindelöf total space for a σ-compact model when a countable family of
+  the given `trivializationAt` base sets covers the base and each selected base set
+  is Lindelöf. In particular,
+  `FiberBundle.lindelofSpace_of_hereditarilyLindelof` applies to a hereditarily
+  Lindelöf base and a σ-compact model. Both results retain the given topologies
+  on the base, model, total space and individual fibers and the given `FiberBundle`
+  structure, with no separation or nonemptiness assumptions.
 - **Projection criteria and canonical homeomorphisms.**
   [`FiberBundle.isOpenEmbedding_proj_iff`](VectorBundles/Topology/FiberBundle/Projection.lean)
   characterizes open-embedding projections by every original fiber being subsingleton.
@@ -295,6 +306,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Analysis.Normed.Ring.Units`](VectorBundles/Analysis/Normed/Ring/Units.lean) | Value embedding for units of a seminormed ring |
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
 | [`Topology.Bornology.Inducing`](VectorBundles/Topology/Bornology/Inducing.lean) | `IsVonNBounded.preimage_of_isInducing` over a general `NormedDivisionRing`, without injectivity or topological vector-space hypotheses |
+| [`Topology.Compactness.Lindelof`](VectorBundles/Topology/Compactness/Lindelof.lean) | Lindelöf sets times compact or σ-compact sets, without separation assumptions |
 | [`Topology.Connected.Basic`](VectorBundles/Topology/Connected/Basic.lean) | Preconnected preimages under open maps with preconnected fibers over a preconnected subset of the range |
 | [`Topology.FiberBundle.Connected`](VectorBundles/Topology/FiberBundle/Connected.lean) | Preconnected projection preimages and preconnected/connected total spaces; [real and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Connected.lean) |
 | [`Topology.Separable.Basic`](VectorBundles/Topology/Separable/Basic.lean) | Ambient-separable preimages under open maps with all ambient fibers separable; arbitrary-set preimage equivalence for open quotient maps; separable domains for separable targets |
@@ -304,6 +316,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.FiberBundle.Countability`](VectorBundles/Topology/FiberBundle/Countability.lean) | `FiberBundle.secondCountableTopology`: second-countable total space from second-countable base and model, with original topologies and no nonemptiness or separation assumptions; [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Countability.lean) use the instance and Mathlib's converse APIs |
 | [`Topology.FiberBundle.Metrizable`](VectorBundles/Topology/FiberBundle/Metrizable.lean) | Metrizable total space from metrizable base and model; model metrizability at a specified base point; [real-plane and empty-base examples](VectorBundlesTest/Topology/FiberBundle/Metrizable.lean) |
 | [`Topology.FiberBundle.SigmaCompact`](VectorBundles/Topology/FiberBundle/SigmaCompact.lean) | Sigma-compact totals over R₁ bases; model reflection at an R₀ base point; factor characterization for nonempty base and model, preserving original topologies; [real-plane and empty-space examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact.lean) |
+| [`Topology.FiberBundle.Lindelof`](VectorBundles/Topology/FiberBundle/Lindelof.lean) | Lindelöf total space from a countable cover by Lindelöf original chart base sets and a σ-compact model; hereditary-Lindelöf-base corollary |
 | [`Topology.VectorBundle.CoordinateMap`](VectorBundles/Topology/VectorBundle/CoordinateMap.lean) | Linear-chart evaluations, operators and linear-atlas criterion |
 | [`Topology.VectorBundle.FiniteSum`](VectorBundles/Topology/VectorBundle/FiniteSum.lean) | Locally finite sums of continuous sections |
 | [`Topology.VectorBundle.Hom`](VectorBundles/Topology/VectorBundle/Hom.lean) | Identity and composition of continuous native Hom sections, with the model operator-norm topology |
@@ -341,6 +354,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.VectorBundle.KernelProjection`](VectorBundles/Topology/VectorBundle/KernelProjection.lean) | Local continuous kernel projections with a common complement |
 | [`Topology.VectorBundle.Range`](VectorBundles/Topology/VectorBundle/Range.lean) | Range bundles with original subtype and induced total topologies |
 | [`Topology.VectorBundle.TrivialMetric`](VectorBundles/Topology/VectorBundle/TrivialMetric.lean) | Constant metrics from supplied compatible Hermitian model forms |
+| [`VectorBundlesTest.Topology.FiberBundle.Lindelof`](VectorBundlesTest/Topology/FiberBundle/Lindelof.lean) | Real mixed products, a singleton chart cover, a trivial real bundle and an empty model over the real base |
 | [`VectorBundlesTest`](VectorBundlesTest.lean) | Full examples: projection and properness boundaries, connectedness, separability, isomorphisms, metrics, semilinear evaluation, Hermitian metrics, metric pullbacks and comaps, shear-metric complement comparison, orthogonal complement/addition/projection, orthonormal charts, products, pullbacks, cylinder charts, frames, embeddings, ranges and finite complements |
 
 ## Conventions and limitations
