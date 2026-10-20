@@ -11,6 +11,25 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Compact-open images and joint coordinate changes.**
+  [`TopologicalSpace.CompactOpens.isLocallyConstant_map`](VectorBundles/Topology/CompactOpen.lean)
+  gives locally constant images of a compact open set under a family of
+  homeomorphisms with jointly continuous forward and inverse evaluations.
+  [`Bundle.Trivialization.continuous_coordChange_uncurry`](VectorBundles/Topology/FiberBundle/CoordChange.lean)
+  and `Bundle.Trivialization.continuous_coordChangeHomeomorph_symm_uncurry`
+  give both joint continuities on the original overlap subtype times the model.
+  These results retain the original topologies and independent universes, without
+  local compactness, separation or nonemptiness assumptions. The
+  [examples](VectorBundlesTest/Topology/CompactOpen.lean) use a nonempty proper
+  compact open set in a two-point space and the canonical trivial real bundle.
+- **Proper graph projections.**
+  [`Set.isProperMap_fst_of_upperHemicontinuous`](VectorBundles/Topology/Maps/Proper.lean)
+  gives a proper first projection from a subset of a product when its fibers are
+  compact and vary upper hemicontinuously. The original topologies and independent
+  base and fiber universes are retained, without separation, local compactness,
+  nonemptiness or ambient closedness assumptions. The
+  [examples](VectorBundlesTest/Topology/CompactOpen.lean) include the real strip
+  `ℝ ×ˢ Icc 0 1` and an empty fiber.
 - **Lindelöf products and fiber bundles.**
   [Lindelöf sets times compact or σ-compact sets](VectorBundles/Topology/Compactness/Lindelof.lean)
   are Lindelöf in arbitrary topological spaces.
@@ -315,6 +334,9 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
 | [`Topology.Bornology.Inducing`](VectorBundles/Topology/Bornology/Inducing.lean) | `IsVonNBounded.preimage_of_isInducing` over a general `NormedDivisionRing`, without injectivity or topological vector-space hypotheses |
 | [`Topology.Compactness.Lindelof`](VectorBundles/Topology/Compactness/Lindelof.lean) | Lindelöf sets times compact or σ-compact sets, without separation assumptions |
+| [`Topology.CompactOpen`](VectorBundles/Topology/CompactOpen.lean) | Locally constant compact-open images for jointly continuous homeomorphism families and their inverses |
+| [`Topology.FiberBundle.CoordChange`](VectorBundles/Topology/FiberBundle/CoordChange.lean) | Jointly continuous coordinate-change homeomorphisms and inverses on the original chart overlap |
+| [`Topology.Maps.Proper`](VectorBundles/Topology/Maps/Proper.lean) | Proper first projection for compact-valued upper hemicontinuous correspondences, without separation or ambient closedness |
 | [`Topology.Connected.Basic`](VectorBundles/Topology/Connected/Basic.lean) | Preconnected preimages under open maps with preconnected fibers over a preconnected subset of the range |
 | [`Topology.FiberBundle.Connected`](VectorBundles/Topology/FiberBundle/Connected.lean) | Preconnected projection preimages and preconnected/connected total spaces; [real and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Connected.lean) |
 | [`Topology.Separable.Basic`](VectorBundles/Topology/Separable/Basic.lean) | Ambient-separable preimages under open maps with all ambient fibers separable; arbitrary-set preimage equivalence for open quotient maps; separable domains for separable targets |
