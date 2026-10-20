@@ -134,6 +134,12 @@ topological fiber bundles.
   original projection is continuous and a closed nonempty subset of the base lies
   in the chart's base set. The [real-plane and empty-space examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact.lean)
   use these results directly without replacing the original bundle data.
+  The same module's `FiberBundle.sigmaCompactSpace_of_countable_closed_compact_cover`
+  gives another sufficient condition: a sigma-compact base without separation and a
+  countable cover of the model by closed compact sets.
+  `FiberBundle.sigmaCompactSpace_of_r1Space_model` derives the R₁ sigma-compact-model
+  case, with no base separation. Direct examples include the canonical Sierpiński
+  base and both empty boundaries.
 - **Compatible fiber metrics.**
   [`VectorBundle.continuousHermitianMetric`](VectorBundles/Topology/VectorBundle/MetricExistence.lean)
   constructs a continuous positive-definite Hermitian metric on a finite-dimensional

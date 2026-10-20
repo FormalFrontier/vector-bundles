@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundles.Topology.FiberBundle.SigmaCompact
+public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Topology.FiberBundle.Constructions
 public import Mathlib.Topology.MetricSpace.ProperSpace
 
@@ -87,3 +88,29 @@ private theorem sigmaCompact_trivial_totalSpace_empty_model
     IsSigmaCompact (Set.univ : Set (TotalSpace Empty (Trivial B Empty))) := by
   let : IsEmpty (TotalSpace Empty (Trivial B Empty)) := ⟨fun p ↦ Empty.elim p.snd⟩
   exact isSigmaCompact_univ
+
+/- Direct use of the closed compact model-cover theorem on the stock real plane. -/
+example : SigmaCompactSpace (Bundle.TotalSpace ℝ (Bundle.Trivial ℝ ℝ)) :=
+  FiberBundle.sigmaCompactSpace_of_countable_closed_compact_cover ℝ (Bundle.Trivial ℝ ℝ)
+    (fun n => closure (compactCovering ℝ n))
+    (fun _ => isClosed_closure)
+    (fun n => (isCompact_compactCovering ℝ n).closure)
+    (iUnion_closure_compactCovering ℝ)
+
+/-- The real trivial bundle over the canonical Sierpiński space is sigma-compact.
+Its finite base is not R₁, so this uses separation only on the model. -/
+theorem FiberBundle.sigmaCompactSpace_sierpinski_real_totalSpace :
+    SigmaCompactSpace (Bundle.TotalSpace ℝ (Bundle.Trivial Prop ℝ)) :=
+  FiberBundle.sigmaCompactSpace_of_r1Space_model ℝ (Bundle.Trivial Prop ℝ)
+
+/- The closed-cover theorem also permits an empty base. -/
+example : SigmaCompactSpace (Bundle.TotalSpace ℝ (Bundle.Trivial Empty ℝ)) :=
+  FiberBundle.sigmaCompactSpace_of_countable_closed_compact_cover ℝ (Bundle.Trivial Empty ℝ)
+    (fun n => closure (compactCovering ℝ n))
+    (fun _ => isClosed_closure)
+    (fun n => (isCompact_compactCovering ℝ n).closure)
+    (iUnion_closure_compactCovering ℝ)
+
+/- The R₁-model theorem also permits an empty model. -/
+example : SigmaCompactSpace (Bundle.TotalSpace Empty (Bundle.Trivial ℝ Empty)) :=
+  FiberBundle.sigmaCompactSpace_of_r1Space_model Empty (Bundle.Trivial ℝ Empty)
