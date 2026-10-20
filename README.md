@@ -30,7 +30,12 @@ topological fiber bundles.
   nonemptiness or ambient closedness assumptions. The
   [examples](VectorBundlesTest/Topology/CompactOpen.lean) include the real strip
   `ℝ ×ˢ Icc 0 1` and an empty fiber.
-- **Lindelöf products and fiber bundles.**
+- **Lindelöf products, proper inverse images and fiber bundles.**
+  [`IsProperMap.isLindelof_preimage`](VectorBundles/Topology/Compactness/Lindelof.lean)
+  gives Lindelöf inverse images of arbitrary Lindelöf subsets under proper maps,
+  without separation, local compactness or nonemptiness assumptions. The
+  [examples](VectorBundlesTest/Topology/Maps/ProperLindelof.lean) use a two-sheeted
+  real projection over a noncompact ray and over the empty set.
   [Lindelöf sets times compact or σ-compact sets](VectorBundles/Topology/Compactness/Lindelof.lean)
   are Lindelöf in arbitrary topological spaces.
   [`FiberBundle.lindelofSpace_of_countable_trivializationAt_cover`](VectorBundles/Topology/FiberBundle/Lindelof.lean)
@@ -179,6 +184,19 @@ topological fiber bundles.
   nonemptiness or base-separation assumptions. The
   [compact-open examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompactKernel.lean)
   include direct uses and empty-model boundaries.
+- **Sigma-compactness over locally compact Lindelöf bases.**
+  [`FiberBundle.sigmaCompactSpace_of_locallyCompactSpace_base`](VectorBundles/Topology/FiberBundle/SigmaCompact/LocallyCompactBase.lean)
+  gives sigma-compactness of the original total space from a locally compact
+  Lindelöf base and sigma-compact model, without separation or nonemptiness
+  assumptions. All four topology instances and the original fiber-bundle data
+  are retained, with independent base, model, and fiber universes.
+  The chart-level
+  [`Bundle.Trivialization.isSigmaCompact_preimage`](VectorBundles/Topology/FiberBundle/Trivialization/SigmaCompact.lean)
+  applies to any sigma-compact subset of a chart's base set and does not require
+  global continuity of the projection. The
+  [direct examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact/LocallyCompactBase.lean)
+  treat a compact real cylinder, the real-plane trivial bundle, an empty base,
+  and an empty model.
 - **Lindelöf model reflection.**
   The [reflection module](VectorBundles/Topology/FiberBundle/Lindelof/Reflection.lean)
   states that a chart of a continuous map with Lindelöf domain has Lindelöf model
@@ -357,7 +375,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Analysis.Normed.Ring.Units`](VectorBundles/Analysis/Normed/Ring/Units.lean) | Value embedding for units of a seminormed ring |
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
 | [`Topology.Bornology.Inducing`](VectorBundles/Topology/Bornology/Inducing.lean) | `IsVonNBounded.preimage_of_isInducing` over a general `NormedDivisionRing`, without injectivity or topological vector-space hypotheses |
-| [`Topology.Compactness.Lindelof`](VectorBundles/Topology/Compactness/Lindelof.lean) | Lindelöf sets times compact or σ-compact sets, without separation assumptions |
+| [`Topology.Compactness.Lindelof`](VectorBundles/Topology/Compactness/Lindelof.lean) | Lindelöf inverse images under proper maps and products with compact or σ-compact sets, without separation assumptions |
 | [`Topology.Compactness.Paracompact`](VectorBundles/Topology/Compactness/Paracompact.lean) | Paracompactness of continuous retracts, with independent universes and no separation assumptions |
 | [`Topology.CompactOpen`](VectorBundles/Topology/CompactOpen.lean) | Locally constant compact-open images for jointly continuous homeomorphism families and their inverses |
 | [`Topology.FiberBundle.CoordChange`](VectorBundles/Topology/FiberBundle/CoordChange.lean) | Jointly continuous coordinate-change homeomorphisms and inverses on the original chart overlap |
@@ -371,6 +389,8 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.FiberBundle.Countability`](VectorBundles/Topology/FiberBundle/Countability.lean) | `FiberBundle.secondCountableTopology`: second-countable total space from second-countable base and model, with original topologies and no nonemptiness or separation assumptions; [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Countability.lean) use the instance and Mathlib's converse APIs |
 | [`Topology.FiberBundle.Metrizable`](VectorBundles/Topology/FiberBundle/Metrizable.lean) | Metrizable total space from metrizable base and model; model metrizability at a specified base point; [real-plane and empty-base examples](VectorBundlesTest/Topology/FiberBundle/Metrizable.lean) |
 | [`Topology.FiberBundle.SigmaCompact`](VectorBundles/Topology/FiberBundle/SigmaCompact.lean) | Sigma-compact totals over R₁ bases; model reflection at an R₀ base point; factor characterization for nonempty base and model, preserving original topologies; [real-plane and empty-space examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact.lean) |
+| [`Topology.FiberBundle.Trivialization.SigmaCompact`](VectorBundles/Topology/FiberBundle/Trivialization/SigmaCompact.lean) | Sigma-compact preimages of sigma-compact subsets inside a trivialization's base set, using the original projection and topologies |
+| [`Topology.FiberBundle.SigmaCompact.LocallyCompactBase`](VectorBundles/Topology/FiberBundle/SigmaCompact/LocallyCompactBase.lean) | Sigma-compact total space over a locally compact Lindelöf base, with no separation or nonemptiness assumptions; [direct real-cylinder, real-plane, and empty-space examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact/LocallyCompactBase.lean) |
 | [`Topology.FiberBundle.Lindelof`](VectorBundles/Topology/FiberBundle/Lindelof.lean) | Lindelöf total space from a countable cover by Lindelöf original chart base sets and a σ-compact model; hereditary-Lindelöf-base corollary |
 | [`Topology.FiberBundle.Paracompact`](VectorBundles/Topology/FiberBundle/Paracompact.lean) | Paracompact model from an ambient-closed nonempty chart base patch; R₀-base point consequence with the original bundle topologies |
 | [`Topology.VectorBundle.CoordinateMap`](VectorBundles/Topology/VectorBundle/CoordinateMap.lean) | Linear-chart evaluations, operators and linear-atlas criterion |

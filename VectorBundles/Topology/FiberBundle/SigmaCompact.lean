@@ -14,6 +14,7 @@ public import Mathlib.Topology.FiberBundle.Basic
 public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.QuasiSeparated
 public import Mathlib.Topology.Sets.Compacts
+public import VectorBundles.Topology.FiberBundle.Trivialization.SigmaCompact
 
 /-!
 # Sigma-compactness of fiber-bundle total spaces
@@ -68,12 +69,7 @@ instance sigmaCompactSpace
   have hpreimage {K : Set B} (hK : IsCompact K) (b : B)
       (hKb : K ⊆ (trivializationAt F E b).baseSet) :
       IsSigmaCompact ((π F E) ⁻¹' K) := by
-    let : CompactSpace K := isCompact_iff_compactSpace.mp hK
-    rw [isSigmaCompact_iff_isSigmaCompact_univ]
-    simpa only [Set.image_univ_of_surjective
-      ((trivializationAt F E b).preimageHomeomorph hKb).symm.surjective] using
-      (isSigmaCompact_univ : IsSigmaCompact (Set.univ : Set (K × F))).image
-        ((trivializationAt F E b).preimageHomeomorph hKb).symm.continuous
+    exact (trivializationAt F E b).isSigmaCompact_preimage K hK.isSigmaCompact hKb
   have hcompact (K : Set B) (hK : IsCompact K) :
       IsSigmaCompact ((π F E) ⁻¹' K) := by
     obtain ⟨t, ht⟩ := hK.elim_finite_subcover

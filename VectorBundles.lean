@@ -20,6 +20,8 @@ public import VectorBundles.Topology.FiberBundle.LocallyCompact
 public import VectorBundles.Topology.FiberBundle.Countability
 public import VectorBundles.Topology.FiberBundle.Metrizable
 public import VectorBundles.Topology.FiberBundle.SigmaCompact
+public import VectorBundles.Topology.FiberBundle.Trivialization.SigmaCompact
+public import VectorBundles.Topology.FiberBundle.SigmaCompact.LocallyCompactBase
 public import VectorBundles.Topology.FiberBundle.Lindelof
 public import VectorBundles.Topology.FiberBundle.Lindelof.Reflection
 public import VectorBundles.Topology.FiberBundle.Paracompact
