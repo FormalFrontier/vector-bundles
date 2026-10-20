@@ -9,6 +9,7 @@ public import VectorBundles.Analysis.Normed.Ring.Units
 public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
 public import VectorBundles.Topology.Compactness.Lindelof
 public import VectorBundles.Topology.Compactness.Paracompact
+public import VectorBundles.Topology.Compactness.SigmaCompact
 public import VectorBundles.Topology.CompactOpen
 public import VectorBundles.Topology.Connected.Basic
 public import VectorBundles.Topology.Separable.Basic
@@ -22,7 +23,9 @@ public import VectorBundles.Topology.FiberBundle.Metrizable
 public import VectorBundles.Topology.FiberBundle.SigmaCompact
 public import VectorBundles.Topology.FiberBundle.Trivialization.SigmaCompact
 public import VectorBundles.Topology.FiberBundle.SigmaCompact.LocallyCompactBase
+public import VectorBundles.Topology.FiberBundle.SigmaCompact.Proper
 public import VectorBundles.Topology.FiberBundle.Lindelof
+public import VectorBundles.Topology.FiberBundle.Lindelof.Proper
 public import VectorBundles.Topology.FiberBundle.Lindelof.Reflection
 public import VectorBundles.Topology.FiberBundle.Paracompact
 public import VectorBundles.Topology.FiberBundle.CoordChange

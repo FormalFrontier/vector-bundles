@@ -11,6 +11,18 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Sigma-compactness and proper maps.**
+  [`IsProperMap.isSigmaCompact_preimage`](VectorBundles/Topology/Compactness/SigmaCompact.lean)
+  sends an arbitrary sigma-compact target subset to a sigma-compact inverse image;
+  `IsProperMap.sigmaCompactSpace` gives the corresponding domain-space consequence.
+  [`FiberBundle.sigmaCompactSpace_totalSpace`](VectorBundles/Topology/FiberBundle/SigmaCompact/Proper.lean)
+  applies this to the canonical projection of a compact-model bundle over a
+  sigma-compact base. These results retain the original topologies and independent
+  universes, without separation, local compactness, surjectivity or nonemptiness
+  assumptions. The [proper-map examples](VectorBundlesTest/Topology/Compactness/SigmaCompact.lean)
+  use the real two-sheeted projection over a noncompact ray, and the
+  [bundle examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact/Proper.lean)
+  use the canonical two-point and empty-model bundles over the real line.
 - **Compact-open images and joint coordinate changes.**
   [`TopologicalSpace.CompactOpens.isLocallyConstant_map`](VectorBundles/Topology/CompactOpen.lean)
   gives locally constant images of a compact open set under a family of
@@ -46,6 +58,9 @@ topological fiber bundles.
   Lindelöf base and a σ-compact model. Both results retain the given topologies
   on the base, model, total space and individual fibers and the given `FiberBundle`
   structure, with no separation or nonemptiness assumptions.
+- **[Lindelöf total spaces with compact models](VectorBundles/Topology/FiberBundle/Lindelof/Proper.lean).**
+  `FiberBundle.lindelofSpace_totalSpace` gives a Lindelöf total space from a Lindelöf base and compact model,
+  retaining the original topologies, given fiber-bundle structure and independent universes.
 - **Projection criteria and canonical homeomorphisms.**
   [`FiberBundle.isOpenEmbedding_proj_iff`](VectorBundles/Topology/FiberBundle/Projection.lean)
   characterizes open-embedding projections by every original fiber being subsingleton.

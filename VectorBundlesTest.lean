@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import VectorBundlesTest.Topology.Compactness.SigmaCompact
 public import VectorBundlesTest.Topology.CompactOpen
 public import VectorBundlesTest.Topology.Maps.ProperLindelof
 public import VectorBundlesTest.Topology.FiberBundle.Connected
@@ -14,9 +15,11 @@ public import VectorBundlesTest.Topology.FiberBundle.LocallyCompact
 public import VectorBundlesTest.Topology.FiberBundle.Countability
 public import VectorBundlesTest.Topology.FiberBundle.Metrizable
 public import VectorBundlesTest.Topology.FiberBundle.SigmaCompact
+public import VectorBundlesTest.Topology.FiberBundle.SigmaCompact.Proper
 public import VectorBundlesTest.Topology.FiberBundle.SigmaCompactKernel
 public import VectorBundlesTest.Topology.FiberBundle.SigmaCompact.LocallyCompactBase
 public import VectorBundlesTest.Topology.FiberBundle.Lindelof
+public import VectorBundlesTest.Topology.FiberBundle.Lindelof.Proper
 public import VectorBundlesTest.Topology.FiberBundle.Lindelof.Reflection
 public import VectorBundlesTest.Topology.FiberBundle.Paracompact
 public import VectorBundlesTest.Topology.VectorBundle.HermitianMetric
