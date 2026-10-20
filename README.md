@@ -170,6 +170,15 @@ topological fiber bundles.
   `FiberBundle.sigmaCompactSpace_of_r1Space_model` derives the R₁ sigma-compact-model
   case, with no base separation. Direct examples include the canonical Sierpiński
   base and both empty boundaries.
+  For a sigma-compact base and quasi-separated model,
+  `FiberBundle.sigmaCompactSpace_of_countable_open_compact_cover` instead uses a
+  countable cover by compact open sets, which need not be closed.
+  `FiberBundle.sigmaCompactSpace_of_open_nhdsKer_cover` applies when the model is
+  sigma-compact and covered by open neighborhood kernels of singletons; not every
+  singleton kernel must be open. Both retain the original topologies without
+  nonemptiness or base-separation assumptions. The
+  [compact-open examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompactKernel.lean)
+  include direct uses and empty-model boundaries.
 - **Lindelöf model reflection.**
   The [reflection module](VectorBundles/Topology/FiberBundle/Lindelof/Reflection.lean)
   states that a chart of a continuous map with Lindelöf domain has Lindelöf model

@@ -87,6 +87,7 @@ globs = [
   "VectorBundlesTest.Topology.FiberBundle.Countability",
   "VectorBundlesTest.Topology.FiberBundle.Metrizable",
   "VectorBundlesTest.Topology.FiberBundle.SigmaCompact",
+  "VectorBundlesTest.Topology.FiberBundle.SigmaCompactKernel",
   "VectorBundlesTest.Topology.FiberBundle.Lindelof",
   "VectorBundlesTest.Topology.FiberBundle.Lindelof.Reflection",
   "VectorBundlesTest.Topology.FiberBundle.Paracompact",
