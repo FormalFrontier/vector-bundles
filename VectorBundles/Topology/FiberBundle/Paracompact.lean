@@ -30,7 +30,12 @@ their coupled `FiberBundle` data, are retained throughout.
 
 A fiber bundle with compact model over a paracompact base has paracompact total
 space. Its canonical projection is proper, and paracompactness passes to the
-domain of a proper map.
+domain of a proper map. Conversely, for a compact nonempty model, the canonical
+projection is open, proper and surjective, so a paracompact total space has
+paracompact base. An empty model gives an empty total space over any base.
+Thus for compact models, total-space paracompactness is equivalent to the model
+being empty or the base being paracompact. All four given topologies and the
+coupled bundle structure are retained; no separation assumption is imposed.
 
 ## References
 
@@ -98,5 +103,32 @@ theorem paracompactSpace_totalSpace
     [fb : FiberBundle F E] [ParacompactSpace B] [CompactSpace F] :
     ParacompactSpace (Bundle.TotalSpace F E) := by
   exact IsProperMap.paracompactSpace (FiberBundle.isProperMap_proj F E)
+
+/-- For a fiber bundle with compact model, the original total space is paracompact
+exactly when the model is empty or the base is paracompact. No separation,
+nonempty-base or nonempty-model hypothesis is required. -/
+theorem paracompactSpace_totalSpace_iff
+    {B : Type uB} (F : Type uF) (E : B → Type uE)
+    [TopologicalSpace B] [TopologicalSpace F]
+    [TopologicalSpace (Bundle.TotalSpace F E)] [∀ b, TopologicalSpace (E b)]
+    [fb : FiberBundle F E] [CompactSpace F] :
+    ParacompactSpace (Bundle.TotalSpace F E) ↔ (IsEmpty F ∨ ParacompactSpace B) := by
+  constructor
+  · intro htotal
+    let : ParacompactSpace (Bundle.TotalSpace F E) := htotal
+    cases isEmpty_or_nonempty F with
+    | inl hF => exact Or.inl hF
+    | inr hF =>
+      let : Nonempty F := hF
+      exact Or.inr
+        (IsProperMap.paracompactSpace_codomain (FiberBundle.isProperMap_proj F E)
+          (FiberBundle.isOpenMap_proj F E) (FiberBundle.surjective_proj F E))
+  · rintro (hF | hB)
+    · let : IsEmpty F := hF
+      let : IsEmpty (Bundle.TotalSpace F E) :=
+        isEmpty_iff.mpr (fun z => isEmptyElim ((FiberBundle.homeomorphAt F E z.proj) z.snd))
+      infer_instance
+    · let : ParacompactSpace B := hB
+      exact FiberBundle.paracompactSpace_totalSpace F E
 
 end FiberBundle

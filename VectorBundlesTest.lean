@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundlesTest.Topology.Compactness.SigmaCompact
+public import VectorBundlesTest.Topology.LocallyFinite
 public import VectorBundlesTest.Topology.CompactOpen
 public import VectorBundlesTest.Topology.Maps.ProperLindelof
 public import VectorBundlesTest.Topology.FiberBundle.Connected

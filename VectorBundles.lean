@@ -10,6 +10,7 @@ public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
 public import VectorBundles.Topology.Compactness.Lindelof
 public import VectorBundles.Topology.Compactness.Paracompact
 public import VectorBundles.Topology.Compactness.SigmaCompact
+public import VectorBundles.Topology.LocallyFinite
 public import VectorBundles.Topology.CompactOpen
 public import VectorBundles.Topology.Connected.Basic
 public import VectorBundles.Topology.Separable.Basic

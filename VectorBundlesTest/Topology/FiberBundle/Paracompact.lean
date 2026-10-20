@@ -20,8 +20,10 @@ public import VectorBundles.Topology.FiberBundle.Paracompact
 # Paracompact models of canonical trivial bundles
 
 These applications retain the canonical total-space topology and fiber-bundle structure of
-`Bundle.Trivial`. The total-space paracompactness premises come from metric spaces, a product
-with a compact first factor, or finiteness, independently of reflection to the model.
+`Bundle.Trivial`. The total-space paracompactness premises come from metric spaces, products
+with compact factors, or finiteness, independently of reflection to the model or base.
+The compact-model equivalence is also applied to the two-sheeted real trivial bundle
+and to an empty model over an arbitrary topological base.
 -/
 
 @[expose] public section
@@ -144,3 +146,32 @@ example : ParacompactSpace Empty := by
 /-- An empty model is allowed even over a nonempty noncompact base. -/
 example : ParacompactSpace (Bundle.TotalSpace Empty (Bundle.Trivial ℝ Empty)) := by
   exact FiberBundle.paracompactSpace_totalSpace Empty (Bundle.Trivial ℝ Empty)
+
+/-- The two-sheeted real projection is open, proper and surjective. Source
+paracompactness comes from Mathlib's metric real-line and compact-product instances,
+independently of proper-map inverse-image or codomain theorems. -/
+example : ParacompactSpace ℝ := by
+  let : ParacompactSpace (ℝ × Fin 2) := inferInstance
+  exact IsProperMap.paracompactSpace_codomain
+    (isProperMap_fst_of_compactSpace (X := ℝ) (Y := Fin 2))
+    isOpenMap_fst Prod.fst_surjective
+
+/-- The compact-model equivalence recovers base paracompactness from the canonical
+two-sheeted real bundle. Its original total-space hypothesis comes from the stock
+product homeomorphism, the metric real line and the finite compact model. -/
+example : ParacompactSpace ℝ := by
+  have hproduct : ParacompactSpace (ℝ × Fin 2) := inferInstance
+  have htotal : ParacompactSpace (TotalSpace (Fin 2) (Trivial ℝ (Fin 2))) :=
+    (Trivial.homeomorphProd ℝ (Fin 2)).paracompactSpace_iff.mpr hproduct
+  rcases (FiberBundle.paracompactSpace_totalSpace_iff
+    (Fin 2) (Trivial ℝ (Fin 2))).mp htotal with hempty | hbase
+  · obtain ⟨h⟩ := hempty
+    exact (h (0 : Fin 2)).elim
+  · exact hbase
+
+/-- An empty compact model gives a paracompact original total space over any supplied
+topological base, without assuming that the base is paracompact or nonempty. -/
+example {B : Type uX} [TopologicalSpace B] :
+    ParacompactSpace (TotalSpace Empty (Trivial B Empty)) := by
+  exact (FiberBundle.paracompactSpace_totalSpace_iff Empty (Trivial B Empty)).mpr
+    (Or.inl (inferInstance : IsEmpty Empty))

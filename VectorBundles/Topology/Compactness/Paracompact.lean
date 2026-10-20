@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Topology.Compactness.Paracompact
 public import Mathlib.Topology.Maps.Proper.Basic
+public import VectorBundles.Topology.LocallyFinite
 
 /-!
 # Paracompactness under continuous retracts and proper maps
@@ -25,11 +26,19 @@ Proper maps also reflect paracompactness: a space admitting a proper map to a
 paracompact space is paracompact. No surjectivity, separation, or nonemptiness
 assumptions are needed.
 
+An open surjective proper map from a paracompact space also has paracompact
+codomain. Images of a precise locally finite open refinement remain open and
+locally finite, and surjectivity supplies coverage. No separation or
+nonemptiness assumption is needed.
+
 ## References
 
 * Reid Barton, Yury Kudryashov, and Mathlib contributors,
   [`Mathlib.Topology.Compactness.Paracompact`](https://github.com/leanprover-community/mathlib4/blob/83abb3e776bdefcbc447a1e44d0debe4010039e5/Mathlib/Topology/Compactness/Paracompact.lean):
   paracompactness and precise locally finite refinements.
+* Anatole Dedecker, Etienne Marion, and Mathlib contributors,
+  [`Mathlib.Topology.Maps.Proper.Basic`](https://github.com/leanprover-community/mathlib4/blob/83abb3e776bdefcbc447a1e44d0debe4010039e5/Mathlib/Topology/Maps/Proper/Basic.lean):
+  proper maps, closedness and compact inverse images.
 -/
 
 @[expose] public section
@@ -46,8 +55,9 @@ theorem IsProperMap.paracompactSpace
   intro α s hsopen hscover
   have hfinite (y : Y) :
       ∃ a : Finset α, f ⁻¹' {y} ⊆ ⋃ i ∈ a, s i := by
-    apply (hf.isCompact_preimage (isCompact_singleton : IsCompact ({y} : Set Y))).elim_finite_subcover
-      s hsopen
+    apply
+      (hf.isCompact_preimage (isCompact_singleton : IsCompact ({y} : Set Y))).elim_finite_subcover
+        s hsopen
     rw [hscover]
     exact Set.subset_univ _
   choose A hA using hfinite
@@ -96,6 +106,25 @@ theorem IsProperMap.paracompactSpace
   refine ⟨α, t, htopen, htcover, htfinite, ?_⟩
   intro i
   exact ⟨i, Set.inter_subset_left⟩
+
+/-- The codomain of an open surjective proper map from a paracompact space is
+paracompact. Openness makes the images of open refinements open; properness gives
+closedness and compact fibers for `IsClosedMap.locallyFinite_image`. -/
+theorem IsProperMap.paracompactSpace_codomain
+    {X : Type uX} {Y : Type uY} [TopologicalSpace X] [TopologicalSpace Y]
+    {f : X → Y} (hf : IsProperMap f) (hopen : IsOpenMap f)
+    (hsurj : Function.Surjective f) [ParacompactSpace X] : ParacompactSpace Y := by
+  constructor
+  intro α s hsopen hscover
+  obtain ⟨t, htopen, htcover, htfinite, htrefine⟩ :=
+    precise_refinement (fun a => f ⁻¹' s a) (fun a => (hsopen a).preimage hf.continuous)
+      (by rw [← Set.preimage_iUnion, hscover, Set.preimage_univ])
+  refine ⟨α, (fun a => f '' t a), (fun a => hopen _ (htopen a)), ?_,
+    hf.isClosedMap.locallyFinite_image
+      (fun y => hf.isCompact_preimage isCompact_singleton) t htfinite, ?_⟩
+  · rw [← Set.image_iUnion, htcover, Set.image_univ_of_surjective hsurj]
+  · intro a
+    exact ⟨a, Set.image_subset_iff.mpr (htrefine a)⟩
 
 /-- A continuous retract of a paracompact space is paracompact, without separation
 or nonemptiness assumptions. -/

@@ -254,6 +254,23 @@ topological fiber bundles.
   gives a paracompact total space from a paracompact base and compact model.
   Both retain the original topologies and independent universes, without separation,
   surjectivity or nonemptiness assumptions; the bundle keeps its given structure.
+- **Locally finite images and compact-model base characterization.**
+  [`IsClosedMap.locallyFinite_image`](VectorBundles/Topology/LocallyFinite.lean)
+  states that a closed map with compact point fibers sends arbitrary locally finite
+  families to locally finite families, without continuity, openness or surjectivity.
+  [`IsProperMap.paracompactSpace_codomain`](VectorBundles/Topology/Compactness/Paracompact.lean)
+  states paracompactness of the codomain of an open surjective proper map from a
+  paracompact space.
+  [`FiberBundle.paracompactSpace_totalSpace_iff`](VectorBundles/Topology/FiberBundle/Paracompact.lean)
+  states, for a compact model, that the original total space is paracompact exactly
+  when the model is empty or the base is paracompact. The statements
+  retain the original topologies and independent universes,
+  without separation or nonemptiness assumptions. The
+  [locally finite example](VectorBundlesTest/Topology/LocallyFinite.lean) uses an
+  infinite family of nonempty fibers of `ℕ × Fin 2 → ℕ`; the
+  [paracompactness examples](VectorBundlesTest/Topology/FiberBundle/Paracompact.lean)
+  apply the statements to the two-sheeted real projection, the canonical two-sheeted
+  real bundle, and an empty model over an arbitrary topological base.
 - **Compatible fiber metrics.**
   [`VectorBundle.continuousHermitianMetric`](VectorBundles/Topology/VectorBundle/MetricExistence.lean)
   constructs a continuous positive-definite Hermitian metric on a finite-dimensional
@@ -410,7 +427,8 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
 | [`Topology.Bornology.Inducing`](VectorBundles/Topology/Bornology/Inducing.lean) | `IsVonNBounded.preimage_of_isInducing` over a general `NormedDivisionRing`, without injectivity or topological vector-space hypotheses |
 | [`Topology.Compactness.Lindelof`](VectorBundles/Topology/Compactness/Lindelof.lean) | Lindelöf inverse images under proper maps and products with compact or σ-compact sets, without separation assumptions |
-| [`Topology.Compactness.Paracompact`](VectorBundles/Topology/Compactness/Paracompact.lean) | Paracompactness of continuous retracts, with independent universes and no separation assumptions |
+| [`Topology.Compactness.Paracompact`](VectorBundles/Topology/Compactness/Paracompact.lean) | Paracompactness of continuous retracts and domains of proper maps; open-surjective-proper codomain theorem |
+| [`Topology.LocallyFinite`](VectorBundles/Topology/LocallyFinite.lean) | Locally finite images under closed maps with compact point fibers; [infinite-index example](VectorBundlesTest/Topology/LocallyFinite.lean) |
 | [`Topology.CompactOpen`](VectorBundles/Topology/CompactOpen.lean) | Locally constant compact-open images for jointly continuous homeomorphism families and their inverses |
 | [`Topology.FiberBundle.CoordChange`](VectorBundles/Topology/FiberBundle/CoordChange.lean) | Jointly continuous coordinate-change homeomorphisms and inverses on the original chart overlap |
 | [`Topology.Maps.Proper`](VectorBundles/Topology/Maps/Proper.lean) | Proper first projection for compact-valued upper hemicontinuous correspondences, without separation or ambient closedness |
@@ -428,7 +446,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.FiberBundle.Trivialization.Lindelof`](VectorBundles/Topology/FiberBundle/Trivialization/Lindelof.lean) | Lindelöf preimages of sigma-compact subsets inside an original trivialization's base set with Lindelöf model, without global projection continuity; compact subsets via `hK.isSigmaCompact` |
 | [`Topology.FiberBundle.Lindelof.LocallyCompactBase`](VectorBundles/Topology/FiberBundle/Lindelof/LocallyCompactBase.lean) | Lindelöf total space over a locally compact Lindelöf base with Lindelöf model, retaining original topologies and bundle data without separation or nonemptiness assumptions; [direct real-cylinder, real-plane, and empty-space examples](VectorBundlesTest/Topology/FiberBundle/Lindelof/LocallyCompactBase.lean) |
 | [`Topology.FiberBundle.Lindelof`](VectorBundles/Topology/FiberBundle/Lindelof.lean) | Lindelöf total space from a countable cover by Lindelöf original chart base sets and a σ-compact model; hereditary-Lindelöf-base corollary |
-| [`Topology.FiberBundle.Paracompact`](VectorBundles/Topology/FiberBundle/Paracompact.lean) | Paracompact model from an ambient-closed nonempty chart base patch; R₀-base point consequence with the original bundle topologies |
+| [`Topology.FiberBundle.Paracompact`](VectorBundles/Topology/FiberBundle/Paracompact.lean) | Paracompact model from an ambient-closed nonempty chart base patch; R₀-base point consequence and compact-model total spaces; empty-aware compact-model base equivalence |
 | [`Topology.VectorBundle.CoordinateMap`](VectorBundles/Topology/VectorBundle/CoordinateMap.lean) | Linear-chart evaluations, operators and linear-atlas criterion |
 | [`Topology.VectorBundle.FiniteSum`](VectorBundles/Topology/VectorBundle/FiniteSum.lean) | Locally finite sums of continuous sections |
 | [`Topology.VectorBundle.Hom`](VectorBundles/Topology/VectorBundle/Hom.lean) | Identity and composition of continuous native Hom sections, with the model operator-norm topology |
@@ -515,4 +533,7 @@ The Hermitian and semilinear APIs extend those prior formalizations; the other
 modules document their own mathematical and formalization sources.
 Fiber-bundle metrizability follows the original formalization by Formal Frontier Agents
 and uses Metrization's locally finite closed-neighbourhood-cover criterion.
+The locally finite and paracompactness statements use Yury Kudryashov's locally
+finite-family API, Reid Barton and Yury Kudryashov's paracompactness formalization,
+and Anatole Dedecker and Etienne Marion's proper-map API in Mathlib.
 Licensed under Apache-2.0; see [LICENSE](LICENSE).
