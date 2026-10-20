@@ -125,8 +125,15 @@ topological fiber bundles.
   model, retaining the original topologies and fiber-bundle structure. Base, model
   and fibers have independent universes; no nonemptiness, local compactness, scalar
   or finite-dimensionality assumption is needed, nor separation of the model or
-  total space. The [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact.lean)
-  use the instance directly over the same real base. No converse is asserted.
+  total space. `FiberBundle.sigmaCompactSpace_model` reflects sigma-compactness to
+  the model at any specified point of an R₀ base, even when the model is empty.
+  `FiberBundle.sigmaCompactSpace_totalSpace_iff` characterizes sigma-compact totals
+  by sigma-compact base and model when the base is R₁ and both factors are nonempty.
+  The chart-level `Bundle.Trivialization.sigmaCompactSpace_model_of_isClosed`
+  reflects sigma-compactness of the original ambient space to the model when the
+  original projection is continuous and a closed nonempty subset of the base lies
+  in the chart's base set. The [real-plane and empty-space examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact.lean)
+  use these results directly without replacing the original bundle data.
 - **Compatible fiber metrics.**
   [`VectorBundle.continuousHermitianMetric`](VectorBundles/Topology/VectorBundle/MetricExistence.lean)
   constructs a continuous positive-definite Hermitian metric on a finite-dimensional
@@ -290,7 +297,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.FiberBundle.Proper`](VectorBundles/Topology/FiberBundle/Proper.lean) | Proper projection exactly when every fiber is compact; compactness transfer and equivalence without separation |
 | [`Topology.FiberBundle.Countability`](VectorBundles/Topology/FiberBundle/Countability.lean) | `FiberBundle.secondCountableTopology`: second-countable total space from second-countable base and model, with original topologies and no nonemptiness or separation assumptions; [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Countability.lean) use the instance and Mathlib's converse APIs |
 | [`Topology.FiberBundle.Metrizable`](VectorBundles/Topology/FiberBundle/Metrizable.lean) | Metrizable total space from metrizable base and model; model metrizability at a specified base point; [real-plane and empty-base examples](VectorBundlesTest/Topology/FiberBundle/Metrizable.lean) |
-| [`Topology.FiberBundle.SigmaCompact`](VectorBundles/Topology/FiberBundle/SigmaCompact.lean) | Sigma-compact total space from an R₁ sigma-compact base and sigma-compact model, with original topologies and no nonemptiness assumptions; [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact.lean) |
+| [`Topology.FiberBundle.SigmaCompact`](VectorBundles/Topology/FiberBundle/SigmaCompact.lean) | Sigma-compact totals over R₁ bases; model reflection at an R₀ base point; factor characterization for nonempty base and model, preserving original topologies; [real-plane and empty-space examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact.lean) |
 | [`Topology.VectorBundle.CoordinateMap`](VectorBundles/Topology/VectorBundle/CoordinateMap.lean) | Linear-chart evaluations, operators and linear-atlas criterion |
 | [`Topology.VectorBundle.FiniteSum`](VectorBundles/Topology/VectorBundle/FiniteSum.lean) | Locally finite sums of continuous sections |
 | [`Topology.VectorBundle.Hom`](VectorBundles/Topology/VectorBundle/Hom.lean) | Identity and composition of continuous native Hom sections, with the model operator-norm topology |

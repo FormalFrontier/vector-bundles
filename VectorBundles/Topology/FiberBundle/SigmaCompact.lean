@@ -74,3 +74,70 @@ instance sigmaCompactSpace
       (fun n ↦ hcompact _ (isCompact_compactCovering B n))
 
 end FiberBundle
+
+namespace Bundle.Trivialization
+
+universe uZ
+
+/-- A chart of a sigma-compact space has sigma-compact model if its base set contains a
+closed nonempty subset and its original projection is continuous. No separation assumption
+on the base or model is needed. -/
+theorem sigmaCompactSpace_model_of_isClosed
+    {B : Type uB} {Z : Type uZ} {F : Type uF}
+    [TopologicalSpace B] [TopologicalSpace Z] [TopologicalSpace F]
+    {p : Z → B} (e : Trivialization F p) (hp : Continuous p)
+    [SigmaCompactSpace Z] {s : Set B} (hs : IsClosed s) (hne : s.Nonempty)
+    (hsub : s ⊆ e.baseSet) : SigmaCompactSpace F := by
+  let : SigmaCompactSpace (p ⁻¹' s) := (hs.preimage hp).sigmaCompactSpace
+  let : SigmaCompactSpace (s × F) := isSigmaCompact_univ_iff.mp (by
+    simpa only [(e.preimageHomeomorph hsub).surjective.range_eq] using
+      isSigmaCompact_range (e.preimageHomeomorph hsub).continuous)
+  obtain ⟨b, hb⟩ := hne
+  have hsurj : Function.Surjective (Prod.snd : s × F → F) :=
+    fun y ↦ ⟨(⟨b, hb⟩, y), rfl⟩
+  apply isSigmaCompact_univ_iff.mp
+  simpa only [hsurj.range_eq] using
+    isSigmaCompact_range (continuous_snd : Continuous (Prod.snd : s × F → F))
+
+end Bundle.Trivialization
+
+namespace FiberBundle
+
+/-- If the original total space of a fiber bundle is sigma-compact and the base is R₀,
+then the model is sigma-compact at any specified base point. The model may be empty. -/
+theorem sigmaCompactSpace_model
+    {B : Type uB} (F : Type uF) (E : B → Type uE)
+    [TopologicalSpace B] [TopologicalSpace F]
+    [TopologicalSpace (TotalSpace F E)] [∀ b, TopologicalSpace (E b)]
+    [FiberBundle F E] [R0Space B] [SigmaCompactSpace (TotalSpace F E)] (b : B) :
+    SigmaCompactSpace F := by
+  refine (trivializationAt F E b).sigmaCompactSpace_model_of_isClosed
+    (continuous_proj F E) (isClosed_closure : IsClosed (closure ({b} : Set B)))
+    ⟨b, subset_closure (by rfl)⟩ ?_
+  intro y hy
+  have hby : b ⤳ y := specializes_iff_mem_closure.mpr hy
+  exact hby.symm.mem_open (trivializationAt F E b).open_baseSet
+    (mem_baseSet_trivializationAt F E b)
+
+/-- For a fiber bundle over a nonempty R₁ base with nonempty model, the original total space
+is sigma-compact exactly when the base and model are both sigma-compact. -/
+theorem sigmaCompactSpace_totalSpace_iff
+    {B : Type uB} (F : Type uF) (E : B → Type uE)
+    [TopologicalSpace B] [TopologicalSpace F]
+    [TopologicalSpace (TotalSpace F E)] [∀ b, TopologicalSpace (E b)]
+    [FiberBundle F E] [R1Space B] [Nonempty B] [Nonempty F] :
+    SigmaCompactSpace (TotalSpace F E) ↔ SigmaCompactSpace B ∧ SigmaCompactSpace F := by
+  constructor
+  · intro h
+    let : SigmaCompactSpace (TotalSpace F E) := h
+    have hB : SigmaCompactSpace B := by
+      apply isSigmaCompact_univ_iff.mp
+      simpa only [(surjective_proj F E).range_eq] using
+        isSigmaCompact_range (continuous_proj F E)
+    exact ⟨hB, sigmaCompactSpace_model F E (Classical.choice ‹Nonempty B›)⟩
+  · rintro ⟨hB, hF⟩
+    let : SigmaCompactSpace B := hB
+    let : SigmaCompactSpace F := hF
+    exact FiberBundle.sigmaCompactSpace F E
+
+end FiberBundle
