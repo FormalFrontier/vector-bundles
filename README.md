@@ -151,6 +151,14 @@ topological fiber bundles.
   `FiberBundle.sigmaCompactSpace_of_r1Space_model` derives the R₁ sigma-compact-model
   case, with no base separation. Direct examples include the canonical Sierpiński
   base and both empty boundaries.
+- **Lindelöf model reflection.**
+  The [reflection module](VectorBundles/Topology/FiberBundle/Lindelof/Reflection.lean)
+  states that a chart of a continuous map with Lindelöf domain has Lindelöf model
+  when its base set contains a nonempty subset closed in the ambient base. For a
+  fiber bundle, Lindelöfness of the original total space and a specified point of
+  an R₀ base imply Lindelöfness of the model. Both statements retain the original
+  topologies and allow an empty model; the chart statement requires no separation
+  assumptions on the base or model.
 - **Compatible fiber metrics.**
   [`VectorBundle.continuousHermitianMetric`](VectorBundles/Topology/VectorBundle/MetricExistence.lean)
   constructs a continuous positive-definite Hermitian metric on a finite-dimensional

@@ -19,6 +19,7 @@ public import VectorBundles.Topology.FiberBundle.Countability
 public import VectorBundles.Topology.FiberBundle.Metrizable
 public import VectorBundles.Topology.FiberBundle.SigmaCompact
 public import VectorBundles.Topology.FiberBundle.Lindelof
+public import VectorBundles.Topology.FiberBundle.Lindelof.Reflection
 public import VectorBundles.Topology.VectorBundle.CoordinateMap
 public import VectorBundles.Topology.VectorBundle.FiniteSum
 public import VectorBundles.Topology.VectorBundle.HermitianMetric
