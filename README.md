@@ -45,7 +45,10 @@ topological fiber bundles.
 - **Lindelöf products, proper inverse images and fiber bundles.**
   [`IsProperMap.isLindelof_preimage`](VectorBundles/Topology/Compactness/Lindelof.lean)
   gives Lindelöf inverse images of arbitrary Lindelöf subsets under proper maps,
-  without separation, local compactness or nonemptiness assumptions. The
+  without separation, local compactness or nonemptiness assumptions.
+  `IsProperMap.isLindelof_preimage_iff` characterizes Lindelöfness of an inverse
+  image by Lindelöfness of the target subset intersected with the map's range,
+  without requiring surjectivity. The
   [examples](VectorBundlesTest/Topology/Maps/ProperLindelof.lean) use a two-sheeted
   real projection over a noncompact ray and over the empty set.
   [Lindelöf sets times compact or σ-compact sets](VectorBundles/Topology/Compactness/Lindelof.lean)
@@ -61,6 +64,9 @@ topological fiber bundles.
 - **[Lindelöf total spaces with compact models](VectorBundles/Topology/FiberBundle/Lindelof/Proper.lean).**
   `FiberBundle.lindelofSpace_totalSpace` gives a Lindelöf total space from a Lindelöf base and compact model,
   retaining the original topologies, given fiber-bundle structure and independent universes.
+  For a compact model `F` over a base `B`,
+  `FiberBundle.lindelofSpace_totalSpace_iff` characterizes a Lindelöf total space by
+  `IsEmpty F ∨ LindelofSpace B`; an empty model does not force the base to be Lindelöf.
 - **Projection criteria and canonical homeomorphisms.**
   [`FiberBundle.isOpenEmbedding_proj_iff`](VectorBundles/Topology/FiberBundle/Projection.lean)
   characterizes open-embedding projections by every original fiber being subsingleton.

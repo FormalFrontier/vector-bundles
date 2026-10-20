@@ -14,11 +14,13 @@ import Mathlib.Topology.WithTopology
 /-!
 # Lindelöf total spaces of compact-model trivial bundles
 
-These applications retain the standard topology on the noncompact real base and
-all canonical trivial-bundle fiber and total-space topologies. The first model is
-the indiscrete two-point space, compact by finiteness rather than discreteness.
+The standard-base examples retain the usual topology on the noncompact real base
+and all canonical trivial-bundle fiber and total-space topologies. The first model
+is the indiscrete two-point space, compact by finiteness rather than discreteness.
 The empty model is also finite and compact, and needs no nonemptiness hypothesis.
-The real base is Lindelöf through its standard second-countable topology.
+The usual real base is Lindelöf through its second-countable topology. The
+empty-model characterization also applies over the uncountable discrete real
+base, which is not Lindelöf, with the canonical bundle topologies.
 -/
 
 @[expose] public section
@@ -39,5 +41,27 @@ without requiring a point in the model fiber. -/
 theorem real_empty_lindelofSpace_totalSpace :
     LindelofSpace (Bundle.TotalSpace Empty (Bundle.Trivial ℝ Empty)) :=
   FiberBundle.lindelofSpace_totalSpace (B := ℝ) Empty (Bundle.Trivial ℝ Empty)
+
+end Bundle.Trivial
+
+namespace Bundle.Trivial
+
+/-- The compact-model characterization applies to the canonical indiscrete pair over the reals. -/
+theorem real_indiscretePair_lindelofSpace_totalSpace_via_iff :
+    LindelofSpace
+      (Bundle.TotalSpace (WithTopology (Fin 2) ⊤)
+        (Bundle.Trivial ℝ (WithTopology (Fin 2) ⊤))) := by
+  exact (FiberBundle.lindelofSpace_totalSpace_iff
+    (WithTopology (Fin 2) ⊤)
+    (Bundle.Trivial ℝ (WithTopology (Fin 2) ⊤))).mpr
+      (Or.inr (inferInstance : LindelofSpace ℝ))
+
+/-- The empty-model alternative works over the uncountable discrete real base. -/
+theorem discreteReal_empty_lindelofSpace_totalSpace_via_iff :
+    LindelofSpace
+      (Bundle.TotalSpace Empty (Bundle.Trivial (WithTopology ℝ ⊥) Empty)) := by
+  exact (FiberBundle.lindelofSpace_totalSpace_iff
+    Empty (Bundle.Trivial (WithTopology ℝ ⊥) Empty)).mpr
+      (Or.inl (inferInstance : IsEmpty Empty))
 
 end Bundle.Trivial

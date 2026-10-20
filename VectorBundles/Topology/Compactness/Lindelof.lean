@@ -106,3 +106,15 @@ theorem IsLindelof.prod_of_isSigmaCompact (hs : IsLindelof s) (ht : IsSigmaCompa
   rcases ht with ⟨K, hK, rfl⟩
   rw [prod_iUnion]
   exact isLindelof_iUnion fun n => hs.prod_of_isCompact (hK n)
+
+/-- The preimage of a set under a proper map is Lindelöf if and only if the intersection of that
+set with the range of the map is Lindelöf. -/
+theorem IsProperMap.isLindelof_preimage_iff
+    {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
+    {f : X → Y} (hproper : IsProperMap f) (s : Set Y) :
+    IsLindelof (f ⁻¹' s) ↔ IsLindelof (s ∩ Set.range f) := by
+  constructor
+  · intro hs
+    simpa only [Set.image_preimage_eq_inter_range] using hs.image hproper.continuous
+  · intro hs
+    simpa only [Set.preimage_inter_range] using hproper.isLindelof_preimage hs
