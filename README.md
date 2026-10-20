@@ -138,6 +138,18 @@ topological fiber bundles.
   fiber structures. No finite dimension is required. Pairing formulas and pointwise
   identity/composition laws are provided; equality of continuous structures across
   different Hom-bundle topologies is not asserted.
+- **Comaps of supplied metrics.**
+  [`Bundle.HermitianMetric.comap`](VectorBundles/Topology/VectorBundle/MetricComap.lean)
+  pulls a supplied metric back along same-base fiberwise continuous-linear
+  topological embeddings; injectivity alone is not enough. The induced pairing is
+  `g.inner b (a b v) (a b w)`. Pointwise comap needs no base topology, models
+  or bundle structures. `Bundle.ContinuousHermitianMetric.comap` requires a
+  continuous section of the native Hom bundle with its model operator-norm topology.
+  Both bundles keep their original model norms, fiber and total-space topologies,
+  and exact `FiberBundle`/`VectorBundle` structures; only the models are normed.
+  Over `RCLike` scalars, bases and ranks are arbitrary and universes independent:
+  no finite dimension, separation, nonemptiness or uniform lower bound is assumed.
+  Forgetful, identity and contravariant composition laws preserve these pairings.
 - **Orthogonal subbundles and splitting for a supplied metric.**
   [`Bundle.ContinuousHermitianMetric.orthogonalBundle`](VectorBundles/Topology/VectorBundle/OrthogonalComplement.lean)
   constructs bundle data on the orthogonal family of an intrinsic submodule bundle
@@ -257,6 +269,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Analysis.InnerProductSpace.PositiveForm`](VectorBundles/Analysis/InnerProductSpace/PositiveForm.lean) | Bounded positive-form unit sublevels in the original topology |
 | [`Analysis.Normed.Ring.Units`](VectorBundles/Analysis/Normed/Ring/Units.lean) | Value embedding for units of a seminormed ring |
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
+| [`Topology.Bornology.Inducing`](VectorBundles/Topology/Bornology/Inducing.lean) | `IsVonNBounded.preimage_of_isInducing` over a general `NormedDivisionRing`, without injectivity or topological vector-space hypotheses |
 | [`Topology.Connected.Basic`](VectorBundles/Topology/Connected/Basic.lean) | Preconnected preimages under open maps with preconnected fibers over a preconnected subset of the range |
 | [`Topology.FiberBundle.Connected`](VectorBundles/Topology/FiberBundle/Connected.lean) | Preconnected projection preimages and preconnected/connected total spaces; [real and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Connected.lean) |
 | [`Topology.Separable.Basic`](VectorBundles/Topology/Separable/Basic.lean) | Ambient-separable preimages of ambient-separable sets under open maps with all ambient fibers separable; separable domains for separable targets |
@@ -268,6 +281,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.FiberBundle.SigmaCompact`](VectorBundles/Topology/FiberBundle/SigmaCompact.lean) | Sigma-compact total space from an R₁ sigma-compact base and sigma-compact model, with original topologies and no nonemptiness assumptions; [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact.lean) |
 | [`Topology.VectorBundle.CoordinateMap`](VectorBundles/Topology/VectorBundle/CoordinateMap.lean) | Linear-chart evaluations, operators and linear-atlas criterion |
 | [`Topology.VectorBundle.FiniteSum`](VectorBundles/Topology/VectorBundle/FiniteSum.lean) | Locally finite sums of continuous sections |
+| [`Topology.VectorBundle.Hom`](VectorBundles/Topology/VectorBundle/Hom.lean) | Identity and composition of continuous native Hom sections, with the model operator-norm topology |
 | [`Topology.VectorBundle.SemilinearEvaluation`](VectorBundles/Topology/VectorBundle/SemilinearEvaluation.lean) | One- and two-argument evaluation on Mathlib's Hom topology |
 | [`Topology.VectorBundle.WeightedForm`](VectorBundles/Topology/VectorBundle/WeightedForm.lean) | Supported weighted forms in linear charts |
 | [`Topology.VectorBundle.HermitianMetric`](VectorBundles/Topology/VectorBundle/HermitianMetric.lean) | Hermitian metric data, continuity, Core conversion and real bridges |
@@ -278,6 +292,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.VectorBundle.MetricExistence`](VectorBundles/Topology/VectorBundle/MetricExistence.lean) | Partition-of-unity construction of continuous Hermitian metrics |
 | [`Topology.VectorBundle.Metric`](VectorBundles/Topology/VectorBundle/Metric.lean) | Real Riemannian specialization |
 | [`Topology.VectorBundle.MetricPullback`](VectorBundles/Topology/VectorBundle/MetricPullback.lean) | Pointwise and continuous pullbacks of supplied Hermitian metrics |
+| [`Topology.VectorBundle.MetricComap`](VectorBundles/Topology/VectorBundle/MetricComap.lean) | Pointwise and continuous comaps of supplied metrics along fiberwise topological linear embeddings |
 | [`Topology.VectorBundle.Isomorphism`](VectorBundles/Topology/VectorBundle/Isomorphism.lean) | Fiberwise equivalences with only forward continuity supplied |
 | [`Topology.VectorBundle.OrthogonalComplement`](VectorBundles/Topology/VectorBundle/OrthogonalComplement.lean) | Orthogonal subbundle with original subtype topologies |
 | [`Topology.VectorBundle.OrthogonalComparison`](VectorBundles/Topology/VectorBundle/OrthogonalComparison.lean) | Quotient-derived comparison of complements for two supplied metrics |
@@ -301,7 +316,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.VectorBundle.KernelProjection`](VectorBundles/Topology/VectorBundle/KernelProjection.lean) | Local continuous kernel projections with a common complement |
 | [`Topology.VectorBundle.Range`](VectorBundles/Topology/VectorBundle/Range.lean) | Range bundles with original subtype and induced total topologies |
 | [`Topology.VectorBundle.TrivialMetric`](VectorBundles/Topology/VectorBundle/TrivialMetric.lean) | Constant metrics from supplied compatible Hermitian model forms |
-| [`VectorBundlesTest`](VectorBundlesTest.lean) | Full examples: projection and properness boundaries, connectedness, separability, isomorphisms, metrics, semilinear evaluation, Hermitian metrics, metric pullbacks, shear-metric complement comparison, orthogonal complement/addition/projection, orthonormal charts, products, pullbacks, cylinder charts, frames, embeddings, ranges and finite complements |
+| [`VectorBundlesTest`](VectorBundlesTest.lean) | Full examples: projection and properness boundaries, connectedness, separability, isomorphisms, metrics, semilinear evaluation, Hermitian metrics, metric pullbacks and comaps, shear-metric complement comparison, orthogonal complement/addition/projection, orthonormal charts, products, pullbacks, cylinder charts, frames, embeddings, ranges and finite complements |
 
 ## Conventions and limitations
 

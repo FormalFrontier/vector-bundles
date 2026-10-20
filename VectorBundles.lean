@@ -20,6 +20,9 @@ public import VectorBundles.Topology.FiberBundle.SigmaCompact
 public import VectorBundles.Topology.VectorBundle.CoordinateMap
 public import VectorBundles.Topology.VectorBundle.FiniteSum
 public import VectorBundles.Topology.VectorBundle.HermitianMetric
+public import VectorBundles.Topology.Bornology.Inducing
+public import VectorBundles.Topology.VectorBundle.Hom
+public import VectorBundles.Topology.VectorBundle.MetricComap
 public import VectorBundles.Topology.VectorBundle.Isomorphism
 public import VectorBundles.Topology.VectorBundle.Metric
 public import VectorBundles.Topology.VectorBundle.MetricPullback
