@@ -6,9 +6,10 @@ module
 
 public import Mathlib.Topology.FiberBundle.Basic
 public import VectorBundles.Topology.Compactness.Paracompact
+public import VectorBundles.Topology.FiberBundle.Proper
 
 /-!
-# Paracompact models from closed chart patches
+# Paracompact models and total spaces of fiber bundles
 
 A chart of a paracompact total space has paracompact model if its base set contains
 a nonempty subset closed in the ambient base and the projection is continuous.
@@ -26,6 +27,10 @@ its selected chart base set. This is a nonempty ambient-closed patch, and the
 bundle's canonical continuous projection supplies the continuity hypothesis.
 The given topologies on the base, model, total space, and individual fibers, and
 their coupled `FiberBundle` data, are retained throughout.
+
+A fiber bundle with compact model over a paracompact base has paracompact total
+space. Its canonical projection is proper, and paracompactness passes to the
+domain of a proper map.
 
 ## References
 
@@ -84,5 +89,14 @@ theorem paracompactSpace_model
   · intro x hx
     have hbx : b ⤳ x := specializes_iff_mem_closure.mpr hx
     exact hbx.symm.mem_open e.open_baseSet (mem_baseSet_trivializationAt F E b)
+
+/-- A fiber bundle with compact model over a paracompact base has paracompact total space. -/
+theorem paracompactSpace_totalSpace
+    {B : Type uB} (F : Type uF) (E : B → Type uE)
+    [TopologicalSpace B] [TopologicalSpace F]
+    [TopologicalSpace (Bundle.TotalSpace F E)] [∀ b, TopologicalSpace (E b)]
+    [fb : FiberBundle F E] [ParacompactSpace B] [CompactSpace F] :
+    ParacompactSpace (Bundle.TotalSpace F E) := by
+  exact IsProperMap.paracompactSpace (FiberBundle.isProperMap_proj F E)
 
 end FiberBundle

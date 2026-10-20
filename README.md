@@ -195,6 +195,13 @@ topological fiber bundles.
   nonempty chart base patch, for a continuous projection. The patch need not be compact.
   For a fiber bundle, a specified point of an R₀ base suffices. The original base,
   model, total-space and fiber topologies are retained, and the model may be empty.
+- **Proper inverse images and compact-model total spaces.**
+  [`IsProperMap.paracompactSpace`](VectorBundles/Topology/Compactness/Paracompact.lean)
+  gives a paracompact domain for a proper map to a paracompact space.
+  [`FiberBundle.paracompactSpace_totalSpace`](VectorBundles/Topology/FiberBundle/Paracompact.lean)
+  gives a paracompact total space from a paracompact base and compact model.
+  Both retain the original topologies and independent universes, without separation,
+  surjectivity or nonemptiness assumptions; the bundle keeps its given structure.
 - **Compatible fiber metrics.**
   [`VectorBundle.continuousHermitianMetric`](VectorBundles/Topology/VectorBundle/MetricExistence.lean)
   constructs a continuous positive-definite Hermitian metric on a finite-dimensional

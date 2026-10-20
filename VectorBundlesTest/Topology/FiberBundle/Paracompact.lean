@@ -8,6 +8,7 @@ public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Topology.EMetricSpace.Paracompact
 public import Mathlib.Topology.FiberBundle.Constructions
+public import Mathlib.Topology.Maps.Proper.Basic
 public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.ProperSpace
 public import Mathlib.Topology.Order
@@ -112,3 +113,34 @@ theorem prop_of_trivial_sierpinski_bundle : ParacompactSpace Prop := by
       exact Set.mem_univ b)
 
 end ParacompactSpace
+
+/-! Direct clients of proper inverse images and compact-model total spaces. -/
+
+universe uX uY
+
+/-- A compact right factor gives a proper first projection, with the original product topology. -/
+example {X : Type uX} {Y : Type uY} [TopologicalSpace X] [TopologicalSpace Y]
+    [ParacompactSpace X] [CompactSpace Y] : ParacompactSpace (X × Y) := by
+  exact IsProperMap.paracompactSpace
+    (isProperMap_fst_of_compactSpace (X := X) (Y := Y))
+
+/-- The second projection supplies the independent compact-left product client. -/
+example {X : Type uX} {Y : Type uY} [TopologicalSpace X] [TopologicalSpace Y]
+    [CompactSpace X] [ParacompactSpace Y] : ParacompactSpace (X × Y) := by
+  exact IsProperMap.paracompactSpace
+    (isProperMap_snd_of_compactSpace (X := X) (Y := Y))
+
+/-- A two-point indiscrete model is compact and nondegenerate; the real base is noncompact. -/
+example : ParacompactSpace
+    (Bundle.TotalSpace (WithTopology (Fin 2) ⊤)
+      (Bundle.Trivial ℝ (WithTopology (Fin 2) ⊤))) := by
+  exact FiberBundle.paracompactSpace_totalSpace
+    (WithTopology (Fin 2) ⊤) (Bundle.Trivial ℝ (WithTopology (Fin 2) ⊤))
+
+/-- The stock proper constant map from the empty space has a nonempty real target. -/
+example : ParacompactSpace Empty := by
+  exact IsProperMap.paracompactSpace (isProperMap_const (X := Empty) (0 : ℝ))
+
+/-- An empty model is allowed even over a nonempty noncompact base. -/
+example : ParacompactSpace (Bundle.TotalSpace Empty (Bundle.Trivial ℝ Empty)) := by
+  exact FiberBundle.paracompactSpace_totalSpace Empty (Bundle.Trivial ℝ Empty)
