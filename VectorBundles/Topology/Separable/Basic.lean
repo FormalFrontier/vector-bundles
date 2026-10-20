@@ -8,12 +8,14 @@ public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Maps.Basic
 
 /-!
-# Separability of preimages under an open map
+# Separability of preimages under open maps and open quotient maps
 
 For an open map, the preimage of an ambiently separable set is ambiently separable
 if every fiber is separable as a subset of the original domain. In particular, an
 open map to a separable space has separable domain when all its fibers are
-ambiently separable.
+ambiently separable. For an open quotient map with the same all-fibers hypothesis,
+a set has ambiently separable preimage if and only if the set itself is ambiently
+separable.
 
 ## Scope
 
@@ -33,6 +35,11 @@ The whole-codomain theorem gives a `SeparableSpace` conclusion from
 `SeparableSpace` of the codomain and the same ambient separability of all fibers.
 It likewise requires no continuity or additional range hypothesis.
 
+For `IsOpenQuotientMap.isSeparable_preimage_iff`, the forward implication uses
+continuous surjective image, while the reverse implication uses the open-map
+preimage criterion. The set is arbitrary: it need not be open, nonempty, or
+separable as a subtype, and neither ambient space is assumed separable.
+
 ## References
 
 * Mathlib's `TopologicalSpace.IsSeparable` and `TopologicalSpace.IsSeparable.iUnion`
@@ -42,6 +49,8 @@ It likewise requires no continuity or additional range hypothesis.
 * Mathlib's `isSeparable_closure`, `TopologicalSpace.IsSeparable.mono`, and
   `isSeparable_univ_iff` for the closure and whole-codomain consequences.
 * Mathlib's `IsOpenMap.separableSpace_of_injective` for the injective case.
+* Mathlib's `IsOpenQuotientMap` and `TopologicalSpace.IsSeparable.image` for
+  continuous surjective images in the preimage equivalence.
 -/
 
 @[expose] public section
@@ -90,3 +99,22 @@ theorem separableSpace_of_isSeparable_fibers
       (TopologicalSpace.IsSeparable.of_separableSpace (Set.univ : Set Y)) hf hFib)
 
 end IsOpenMap
+
+namespace IsOpenQuotientMap
+
+variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
+  {f : X → Y}
+
+/-- For an open quotient map with ambiently separable fibers over every codomain
+point, an arbitrary set has ambiently separable preimage if and only if it is
+ambiently separable. Neither ambient space need be separable. -/
+theorem isSeparable_preimage_iff (hf : IsOpenQuotientMap f)
+    (hFib : ∀ y : Y, TopologicalSpace.IsSeparable (f ⁻¹' {y})) (s : Set Y) :
+    TopologicalSpace.IsSeparable (f ⁻¹' s) ↔ TopologicalSpace.IsSeparable s := by
+  constructor
+  · intro hs
+    simpa only [hf.surjective.image_preimage s] using hs.image hf.continuous
+  · intro hs
+    exact hs.preimage_of_isOpenMap_of_isSeparable_fibers hf.isOpenMap hFib
+
+end IsOpenQuotientMap

@@ -93,20 +93,32 @@ topological fiber bundles.
   and ambient separability of `f ⁻¹' {y}` for every `y : Y`. Ambient countable
   witnesses need not lie in the sets they approximate. The original topologies
   and independent universes are retained; no continuity, surjectivity, range
-  condition, nonemptiness or separation assumption is required.
+  condition, nonemptiness or separation assumption is required. For an open quotient
+  map with the same all-fibers hypothesis,
+  `IsOpenQuotientMap.isSeparable_preimage_iff` characterizes ambient separability of
+  an arbitrary set by ambient separability of its preimage. Neither ambient space
+  need be separable, and the set need not be open or nonempty.
 - **Separable domains of open maps.**
   [`IsOpenMap.separableSpace_of_isSeparable_fibers`](VectorBundles/Topology/Separable/Basic.lean)
   gives `SeparableSpace X` from `SeparableSpace Y`, openness of `f : X → Y`
   and ambient separability of every original fiber, with no continuity or
   surjectivity assumption.
-- **Separability of fiber-bundle total spaces.**
+- **Separability of fiber bundles.**
   [`FiberBundle.separableSpace_totalSpace`](VectorBundles/Topology/FiberBundle/Separable.lean)
   gives a separable total space from a separable base and model, using the
   given fiber-bundle data and all four original topologies. The base, model
-  and fiber universes are independent; no second-countability, separation or
-  nonemptiness assumption is required. The
-  [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Separable.lean)
-  include an empty model over the same nonempty real base.
+  and fiber universes are independent; this direction needs no second-countability,
+  separation or nonemptiness assumption. `FiberBundle.separableSpace_model`
+  recovers model separability from the total space at a specified base point,
+  even for an empty model. For a nonempty model, base reflection is Mathlib's exact
+  `(FiberBundle.isQuotientMap_proj F E).separableSpace`.
+  `FiberBundle.separableSpace_totalSpace_iff` characterizes separable total space
+  by separability of both base and model when both are nonempty, as an explicit
+  theorem rather than a backward instance. The
+  [examples](VectorBundlesTest/Topology/FiberBundle/Separable.lean) include generic
+  products, arbitrary ambient strips, the original bundle projection, and cheap
+  empty-model and empty-base boundaries. The subset equivalence uses the generic
+  open-quotient theorem on the original bundle projection.
 - **Sigma-compactness of fiber-bundle total spaces.**
   [`FiberBundle.sigmaCompactSpace`](VectorBundles/Topology/FiberBundle/SigmaCompact.lean)
   gives a sigma-compact total space from an R₁ sigma-compact base and a sigma-compact
@@ -272,8 +284,8 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.Bornology.Inducing`](VectorBundles/Topology/Bornology/Inducing.lean) | `IsVonNBounded.preimage_of_isInducing` over a general `NormedDivisionRing`, without injectivity or topological vector-space hypotheses |
 | [`Topology.Connected.Basic`](VectorBundles/Topology/Connected/Basic.lean) | Preconnected preimages under open maps with preconnected fibers over a preconnected subset of the range |
 | [`Topology.FiberBundle.Connected`](VectorBundles/Topology/FiberBundle/Connected.lean) | Preconnected projection preimages and preconnected/connected total spaces; [real and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Connected.lean) |
-| [`Topology.Separable.Basic`](VectorBundles/Topology/Separable/Basic.lean) | Ambient-separable preimages of ambient-separable sets under open maps with all ambient fibers separable; separable domains for separable targets |
-| [`Topology.FiberBundle.Separable`](VectorBundles/Topology/FiberBundle/Separable.lean) | Separable total spaces from separable base and model with given topologies and fiber-bundle data; [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Separable.lean) |
+| [`Topology.Separable.Basic`](VectorBundles/Topology/Separable/Basic.lean) | Ambient-separable preimages under open maps with all ambient fibers separable; arbitrary-set preimage equivalence for open quotient maps; separable domains for separable targets |
+| [`Topology.FiberBundle.Separable`](VectorBundles/Topology/FiberBundle/Separable.lean) | Separable total spaces, model reflection at a specified base point, and a global equivalence under nonempty base and model, with original topologies and bundle data; [product, ambient-strip and empty-boundary examples](VectorBundlesTest/Topology/FiberBundle/Separable.lean) |
 | [`Topology.FiberBundle.Projection`](VectorBundles/Topology/FiberBundle/Projection.lean) | Sharp projection criteria, canonical homeomorphism and inverse/zero-section formulas |
 | [`Topology.FiberBundle.Proper`](VectorBundles/Topology/FiberBundle/Proper.lean) | Proper projection exactly when every fiber is compact; compactness transfer and equivalence without separation |
 | [`Topology.FiberBundle.Countability`](VectorBundles/Topology/FiberBundle/Countability.lean) | `FiberBundle.secondCountableTopology`: second-countable total space from second-countable base and model, with original topologies and no nonemptiness or separation assumptions; [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Countability.lean) use the instance and Mathlib's converse APIs |
