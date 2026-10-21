@@ -8,7 +8,12 @@ public import Mathlib.Topology.Maps.Proper.Basic
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 /-!
-# Proper projections of compact-valued correspondences
+# Proper maps, compact inverse images and graph projections
+
+For a proper map `f : X → Y`, the inverse image of a target set `s` is compact exactly
+when `s ∩ Set.range f` is compact. Thus compactness of the domain is equivalent to
+compactness of the range, without any surjectivity assumption. All statements use the
+original maps and topologies, with independent domain and codomain universes.
 
 A subset of a product has proper first projection when its fibers are compact and vary
 upper hemicontinuously. All spaces carry their given topologies; neither separation nor
@@ -25,7 +30,8 @@ Mathlib APIs.
 ## References
 
 * Mathlib's proper-map development, by Anatole Dedecker, Etienne Marion, and contributors,
-  including `isProperMap_iff_isClosedMap_and_compact_fibers`.
+  including `IsProperMap.isCompact_preimage` and
+  `isProperMap_iff_isClosedMap_and_compact_fibers`.
 * Mathlib's hemicontinuity development, by Jireh Loreaux and contributors, including
   `isClosedMap_iff_upperHemicontinuous` and `UpperHemicontinuous.forall_isOpen`.
 * Mathlib's compactness development, by Johannes Hölzl, Mario Carneiro, Yury Kudryashov,
@@ -101,3 +107,36 @@ theorem isProperMap_fst_of_upperHemicontinuous
     ⟨continuous_fst.comp continuous_subtype_val, hclosed, hfiber⟩
 
 end Set
+
+universe uX uY
+
+namespace IsProperMap
+
+variable {X : Type uX} {Y : Type uY} [TopologicalSpace X] [TopologicalSpace Y]
+  {f : X → Y}
+
+/-- An inverse image under a proper map is compact exactly when the target set intersected
+with the range is compact. This extends Mathlib's `IsProperMap.isCompact_preimage` to a
+characterization for arbitrary target sets, without requiring surjectivity. -/
+theorem isCompact_preimage_iff (hf : IsProperMap f) (s : Set Y) :
+    IsCompact (f ⁻¹' s) ↔ IsCompact (s ∩ Set.range f) := by
+  constructor
+  · intro hs
+    simpa only [Set.image_preimage_eq_inter_range] using hs.image hf.continuous
+  · intro hs
+    simpa only [Set.preimage_inter, Set.preimage_range, Set.inter_univ] using
+      hf.isCompact_preimage hs
+
+/-- For a target subset contained in the range of a proper map, compactness is equivalent
+to compactness of its inverse image. -/
+theorem isCompact_preimage_iff_of_subset_range (hf : IsProperMap f) (s : Set Y)
+    (hs : s ⊆ Set.range f) : IsCompact (f ⁻¹' s) ↔ IsCompact s := by
+  simpa only [Set.inter_eq_left.mpr hs] using hf.isCompact_preimage_iff s
+
+/-- The domain of a proper map is compact exactly when its range is compact. -/
+theorem compactSpace_iff_isCompact_range (hf : IsProperMap f) :
+    CompactSpace X ↔ IsCompact (Set.range f) := by
+  simpa only [Set.preimage_univ, Set.univ_inter, isCompact_univ_iff] using
+    hf.isCompact_preimage_iff (Set.univ : Set Y)
+
+end IsProperMap

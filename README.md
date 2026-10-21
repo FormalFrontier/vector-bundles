@@ -11,6 +11,16 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Compact inverse images and ranges of proper maps.**
+  [`IsProperMap.isCompact_preimage_iff`](VectorBundles/Topology/Maps/Proper.lean)
+  characterizes compactness of `f ⁻¹' s` by compactness of `s ∩ Set.range f` for a
+  proper map `f : X → Y`. For `s ⊆ Set.range f`,
+  `IsProperMap.isCompact_preimage_iff_of_subset_range` reduces this to compactness of
+  `s`; `IsProperMap.compactSpace_iff_isCompact_range` characterizes compactness of
+  the domain by compactness of the range. The original topologies and independent
+  universes are retained, without separation, nonemptiness or surjectivity assumptions.
+  The [examples](VectorBundlesTest/Topology/Maps/Proper.lean) use the real two-sheeted
+  projection over `[0, 1]` and the closed-interval inclusion into the noncompact real line.
 - **Sigma-compactness and proper maps.**
   [`IsProperMap.isSigmaCompact_preimage`](VectorBundles/Topology/Compactness/SigmaCompact.lean)
   sends an arbitrary sigma-compact target subset to a sigma-compact inverse image;

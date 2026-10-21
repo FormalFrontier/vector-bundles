@@ -62,6 +62,7 @@
         "VectorBundlesTest.Topology.Compactness.SigmaCompact",
         "VectorBundlesTest.Topology.LocallyFinite",
         "VectorBundlesTest.Topology.CompactOpen",
+        "VectorBundlesTest.Topology.Maps.Proper",
         "VectorBundlesTest.Topology.Maps.ProperLindelof",
         "VectorBundlesTest.Topology.FiberBundle.Basic",
         "VectorBundlesTest.Topology.FiberBundle.Connected",
