@@ -90,9 +90,12 @@ topological fiber bundles.
   [`FiberBundle.isProperMap_proj_iff`](VectorBundles/Topology/FiberBundle/Proper.lean)
   characterizes proper projections by compactness of every fiber with its given
   topology. `FiberBundle.isProperMap_proj` gives the compact-model sufficient
-  criterion. Properness is Mathlib's `IsProperMap` (continuity and universal
-  closedness). No separation, local compactness or nonempty-base assumption is
-  required; an empty base does not require a compact model.
+  criterion. `FiberBundle.isProperMap_proj_iff_isEmpty_or_compactSpace` states the
+  equivalent model-space criterion: the base is empty or the model is compact.
+  Properness is Mathlib's `IsProperMap` (continuity and universal closedness).
+  These statements use the given base, model, total-space and fiber topologies and
+  their fiber-bundle structure, with independent universes and no separation,
+  local compactness or nonemptiness assumptions.
 - **Proper canonical pullback lifts.**
   [`Bundle.Pullback.isProperMap_lift`](VectorBundles/Topology/FiberBundle/Pullback/Proper.lean)
   gives a proper lift from a proper base map and continuity of the original bundle
@@ -108,10 +111,14 @@ topological fiber bundles.
   `FiberBundle.compactSpace_model` recovers compactness of the model from compactness
   of the total space and a specified base point, even when the model is empty.
   `FiberBundle.compactSpace_totalSpace_iff` characterizes compact total space by compact
-  base and compact model when both base and model are nonempty. These results use only
-  the original topologies and fiber-bundle structure, with no separation assumptions.
-  Empty-model and empty-base examples show why the respective nonemptiness hypotheses
-  in the equivalence are necessary.
+  base and compact model when both base and model are nonempty.
+  `FiberBundle.compactSpace_totalSpace_iff_isEmpty_or_compactSpace` states the
+  characterization without nonemptiness assumptions: the base is empty, the model
+  is empty, or both are compact. These statements use the four given topologies and
+  their fiber-bundle structure, with independent universes and no separation or
+  local compactness assumptions. The [examples](VectorBundlesTest/Topology/FiberBundle/Proper.lean)
+  include the two-point bundle over a point, an empty base with real model, and
+  an empty model over the real line.
 - **Local compactness of fiber bundles without separation assumptions.**
   [`FiberBundle.locallyCompactSpace_model`](VectorBundles/Topology/FiberBundle/LocallyCompact.lean)
   recovers local compactness of the model from a locally compact total space and a

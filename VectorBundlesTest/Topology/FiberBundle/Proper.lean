@@ -16,6 +16,7 @@ The trivial bundle on the real line with its two-element discrete model has a pr
 The projection is not injective: the points with fiber coordinates `0` and `1` over the origin
 are distinct. All examples use Mathlib's original trivial-bundle topology and bundle structure.
 
+The two-element trivial bundle over a point has both proper projection and compact total space.
 An empty base needs no compactness of the model, an empty model gives a proper projection,
 and a real fiber over a point obstructs properness.
 
@@ -48,13 +49,24 @@ public theorem not_injective_proj_finTwo :
     (TotalSpace.mk_inj (F := Fin 2) (E := Trivial ℝ (Fin 2)) (b := (0 : ℝ))).mp h01
   exact (by decide : (0 : Fin 2) ≠ 1) hcoord
 
+private theorem point_finTwo_proper_and_compact :
+    IsProperMap (TotalSpace.proj (F := Fin 2) (E := Trivial PUnit (Fin 2))) ∧
+      CompactSpace (TotalSpace (Fin 2) (Trivial PUnit (Fin 2))) := by
+  constructor
+  · exact (FiberBundle.isProperMap_proj_iff_isEmpty_or_compactSpace
+      (Fin 2) (Trivial PUnit (Fin 2))).mpr (Or.inr inferInstance)
+  · exact (FiberBundle.compactSpace_totalSpace_iff_isEmpty_or_compactSpace
+      (Fin 2) (Trivial PUnit (Fin 2))).mpr (Or.inr (Or.inr ⟨inferInstance, inferInstance⟩))
+
 private theorem empty_base_projection :
     IsProperMap (TotalSpace.proj (F := ℝ) (E := Trivial Empty ℝ)) := by
-  exact (FiberBundle.isProperMap_proj_iff ℝ (Trivial Empty ℝ)).mpr (fun b ↦ nomatch b)
+  exact (FiberBundle.isProperMap_proj_iff_isEmpty_or_compactSpace
+    ℝ (Trivial Empty ℝ)).mpr (Or.inl inferInstance)
 
 private theorem empty_model_projection :
     IsProperMap (TotalSpace.proj (F := Empty) (E := Trivial ℝ Empty)) := by
-  exact FiberBundle.isProperMap_proj Empty (Trivial ℝ Empty)
+  exact (FiberBundle.isProperMap_proj_iff_isEmpty_or_compactSpace
+    Empty (Trivial ℝ Empty)).mpr (Or.inr inferInstance)
 
 private theorem real_point_projection_not_proper :
     ¬ IsProperMap (TotalSpace.proj (F := ℝ) (E := Trivial PUnit ℝ)) := by
@@ -76,15 +88,15 @@ private theorem circle_torus_compact :
 private theorem empty_model_compactness_boundary :
     CompactSpace (TotalSpace Empty (Trivial ℝ Empty)) ∧ ¬ CompactSpace ℝ := by
   constructor
-  · let : IsEmpty (TotalSpace Empty (Trivial ℝ Empty)) := ⟨fun x ↦ nomatch x.snd⟩
-    infer_instance
+  · exact (FiberBundle.compactSpace_totalSpace_iff_isEmpty_or_compactSpace
+      Empty (Trivial ℝ Empty)).mpr (Or.inr (Or.inl inferInstance))
   · exact not_compactSpace_iff.mpr (inferInstance : NoncompactSpace ℝ)
 
 private theorem empty_base_compactness_boundary :
     CompactSpace (TotalSpace ℝ (Trivial Empty ℝ)) ∧ ¬ CompactSpace ℝ := by
   constructor
-  · let : IsEmpty (TotalSpace ℝ (Trivial Empty ℝ)) := ⟨fun x ↦ nomatch x.proj⟩
-    infer_instance
+  · exact (FiberBundle.compactSpace_totalSpace_iff_isEmpty_or_compactSpace
+      ℝ (Trivial Empty ℝ)).mpr (Or.inl inferInstance)
   · exact not_compactSpace_iff.mpr (inferInstance : NoncompactSpace ℝ)
 
 end Bundle.Trivial

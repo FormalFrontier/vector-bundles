@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib.Topology.FiberBundle.Basic
+public import VectorBundles.Topology.FiberBundle.Basic
 public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.Maps.Proper.Basic
 
@@ -17,14 +18,16 @@ topologies on the base, model, total space, and fibers, together with their `Fib
 No separation, local compactness, or inhabitation assumption on the base is needed.
 
 Properness means Mathlib's `IsProperMap`: continuity and universal closedness, equivalently
-continuity, closedness, and compact fibers. Compactness of every fiber is the sharp formulation:
-when the base is empty, the projection is proper even if the model is not compact.
+continuity, closedness, and compact fibers. Compactness of every fiber is equivalent to the base
+being empty or the model being compact. In particular, when the base is empty, the projection is
+proper even if the model is not compact.
 
 A compact base and compact model give a compact total space. When the model is nonempty,
 compactness of the total space also implies compactness of the base. If the base has a point,
 compactness of the total space implies compactness of the model. Thus, when both base and model
 are nonempty, compactness of the total space is equivalent to compactness of the base and model.
-These results also require no separation assumptions.
+Without nonemptiness assumptions, the total space is compact exactly when the base is empty,
+the model is empty, or both are compact. These results also require no separation assumptions.
 
 ## References
 
@@ -103,6 +106,27 @@ theorem isProperMap_proj
   intro b
   exact (homeomorphAt F E b).symm.compactSpace
 
+/-- A fiber-bundle projection is proper exactly when the base is empty or the model fiber
+is compact. All four topologies and the fiber-bundle structure are the given ones; no separation,
+local compactness, or nonemptiness assumption is needed. -/
+theorem isProperMap_proj_iff_isEmpty_or_compactSpace
+    {B : Type uB} (F : Type uF) (E : B → Type uE)
+    [TopologicalSpace B] [TopologicalSpace F]
+    [TopologicalSpace (TotalSpace F E)] [∀ b, TopologicalSpace (E b)]
+    [FiberBundle F E] :
+    IsProperMap (TotalSpace.proj (F := F) (E := E)) ↔ IsEmpty B ∨ CompactSpace F := by
+  constructor
+  · intro hproper
+    rcases isEmpty_or_nonempty B with hB | hB
+    · exact Or.inl hB
+    · let b : B := Classical.choice hB
+      let : CompactSpace (E b) := (isProperMap_proj_iff F E).mp hproper b
+      exact Or.inr (homeomorphAt F E b).compactSpace
+  · rintro (hB | hF)
+    · exact (isProperMap_proj_iff F E).mpr fun b => (hB.false b).elim
+    · let : CompactSpace F := hF
+      exact isProperMap_proj F E
+
 /-! ## Compactness transfer -/
 
 /-- A fiber bundle with compact base and compact model has compact total space.
@@ -176,5 +200,37 @@ theorem compactSpace_totalSpace_iff
     let : CompactSpace B := hB
     let : CompactSpace F := hF
     exact compactSpace_totalSpace F E
+
+/-- The total space of a fiber bundle is compact exactly when the base is empty, the model
+is empty, or both base and model are compact. All four topologies and the fiber-bundle structure
+are the given ones; no separation, local compactness, or nonemptiness assumption is needed. -/
+theorem compactSpace_totalSpace_iff_isEmpty_or_compactSpace
+    {B : Type uB} (F : Type uF) (E : B → Type uE)
+    [TopologicalSpace B] [TopologicalSpace F]
+    [TopologicalSpace (TotalSpace F E)] [∀ b, TopologicalSpace (E b)]
+    [FiberBundle F E] :
+    CompactSpace (TotalSpace F E) ↔
+      IsEmpty B ∨ IsEmpty F ∨ (CompactSpace B ∧ CompactSpace F) := by
+  classical
+  constructor
+  · intro h
+    by_cases hB : Nonempty B
+    · let : Nonempty B := hB
+      by_cases hF : Nonempty F
+      · let : Nonempty F := hF
+        exact Or.inr (Or.inr ((compactSpace_totalSpace_iff F E).mp h))
+      · exact Or.inr (Or.inl ⟨fun f => hF ⟨f⟩⟩)
+    · exact Or.inl ⟨fun b => hB ⟨b⟩⟩
+  · intro h
+    rcases h with hB | hF | hBF
+    · let : IsEmpty (TotalSpace F E) :=
+        (isEmpty_totalSpace_iff F E).mpr (Or.inl hB)
+      infer_instance
+    · let : IsEmpty (TotalSpace F E) :=
+        (isEmpty_totalSpace_iff F E).mpr (Or.inr hF)
+      infer_instance
+    · let : CompactSpace B := hBF.1
+      let : CompactSpace F := hBF.2
+      exact compactSpace_totalSpace F E
 
 end FiberBundle
