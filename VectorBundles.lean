@@ -7,6 +7,7 @@ module
 public import VectorBundles.Analysis.InnerProductSpace.PositiveForm
 public import VectorBundles.Analysis.Normed.Ring.Units
 public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
+public import VectorBundles.Topology.Compactness.CountablyCompact
 public import VectorBundles.Topology.Compactness.Lindelof
 public import VectorBundles.Topology.Compactness.Paracompact
 public import VectorBundles.Topology.Compactness.SigmaCompact

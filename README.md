@@ -21,6 +21,16 @@ topological fiber bundles.
   universes are retained, without separation, nonemptiness or surjectivity assumptions.
   The [examples](VectorBundlesTest/Topology/Maps/Proper.lean) use the real two-sheeted
   projection over `[0, 1]` and the closed-interval inclusion into the noncompact real line.
+- **Countable compactness and proper maps.**
+  [`IsProperMap.isCountablyCompact_preimage_iff`](VectorBundles/Topology/Compactness/CountablyCompact.lean)
+  characterizes countable compactness of `f ⁻¹' s` by that of `s ∩ Set.range f` for
+  a proper map `f : X → Y`. The subset-of-range corollary removes the intersection,
+  and `IsProperMap.countablyCompactSpace_iff_isCountablyCompact_range` characterizes
+  a countably compact domain by a countably compact range. These results use cluster
+  points of nonbottom countably generated filters, with the original topologies and
+  independent universes, without separation or surjectivity assumptions. The
+  [examples](VectorBundlesTest/Topology/Compactness/CountablyCompact.lean) use the real
+  two-sheeted projection over `[0, 1]` and the nonsurjective closed-interval inclusion.
 - **Sigma-compactness and proper maps.**
   [`IsProperMap.isSigmaCompact_preimage_iff`](VectorBundles/Topology/Compactness/SigmaCompact.lean)
   characterizes sigma-compactness of `f ⁻¹' s` by that of `s ∩ Set.range f`;
@@ -448,6 +458,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Analysis.Normed.Ring.Units`](VectorBundles/Analysis/Normed/Ring/Units.lean) | Value embedding for units of a seminormed ring |
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
 | [`Topology.Bornology.Inducing`](VectorBundles/Topology/Bornology/Inducing.lean) | `IsVonNBounded.preimage_of_isInducing` over a general `NormedDivisionRing`, without injectivity or topological vector-space hypotheses |
+| [`Topology.Compactness.CountablyCompact`](VectorBundles/Topology/Compactness/CountablyCompact.lean) | Countably compact preimages under proper maps exactly when the target subset intersected with the range is countably compact |
 | [`Topology.Compactness.Lindelof`](VectorBundles/Topology/Compactness/Lindelof.lean) | Lindelöf inverse images under proper maps and products with compact or σ-compact sets, without separation assumptions |
 | [`Topology.Compactness.SigmaCompact`](VectorBundles/Topology/Compactness/SigmaCompact.lean) | Sigma-compact inverse images under proper maps exactly when the target subset intersected with the range is sigma-compact |
 | [`Topology.Compactness.Paracompact`](VectorBundles/Topology/Compactness/Paracompact.lean) | Paracompactness of continuous retracts and domains of proper maps; open-surjective-proper codomain theorem |
