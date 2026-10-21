@@ -14,6 +14,7 @@ public import VectorBundles.Topology.LocallyFinite
 public import VectorBundles.Topology.CompactOpen
 public import VectorBundles.Topology.Connected.Basic
 public import VectorBundles.Topology.Separable.Basic
+public import VectorBundles.Topology.FiberBundle.Basic
 public import VectorBundles.Topology.FiberBundle.Connected
 public import VectorBundles.Topology.FiberBundle.Separable
 public import VectorBundles.Topology.FiberBundle.Projection

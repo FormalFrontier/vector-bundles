@@ -74,6 +74,8 @@ topological fiber bundles.
   every fiber is also nonempty, with forward, inverse/base, dependent-pair and given-zero-section
   formulas. These results need no scalar, norm, separation or nonempty-base hypothesis;
   the model assumptions are only sufficient corollaries.
+  [`FiberBundle.isEmpty_totalSpace_iff`](VectorBundles/Topology/FiberBundle/Basic.lean)
+  characterizes empty total space by emptiness of the base or model, without compactness assumptions.
 - **Proper fiber-bundle projections.**
   [`FiberBundle.isProperMap_proj_iff`](VectorBundles/Topology/FiberBundle/Proper.lean)
   characterizes proper projections by compactness of every fiber with its given
