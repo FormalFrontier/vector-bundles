@@ -7,6 +7,7 @@ module
 public import VectorBundles.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.MetricSpace.ProperSpace
 public import Mathlib.Topology.Order
+public import Mathlib.Topology.Order.Compact
 
 /-!
 # Sigma-compact inverse images of the real two-sheeted projection
@@ -14,7 +15,9 @@ public import Mathlib.Topology.Order
 The first projection `ℝ × Fin 2 → ℝ` is proper because its second factor is finite.
 The noncompact closed ray `Ici 0` is sigma-compact as a closed subset of the
 sigma-compact real line. The examples apply the proper-map results to this ray,
-to the empty subset, and to the whole product.
+to the empty subset, and to the whole product. Range-relative reflection also
+handles the real identity on a closed interval and an empty-source map with
+an arbitrary target subset.
 -/
 
 @[expose] public section
@@ -38,3 +41,17 @@ example : IsSigmaCompact ((Prod.fst : ℝ × Fin 2 → ℝ) ⁻¹' (∅ : Set �
 example : SigmaCompactSpace (ℝ × Fin 2) := by
   exact IsProperMap.sigmaCompactSpace
     (isProperMap_fst_of_compactSpace (X := ℝ) (Y := Fin 2))
+
+/-- The range-relative criterion recovers a compact real interval under the identity. -/
+example : IsSigmaCompact ((id : ℝ → ℝ) ⁻¹' Set.Icc (0 : ℝ) 1) := by
+  apply ((isProperMap_id : IsProperMap (id : ℝ → ℝ)).isSigmaCompact_preimage_iff
+    (Set.Icc (0 : ℝ) 1)).mpr
+  simpa only [Set.range_id, Set.inter_univ] using
+    (isCompact_Icc : IsCompact (Set.Icc (0 : ℝ) 1)).isSigmaCompact
+
+/-- No sigma-compactness of the target subset is needed outside an empty range. -/
+example (s : Set ℝ) : IsSigmaCompact ((fun _ : Empty ↦ (0 : ℝ)) ⁻¹' s) := by
+  let : CompactSpace Empty := Finite.compactSpace
+  apply ((isProperMap_const (X := Empty) (0 : ℝ)).isSigmaCompact_preimage_iff s).mpr
+  simpa only [Set.range_eq_empty, Set.inter_empty] using
+    (isSigmaCompact_empty : IsSigmaCompact (∅ : Set ℝ))

@@ -22,17 +22,20 @@ topological fiber bundles.
   The [examples](VectorBundlesTest/Topology/Maps/Proper.lean) use the real two-sheeted
   projection over `[0, 1]` and the closed-interval inclusion into the noncompact real line.
 - **Sigma-compactness and proper maps.**
-  [`IsProperMap.isSigmaCompact_preimage`](VectorBundles/Topology/Compactness/SigmaCompact.lean)
-  sends an arbitrary sigma-compact target subset to a sigma-compact inverse image;
-  `IsProperMap.sigmaCompactSpace` gives the corresponding domain-space consequence.
-  [`FiberBundle.sigmaCompactSpace_totalSpace`](VectorBundles/Topology/FiberBundle/SigmaCompact/Proper.lean)
-  applies this to the canonical projection of a compact-model bundle over a
-  sigma-compact base. These results retain the original topologies and independent
-  universes, without separation, local compactness, surjectivity or nonemptiness
-  assumptions. The [proper-map examples](VectorBundlesTest/Topology/Compactness/SigmaCompact.lean)
-  use the real two-sheeted projection over a noncompact ray, and the
+  [`IsProperMap.isSigmaCompact_preimage_iff`](VectorBundles/Topology/Compactness/SigmaCompact.lean)
+  characterizes sigma-compactness of `f ⁻¹' s` by that of `s ∩ Set.range f`;
+  `IsProperMap.sigmaCompactSpace` gives the sigma-compact-domain consequence.
+  [`FiberBundle.sigmaCompactSpace_totalSpace_iff_of_compactSpace_model`](VectorBundles/Topology/FiberBundle/SigmaCompact/Proper.lean)
+  characterizes sigma-compactness of a compact-model bundle's total space by
+  `IsEmpty F ∨ SigmaCompactSpace B`. These results retain the original topologies
+  and independent universes, without separation, local compactness, surjectivity
+  or nonemptiness assumptions. The
+  [proper-map examples](VectorBundlesTest/Topology/Compactness/SigmaCompact.lean)
+  include the real two-sheeted projection, an interval under the identity, and
+  an arbitrary subset outside an empty range. The
   [bundle examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact/Proper.lean)
-  use the canonical two-point and empty-model bundles over the real line.
+  include reflection for the one-point real cylinder and an empty model over
+  an arbitrary base.
 - **Compact-open images and joint coordinate changes.**
   [`TopologicalSpace.CompactOpens.isLocallyConstant_map`](VectorBundles/Topology/CompactOpen.lean)
   gives locally constant images of a compact open set under a family of
@@ -446,6 +449,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
 | [`Topology.Bornology.Inducing`](VectorBundles/Topology/Bornology/Inducing.lean) | `IsVonNBounded.preimage_of_isInducing` over a general `NormedDivisionRing`, without injectivity or topological vector-space hypotheses |
 | [`Topology.Compactness.Lindelof`](VectorBundles/Topology/Compactness/Lindelof.lean) | Lindelöf inverse images under proper maps and products with compact or σ-compact sets, without separation assumptions |
+| [`Topology.Compactness.SigmaCompact`](VectorBundles/Topology/Compactness/SigmaCompact.lean) | Sigma-compact inverse images under proper maps exactly when the target subset intersected with the range is sigma-compact |
 | [`Topology.Compactness.Paracompact`](VectorBundles/Topology/Compactness/Paracompact.lean) | Paracompactness of continuous retracts and domains of proper maps; open-surjective-proper codomain theorem |
 | [`Topology.LocallyFinite`](VectorBundles/Topology/LocallyFinite.lean) | Locally finite images under closed maps with compact point fibers; [infinite-index example](VectorBundlesTest/Topology/LocallyFinite.lean) |
 | [`Topology.CompactOpen`](VectorBundles/Topology/CompactOpen.lean) | Locally constant compact-open images for jointly continuous homeomorphism families and their inverses |
@@ -460,6 +464,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.FiberBundle.Countability`](VectorBundles/Topology/FiberBundle/Countability.lean) | `FiberBundle.secondCountableTopology`: second-countable total space from second-countable base and model, with original topologies and no nonemptiness or separation assumptions; [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Countability.lean) use the instance and Mathlib's converse APIs |
 | [`Topology.FiberBundle.Metrizable`](VectorBundles/Topology/FiberBundle/Metrizable.lean) | Metrizable total space from metrizable base and model; model metrizability at a specified base point; [real-plane and empty-base examples](VectorBundlesTest/Topology/FiberBundle/Metrizable.lean) |
 | [`Topology.FiberBundle.SigmaCompact`](VectorBundles/Topology/FiberBundle/SigmaCompact.lean) | Sigma-compact totals over R₁ bases; model reflection at an R₀ base point; factor characterization for nonempty base and model, preserving original topologies; [real-plane and empty-space examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact.lean) |
+| [`Topology.FiberBundle.SigmaCompact.Proper`](VectorBundles/Topology/FiberBundle/SigmaCompact/Proper.lean) | For compact model, sigma-compact total space iff the model is empty or the original base is sigma-compact |
 | [`Topology.FiberBundle.Trivialization.SigmaCompact`](VectorBundles/Topology/FiberBundle/Trivialization/SigmaCompact.lean) | Sigma-compact preimages of sigma-compact subsets inside a trivialization's base set, using the original projection and topologies |
 | [`Topology.FiberBundle.SigmaCompact.LocallyCompactBase`](VectorBundles/Topology/FiberBundle/SigmaCompact/LocallyCompactBase.lean) | Sigma-compact total space over a locally compact Lindelöf base, with no separation or nonemptiness assumptions; [direct real-cylinder, real-plane, and empty-space examples](VectorBundlesTest/Topology/FiberBundle/SigmaCompact/LocallyCompactBase.lean) |
 | [`Topology.FiberBundle.Trivialization.Lindelof`](VectorBundles/Topology/FiberBundle/Trivialization/Lindelof.lean) | Lindelöf preimages of sigma-compact subsets inside an original trivialization's base set with Lindelöf model, without global projection continuity; compact subsets via `hK.isSigmaCompact` |

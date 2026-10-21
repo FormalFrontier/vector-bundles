@@ -51,3 +51,16 @@ theorem IsProperMap.sigmaCompactSpace
   apply isSigmaCompact_univ_iff.mp
   simpa only [Set.preimage_univ] using
     hf.isSigmaCompact_preimage (isSigmaCompact_univ : IsSigmaCompact (Set.univ : Set Y))
+
+/-- For a proper map, a preimage is sigma-compact exactly when the part of the set in the
+range is sigma-compact. No separation or surjectivity assumption is needed. -/
+theorem IsProperMap.isSigmaCompact_preimage_iff
+    {X : Type uX} {Y : Type uY} [TopologicalSpace X] [TopologicalSpace Y]
+    {f : X → Y} (hf : IsProperMap f) (s : Set Y) :
+    IsSigmaCompact (f ⁻¹' s) ↔ IsSigmaCompact (s ∩ Set.range f) := by
+  constructor
+  · intro hs
+    simpa only [Set.image_preimage_eq_inter_range] using
+      (IsSigmaCompact.image hf.continuous hs)
+  · intro hs
+    simpa only [Set.preimage_inter_range] using hf.isSigmaCompact_preimage hs
