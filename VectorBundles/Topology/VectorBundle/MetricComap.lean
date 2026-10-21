@@ -85,7 +85,6 @@ theorem HermitianMetric.comap_inner (g : HermitianMetric κ E)
   rfl
 
 /-- The characteristic pairing of the induced metric. -/
-@[simp]
 theorem HermitianMetric.comap_inner_apply (g : HermitianMetric κ E)
     (a : ∀ b, D b →L[κ] E b) (ha : ∀ b, Topology.IsEmbedding (a b))
     (b : B) (v w : D b) :
@@ -200,9 +199,9 @@ private theorem continuous_comap_inner (g : ContinuousHermitianMetric κ F E)
       (fun b ↦ TotalSpace.mk' (G →L[κ] F) b (a b))) :
     Continuous (fun b ↦ TotalSpace.mk' (G →L⋆[κ] G →L[κ] κ) b
       (((a b).precomp κ).comp ((g.inner b).comp (a b)))) := by
-  letI : ∀ b, IsTopologicalAddGroup (E b) := fun b ↦
+  let : ∀ b, IsTopologicalAddGroup (E b) := fun b ↦
     (VectorBundle.continuousLinearEquivAt κ F E b).toContinuousAddEquiv.isTopologicalAddGroup
-  letI : ∀ b, ContinuousSMul κ (E b) := fun b ↦
+  let : ∀ b, ContinuousSMul κ (E b) := fun b ↦
     (VectorBundle.continuousLinearEquivAt κ F E b).continuousSMul
   refine continuous_iff_continuousAt.mpr fun b₀ ↦ ?_
   refine (FiberBundle.continuousAt_section (G →L⋆[κ] G →L[κ] κ)
@@ -282,7 +281,6 @@ theorem ContinuousHermitianMetric.comap_inner (g : ContinuousHermitianMetric κ 
   rw [HermitianMetric.comap_inner, toHermitianMetric_inner_eq]
 
 /-- The characteristic pairing of the continuous induced metric. -/
-@[simp]
 theorem ContinuousHermitianMetric.comap_inner_apply (g : ContinuousHermitianMetric κ F E)
     (a : ∀ b, D b →L[κ] E b) (ha : ∀ b, Topology.IsEmbedding (a b))
     (hcont : @Continuous _ _ _ homDE

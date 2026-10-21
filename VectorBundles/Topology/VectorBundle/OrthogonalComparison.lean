@@ -220,7 +220,6 @@ theorem orthogonalComplementHomeomorph_symm_apply (p : TotalSpace H C₂) :
         (TotalSpace.mk' F p.proj (p.2 : E p.proj)) := rfl
 
 /-- The total comparison preserves the base point. -/
-@[simp]
 theorem orthogonalComplementHomeomorph_proj (p : TotalSpace H C₁) :
     (g₁.orthogonalComplementHomeomorph g₂ S hS p).proj = p.proj := by
   rw [orthogonalComplementHomeomorph_apply]
@@ -228,7 +227,6 @@ theorem orthogonalComplementHomeomorph_proj (p : TotalSpace H C₁) :
     (TotalSpace.mk' F p.proj (p.2 : E p.proj))
 
 /-- The inverse total comparison preserves the base point. -/
-@[simp]
 theorem orthogonalComplementHomeomorph_symm_proj (p : TotalSpace H C₂) :
     (@Homeomorph.symm (TotalSpace H C₁) (TotalSpace H C₂) tC₁ tC₂
       (g₁.orthogonalComplementHomeomorph g₂ S hS) p).proj = p.proj := by

@@ -42,8 +42,8 @@ theorem metrizableSpace_totalSpace
     [FiberBundle F E] [MetrizableSpace B] [MetrizableSpace F] :
     MetrizableSpace (TotalSpace F E) := by
   classical
-  haveI : ParacompactSpace B := by
-    letI := TopologicalSpace.pseudoMetrizableSpacePseudoMetric B
+  have : ParacompactSpace B := by
+    let := TopologicalSpace.pseudoMetrizableSpacePseudoMetric B
     infer_instance
   have hshrink : ∀ b : B, ∃ V : Set B,
       b ∈ V ∧ IsOpen V ∧ closure V ⊆ (trivializationAt F E b).baseSet := by

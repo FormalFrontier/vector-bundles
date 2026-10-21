@@ -288,7 +288,6 @@ theorem homeomorphConst_symm_apply_snd (p : A × E b) :
   rfl
 
 /-- The inverse constant comparison lifts to the corresponding point over `b`. -/
-@[simp]
 theorem lift_homeomorphConst_symm (p : A × E b) :
     Bundle.Pullback.lift (fun _ : A ↦ b) ((homeomorphConst F E b hb).symm p) =
       TotalSpace.mk' F b p.2 := by
@@ -490,7 +489,6 @@ theorem homeomorphComp_symm_apply_proj (z : TotalSpace F ((f ∘ g) *ᵖ E)) :
   rfl
 
 /-- The lift from a composite pullback agrees with the two successive lifts. -/
-@[simp]
 theorem lift_homeomorphComp (z : TotalSpace F (g *ᵖ (f *ᵖ E))) :
     Bundle.Pullback.lift (f ∘ g) (homeomorphComp F E f g h z) =
       Bundle.Pullback.lift f (Bundle.Pullback.lift g z) := by

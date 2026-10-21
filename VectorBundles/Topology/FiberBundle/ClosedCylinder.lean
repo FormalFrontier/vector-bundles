@@ -174,21 +174,21 @@ noncomputable def normalizeClosedCylinderRight :
     exact h₂.symm.continuous.comp (continuous_fst.prodMk hd)
 
 /-- Forward formula for the normalized right chart. -/
-@[simp] theorem normalizeClosedCylinderRight_apply (z : p ⁻¹' {b : X × T | c ≤ b.2}) :
+@[simp↓] theorem normalizeClosedCylinderRight_apply (z : p ⁻¹' {b : X × T | c ≤ b.2}) :
     normalizeClosedCylinderRight c p h₁ h₂ hp₁ hp₂ z =
       ((h₂ z).1,
         closedCylinderCoordChange c p h₁ h₂ hp₁ hp₂ (h₂ z).1.val.1 (h₂ z).2) :=
   rfl
 
 /-- Inverse formula for the normalized right chart. -/
-@[simp] theorem normalizeClosedCylinderRight_symm_apply (q : {b : X × T | c ≤ b.2} × F) :
+@[simp↓] theorem normalizeClosedCylinderRight_symm_apply (q : {b : X × T | c ≤ b.2} × F) :
     (normalizeClosedCylinderRight c p h₁ h₂ hp₁ hp₂).symm q =
       h₂.symm (q.1,
         (closedCylinderCoordChange c p h₁ h₂ hp₁ hp₂ q.1.val.1).symm q.2) :=
   rfl
 
 /-- Normalization changes no base coordinate. -/
-@[simp] theorem normalizeClosedCylinderRight_fst (z : p ⁻¹' {b : X × T | c ≤ b.2}) :
+@[simp↓] theorem normalizeClosedCylinderRight_fst (z : p ⁻¹' {b : X × T | c ≤ b.2}) :
     (normalizeClosedCylinderRight c p h₁ h₂ hp₁ hp₂ z).1.val = p z.val := by
   exact hp₂ z
 
@@ -409,7 +409,7 @@ variable [ClosedIicTopology T] [ClosedIciTopology T] (hπ : Continuous p)
   rfl
 
 /-- The glued trivialization preserves the original projection. -/
-@[simp] theorem glueClosedCylinder_fst (z : Z) :
+theorem glueClosedCylinder_fst (z : Z) :
     (glueClosedCylinder c p h₁ h₂ hp₁ hp₂ hπ z).1 = p z := by
   exact (glueClosedCylinder c p h₁ h₂ hp₁ hp₂ hπ).coe_fst'
     (by rw [glueClosedCylinder_baseSet]; trivial)

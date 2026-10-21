@@ -90,9 +90,9 @@ theorem Bundle.continuous_id_hom_section :
     @Continuous _ _ _ homEE
       (fun b : B ↦ TotalSpace.mk' (F →L[κ] F)
         (E := fun b ↦ E b →L[κ] E b) b (ContinuousLinearMap.id κ (E b))) := by
-  letI : ∀ b, IsTopologicalAddGroup (E b) := fun b ↦
+  let : ∀ b, IsTopologicalAddGroup (E b) := fun b ↦
     (VectorBundle.continuousLinearEquivAt κ F E b).toContinuousAddEquiv.isTopologicalAddGroup
-  letI : ∀ b, ContinuousSMul κ (E b) := fun b ↦
+  let : ∀ b, ContinuousSMul κ (E b) := fun b ↦
     (VectorBundle.continuousLinearEquivAt κ F E b).continuousSMul
   apply continuous_iff_continuousAt.2
   intro b₀
@@ -119,13 +119,13 @@ theorem Continuous.clm_bundle_comp
       (fun b ↦ TotalSpace.mk' (H →L[κ] G) b (c b))) :
     @Continuous _ _ _ homCE
       (fun b ↦ TotalSpace.mk' (H →L[κ] F) b ((a b).comp (c b))) := by
-  letI : ∀ b, IsTopologicalAddGroup (E b) := fun b ↦
+  let : ∀ b, IsTopologicalAddGroup (E b) := fun b ↦
     (VectorBundle.continuousLinearEquivAt κ F E b).toContinuousAddEquiv.isTopologicalAddGroup
-  letI : ∀ b, ContinuousSMul κ (E b) := fun b ↦
+  let : ∀ b, ContinuousSMul κ (E b) := fun b ↦
     (VectorBundle.continuousLinearEquivAt κ F E b).continuousSMul
-  letI : ∀ b, IsTopologicalAddGroup (D b) := fun b ↦
+  let : ∀ b, IsTopologicalAddGroup (D b) := fun b ↦
     (VectorBundle.continuousLinearEquivAt κ G D b).toContinuousAddEquiv.isTopologicalAddGroup
-  letI : ∀ b, ContinuousSMul κ (D b) := fun b ↦
+  let : ∀ b, ContinuousSMul κ (D b) := fun b ↦
     (VectorBundle.continuousLinearEquivAt κ G D b).continuousSMul
   apply continuous_iff_continuousAt.2
   intro b₀

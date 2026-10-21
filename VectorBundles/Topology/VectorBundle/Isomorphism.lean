@@ -44,7 +44,6 @@ by Kevin Buzzard and Will Sawin. The unit argument uses the topology of units de
 set_option autoImplicit false
 set_option relaxedAutoImplicit false
 set_option linter.mathlibStandardSet true
-set_option linter.style.header false
 
 @[expose] public section
 

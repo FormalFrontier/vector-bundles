@@ -80,7 +80,7 @@ theorem separableSpace_totalSpace [SeparableSpace B] [SeparableSpace F] :
     SeparableSpace (TotalSpace F E) := by
   apply (isOpenMap_proj F E).separableSpace_of_isSeparable_fibers
   intro b
-  letI : SeparableSpace (E b) :=
+  let : SeparableSpace (E b) :=
     (homeomorphAt F E b).isOpenMap.separableSpace_of_injective
       (homeomorphAt F E b).injective
   rw [← TotalSpace.range_mk]
@@ -102,13 +102,13 @@ all original topologies and bundle data. The model may be empty. -/
 theorem separableSpace_model (b : B) [SeparableSpace (TotalSpace F E)] :
     SeparableSpace F := by
   let e := trivializationAt F E b
-  letI : SeparableSpace e.source :=
+  let : SeparableSpace e.source :=
     e.open_source.isOpenMap_subtype_val.separableSpace_of_injective
       Subtype.val_injective
-  letI : SeparableSpace (e.baseSet × F) :=
+  let : SeparableSpace (e.baseSet × F) :=
     e.sourceHomeomorphBaseSetProd.surjective.denseRange.separableSpace
       e.sourceHomeomorphBaseSetProd.continuous
-  letI : Nonempty e.baseSet := ⟨⟨b, mem_baseSet_trivializationAt F E b⟩⟩
+  let : Nonempty e.baseSet := ⟨⟨b, mem_baseSet_trivializationAt F E b⟩⟩
   exact (Prod.snd_surjective (α := e.baseSet) (β := F)).denseRange.separableSpace
     continuous_snd
 
@@ -118,12 +118,12 @@ theorem separableSpace_totalSpace_iff [Nonempty B] [Nonempty F] :
     SeparableSpace (TotalSpace F E) ↔ (SeparableSpace B ∧ SeparableSpace F) := by
   constructor
   · intro h
-    letI : SeparableSpace (TotalSpace F E) := h
+    let : SeparableSpace (TotalSpace F E) := h
     exact ⟨(FiberBundle.isQuotientMap_proj F E).separableSpace,
       FiberBundle.separableSpace_model F E (Classical.choice ‹Nonempty B›)⟩
   · rintro ⟨hB, hF⟩
-    letI : SeparableSpace B := hB
-    letI : SeparableSpace F := hF
+    let : SeparableSpace B := hB
+    let : SeparableSpace F := hF
     exact FiberBundle.separableSpace_totalSpace F E
 
 end FiberBundle

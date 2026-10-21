@@ -72,7 +72,7 @@ theorem preimage_of_isOpenMap_of_isSeparable_fibers
     (hFib : ∀ y : Y, TopologicalSpace.IsSeparable (f ⁻¹' {y})) :
     TopologicalSpace.IsSeparable (f ⁻¹' s) := by
   obtain ⟨C, hCcount, hsC⟩ := hs
-  letI : Countable C := hCcount.to_subtype
+  let : Countable C := hCcount.to_subtype
   have hpreimage : TopologicalSpace.IsSeparable (f ⁻¹' C) := by
     have hdecomp : f ⁻¹' C = ⋃ y : C, f ⁻¹' {y.val} := by
       ext x

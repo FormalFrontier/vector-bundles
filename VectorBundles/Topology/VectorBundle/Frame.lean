@@ -345,12 +345,10 @@ theorem ofBasisOfIsModuleTopology_target :
     (ofBasisOfIsModuleTopology v b hb).target = Set.univ := by
   rfl
 
-@[simp]
 theorem ofBasisOfIsModuleTopology_apply (z : TotalSpace F E) :
     ofBasisOfIsModuleTopology v b hb z = (z.proj, v.equivFun.symm ((b z.proj).equivFun z.2)) := by
   rfl
 
-@[simp]
 theorem ofBasisOfIsModuleTopology_symm_apply (x : B) (w : F) :
     (ofBasisOfIsModuleTopology v b hb).symm x w = (b x).equivFun.symm (v.equivFun w) := by
   have h := (ofBasisOfIsModuleTopology v b hb).mk_symm (b := x) (by simp) w
@@ -422,12 +420,10 @@ theorem ofBasis_source : (ofBasis v b hb).source = Set.univ := by
 theorem ofBasis_target : (ofBasis v b hb).target = Set.univ := by
   rfl
 
-@[simp]
 theorem ofBasis_apply (z : TotalSpace F E) :
     ofBasis v b hb z = (z.proj, v.equivFun.symm ((b z.proj).equivFun z.2)) := by
   rfl
 
-@[simp]
 theorem ofBasis_symm_apply (x : B) (w : F) :
     (ofBasis v b hb).symm x w = (b x).equivFun.symm (v.equivFun w) := by
   have h := (ofBasis v b hb).mk_symm (b := x) (by simp) w

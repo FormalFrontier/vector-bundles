@@ -338,12 +338,14 @@ theorem supportedPullbackHomeomorph_lift_comp
         (fun _ hx ↦ hEq hx) (fun _ hx ↦ h₀ hx) (fun _ hx ↦ h₁ hx) z
         ⟨h₀ hz, h₁ hz⟩,
       e.supportedPullbackHomeomorph_lift_of_mem f₀ f₁ K hK hEq h₀ h₁
-        (TotalSpace.mk' F (r z.proj) z.snd) ⟨h₀ hz, h₁ hz⟩] <;> rfl
+        (TotalSpace.mk' F (r z.proj) z.snd) ⟨h₀ hz, h₁ hz⟩]
+    rfl
   · rw [e.supportedPullbackHomeomorph_lift_of_notMem
         (f₀.comp r) (f₁.comp r) (r ⁻¹' K) (hK.preimage r.continuous)
         (fun _ hx ↦ hEq hx) (fun _ hx ↦ h₀ hx) (fun _ hx ↦ h₁ hx) z hz,
       e.supportedPullbackHomeomorph_lift_of_notMem f₀ f₁ K hK hEq h₀ h₁
-        (TotalSpace.mk' F (r z.proj) z.snd) hz] <;> rfl
+        (TotalSpace.mk' F (r z.proj) z.snd) hz]
+    rfl
 
 section Linear
 

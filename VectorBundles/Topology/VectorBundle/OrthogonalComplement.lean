@@ -236,8 +236,8 @@ private theorem continuousOn_chartVector
       (fun _ hb ↦ ⟨hb, Set.mem_univ _⟩)
   exact hc.congr (fun b hb ↦ by rw [e.symmL_apply hb])
 
-private noncomputable def localAnnihilator {ι : Type*} [Fintype ι]
-    [FiberBundle G (fun b ↦ S b)] [VectorBundle 𝕜 G (fun b ↦ S b)]
+private noncomputable def localAnnihilator {ι : Type*}
+    [FiberBundle G (fun b ↦ S b)]
     (e : Trivialization F (π F E)) [e.IsLinear 𝕜]
     (f : Trivialization G (π G (fun b ↦ S b))) [f.IsLinear 𝕜]
     (w : ι → G) (b : B) : F →L[𝕜] (ι → 𝕜) :=
@@ -245,26 +245,31 @@ private noncomputable def localAnnihilator {ι : Type*} [Fintype ι]
     (g.inner b (f.symmL 𝕜 b (w i))).comp (e.symmL 𝕜 b)
 
 private theorem continuousOn_localAnnihilator [FiniteDimensional 𝕜 F]
-    {ι : Type*} [Fintype ι]
-    [FiberBundle G (fun b ↦ S b)] [VectorBundle 𝕜 G (fun b ↦ S b)]
+    {ι : Type*}
+    [FiberBundle G (fun b ↦ S b)]
     (hS : Topology.IsEmbedding
       (fun p : TotalSpace G (fun b ↦ S b) ↦ TotalSpace.mk' F p.proj (p.2 : E p.proj)))
     (e : Trivialization F (π F E)) [e.IsLinear 𝕜]
     (f : Trivialization G (π G (fun b ↦ S b))) [f.IsLinear 𝕜]
     (w : ι → G) :
     ContinuousOn (localAnnihilator g S e f w) (e.baseSet ∩ f.baseSet) := by
-  rw [continuousOn_clm_apply]
-  intro v
-  apply continuousOn_pi.mpr
-  intro i
-  exact g.continuousOn_inner
-    ((hS.continuous.comp_continuousOn
-      (continuousOn_chartVector (E := fun b ↦ S b) f (w i))).mono
-        Set.inter_subset_right)
-    ((continuousOn_chartVector e v).mono Set.inter_subset_left)
+  have hc : ContinuousOn
+      (fun b i ↦ (g.inner b (f.symmL 𝕜 b (w i))).comp (e.symmL 𝕜 b))
+      (e.baseSet ∩ f.baseSet) := by
+    apply continuousOn_pi.mpr
+    intro i
+    rw [continuousOn_clm_apply]
+    intro v
+    exact g.continuousOn_inner
+      ((hS.continuous.comp_continuousOn
+        (continuousOn_chartVector (E := fun b ↦ S b) f (w i))).mono
+          Set.inter_subset_right)
+      ((continuousOn_chartVector e v).mono Set.inter_subset_left)
+  exact (ContinuousLinearMap.piEquivL (𝕜 := 𝕜) (E := F)
+    (F := fun _ : ι ↦ 𝕜)).continuous.comp_continuousOn hc
 
-private theorem localAnnihilator_eq_zero_iff {ι : Type*} [Fintype ι]
-    [FiberBundle G (fun b ↦ S b)] [VectorBundle 𝕜 G (fun b ↦ S b)]
+private theorem localAnnihilator_eq_zero_iff {ι : Type*}
+    [FiberBundle G (fun b ↦ S b)]
     (e : Trivialization F (π F E)) [e.IsLinear 𝕜]
     (f : Trivialization G (π G (fun b ↦ S b))) [f.IsLinear 𝕜]
     (w : Module.Basis ι 𝕜 G) {b : B} (he : b ∈ e.baseSet) (hf : b ∈ f.baseSet) (v : E b) :
@@ -292,14 +297,15 @@ private theorem localAnnihilator_eq_zero_iff {ι : Type*} [Fintype ι]
     rw [happ]
     exact h _ (f.symmL 𝕜 b (w i)).property
 
-private theorem localAnnihilator_hasRightInverse {ι : Type*} [Fintype ι]
+private theorem localAnnihilator_hasRightInverse {ι : Type*}
     [FiniteDimensional 𝕜 G]
-    [FiberBundle G (fun b ↦ S b)] [VectorBundle 𝕜 G (fun b ↦ S b)]
+    [FiberBundle G (fun b ↦ S b)]
     (e : Trivialization F (π F E)) [e.IsLinear 𝕜]
     (f : Trivialization G (π G (fun b ↦ S b))) [f.IsLinear 𝕜]
     (w : Module.Basis ι 𝕜 G) {b : B} (he : b ∈ e.baseSet) (hf : b ∈ f.baseSet) :
     ∃ R : (ι → 𝕜) →L[𝕜] F,
       (localAnnihilator g S e f w b).comp R = ContinuousLinearMap.id 𝕜 (ι → 𝕜) := by
+  let : Fintype ι := FiniteDimensional.fintypeBasisIndex w
   let ew := w.equivFun.toContinuousLinearEquiv
   let es := f.continuousLinearEquivAt 𝕜 b hf
   let ea := e.continuousLinearEquivAt 𝕜 b he

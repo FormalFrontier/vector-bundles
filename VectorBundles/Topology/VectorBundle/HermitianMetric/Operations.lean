@@ -109,7 +109,6 @@ theorem HermitianMetric.add_inner (g h : HermitianMetric κ E) (b : B) :
   rfl
 
 /-- Evaluation of the sum metric is the sum of the supplied pairings. -/
-@[simp]
 theorem HermitianMetric.add_inner_apply (g h : HermitianMetric κ E)
     (b : B) (v w : E b) :
     (g.add h).inner b v w = g.inner b v w + h.inner b v w := by
@@ -123,7 +122,6 @@ theorem HermitianMetric.rescale_inner (g : HermitianMetric κ E) (a : B → ℝ)
   rfl
 
 /-- Evaluation of a rescaled metric multiplies the supplied pairing by the real weight. -/
-@[simp]
 theorem HermitianMetric.rescale_inner_apply (g : HermitianMetric κ E) (a : B → ℝ)
     (ha : ∀ b, 0 < a b) (b : B) (v w : E b) :
     (g.rescale a ha).inner b v w = (a b : κ) * g.inner b v w := by
@@ -218,7 +216,6 @@ theorem ContinuousHermitianMetric.add_inner (g h : ContinuousHermitianMetric κ 
   rfl
 
 /-- Evaluation of a continuous sum is the sum of the supplied pairings. -/
-@[simp]
 theorem ContinuousHermitianMetric.add_inner_apply (g h : ContinuousHermitianMetric κ F E)
     (b : B) (v w : E b) :
     (g.add h).inner b v w = g.inner b v w + h.inner b v w := by
@@ -242,7 +239,6 @@ theorem ContinuousHermitianMetric.rescale_inner (g : ContinuousHermitianMetric �
   rfl
 
 /-- Evaluation of a continuous rescaling multiplies the supplied pairing by the real weight. -/
-@[simp]
 theorem ContinuousHermitianMetric.rescale_inner_apply (g : ContinuousHermitianMetric κ F E)
     (a : A) (ha : ∀ b, 0 < a b) (b : B) (v w : E b) :
     (g.rescale a ha).inner b v w = (a b : κ) * g.inner b v w := by

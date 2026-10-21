@@ -54,18 +54,18 @@ theorem isPreconnected_preimage_proj [PreconnectedSpace F] {s : Set B}
     IsPreconnected ((TotalSpace.proj (F := F) (E := E)) ⁻¹' s) := by
   classical
   by_cases hF : Nonempty F
-  · letI : Nonempty F := hF
+  · let : Nonempty F := hF
     refine hs.preimage_of_isOpenMap_of_isPreconnected_fibers
       (isOpenMap_proj F E) ?_ ?_
     · intro b _
       exact surjective_proj F E b
     · intro b _
-      letI : PreconnectedSpace (E b) :=
+      let : PreconnectedSpace (E b) :=
         (homeomorphAt F E b).symm.surjective.denseRange.preconnectedSpace
           (homeomorphAt F E b).symm.continuous
       simpa only [TotalSpace.range_mk] using
         (isPreconnected_range (continuous_totalSpaceMk F E b))
-  · haveI : IsEmpty (TotalSpace F E) :=
+  · have : IsEmpty (TotalSpace F E) :=
       ⟨fun x => hF ⟨(homeomorphAt F E x.proj) x.snd⟩⟩
     have hempty : ((TotalSpace.proj (F := F) (E := E)) ⁻¹' s) = ∅ := by
       ext x

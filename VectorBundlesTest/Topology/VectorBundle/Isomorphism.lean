@@ -21,7 +21,6 @@ base the two model spaces need not even have the same dimension.
 set_option autoImplicit false
 set_option relaxedAutoImplicit false
 set_option linter.mathlibStandardSet true
-set_option linter.style.header false
 
 @[expose] public section
 
