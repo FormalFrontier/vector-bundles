@@ -3,6 +3,7 @@ SPDX-License-Identifier: Apache-2.0
 Authors: Formal Frontier Agents
 -/
 module
+public import VectorBundles.Topology.FiberBundle.Basic
 
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.FiberBundle.Basic
@@ -67,3 +68,51 @@ instance secondCountableTopology
   exact Set.mem_iUnion.2 ⟨⟨b, hb⟩, (trivializationAt F E b).mem_source.2 hxb⟩
 
 end FiberBundle
+
+
+universe uBase uModel uFiber
+
+/-- A fibre-bundle total space is second countable exactly when its base or model
+fibre is empty, or both the base and model fibre are second countable. This uses
+the supplied topologies and fibre-bundle structure unchanged; the empty cases
+impose no second-countability requirement on the unused base or model. -/
+public theorem _root_.FiberBundle.secondCountableTopology_totalSpace_iff
+    {B : Type uBase} (F : Type uModel) (E : B → Type uFiber)
+    [tB : TopologicalSpace B] [tF : TopologicalSpace F]
+    [tE : ∀ b, TopologicalSpace (E b)]
+    [tTotal : TopologicalSpace (Bundle.TotalSpace F E)] [fb : FiberBundle F E] :
+    SecondCountableTopology (Bundle.TotalSpace F E) ↔
+      IsEmpty B ∨ IsEmpty F ∨
+        (SecondCountableTopology B ∧ SecondCountableTopology F) := by
+  classical
+  constructor
+  · intro hTotal
+    let : SecondCountableTopology (Bundle.TotalSpace F E) := hTotal
+    by_cases hB : Nonempty B
+    · by_cases hF : Nonempty F
+      · let : Nonempty F := hF
+        refine Or.inr (Or.inr ⟨?_, ?_⟩)
+        · have hOpenQuotient : _root_.IsOpenQuotientMap
+              (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B) :=
+            _root_.IsOpenQuotientMap.of_isOpenMap_isQuotientMap
+              (FiberBundle.isOpenMap_proj F E) (FiberBundle.isQuotientMap_proj F E)
+          exact Topology.IsOpenQuotientMap.secondCountableTopology hOpenQuotient
+        · obtain ⟨b⟩ := hB
+          let : SecondCountableTopology
+              ((Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B) ⁻¹' ({b} : Set B)) :=
+            TopologicalSpace.secondCountableTopology_induced _ _ Subtype.val
+          exact ((FiberBundle.trivializationAt F E b).preimageSingletonHomeomorph
+            (FiberBundle.mem_baseSet_trivializationAt
+              F E b)).symm.isInducing.secondCountableTopology
+      · exact Or.inr (Or.inl ⟨fun f => hF ⟨f⟩⟩)
+    · exact Or.inl ⟨fun b => hB ⟨b⟩⟩
+  · rintro (hB | hF | ⟨hB, hF⟩)
+    · let : IsEmpty (Bundle.TotalSpace F E) :=
+        (FiberBundle.isEmpty_totalSpace_iff F E).2 (Or.inl hB)
+      infer_instance
+    · let : IsEmpty (Bundle.TotalSpace F E) :=
+        (FiberBundle.isEmpty_totalSpace_iff F E).2 (Or.inr hF)
+      infer_instance
+    · let : SecondCountableTopology B := hB
+      let : SecondCountableTopology F := hF
+      exact FiberBundle.secondCountableTopology F E

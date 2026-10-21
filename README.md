@@ -156,16 +156,18 @@ topological fiber bundles.
   structure, with independent base, model and fiber universes and no separation assumptions.
   Preconnectedness allows empty models; `ConnectedSpace` includes nonemptiness.
   Connected total space need not imply a connected model.
-- **Second countability of fiber-bundle total spaces.**
-  [`FiberBundle.secondCountableTopology`](VectorBundles/Topology/FiberBundle/Countability.lean)
-  gives a second-countable total space from a second-countable base and model, retaining
-  the original topologies and fiber-bundle structure. Base, model and fibers may lie in
-  independent universes; no nonemptiness, separation or vector-space assumption is needed.
-  The [real-plane and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Countability.lean)
-  apply the instance directly. From a second-countable total space, Mathlib's embedding
-  and homeomorphism APIs recover second countability of the model at a specified base
-  point; its open-quotient API recovers second countability of the base when the model
-  is nonempty.
+- **Sharp second countability for fiber bundles.**
+  [`FiberBundle.secondCountableTopology_totalSpace_iff`](VectorBundles/Topology/FiberBundle/Countability.lean)
+  characterizes second countability of the total space: either the base is empty,
+  the model is empty, or both base and model are second-countable. The supplied
+  topologies and fiber-bundle structure are unchanged, and base, model and fibers
+  may lie in independent universes. No compactness, separation, nonemptiness or
+  vector-space assumption is needed. The existing `FiberBundle.secondCountableTopology`
+  instance supplies the forward construction from second-countable factors.
+  The [real-plane and empty-base/model examples](VectorBundlesTest/Topology/FiberBundle/Countability.lean)
+  apply the criterion, including a noncompact real model and empty total spaces
+  without countability assumptions on the unused factor.
+
 - **Metrizability of fiber bundles.**
   [`FiberBundle.metrizableSpace_totalSpace`](VectorBundles/Topology/FiberBundle/Metrizable.lean)
   gives a metrizable total space from a metrizable base and model, with their original
