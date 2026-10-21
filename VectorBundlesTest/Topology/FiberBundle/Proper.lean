@@ -27,18 +27,19 @@ assumptions.
 
 @[expose] public section
 
--- Private examples exercise the public interface without enlarging it.
-set_option linter.privateModule false
+-- The two-point model has public projection theorems; compactness and empty cases remain private.
 
 open Bundle
 
-namespace VectorBundlesTest.FiberBundleProper
+namespace Bundle.Trivial
 
-private theorem finTwo_projection :
+/-- The trivial bundle on `ℝ` with discrete fiber `Fin 2` has proper projection. -/
+public theorem isProperMap_proj_finTwo :
     IsProperMap (TotalSpace.proj (F := Fin 2) (E := Trivial ℝ (Fin 2))) := by
   exact FiberBundle.isProperMap_proj (Fin 2) (Trivial ℝ (Fin 2))
 
-private theorem finTwo_projection_not_injective :
+/-- The projection of the trivial bundle on `ℝ` with fiber `Fin 2` is not injective. -/
+public theorem not_injective_proj_finTwo :
     ¬ Function.Injective (TotalSpace.proj (F := Fin 2) (E := Trivial ℝ (Fin 2))) := by
   intro h
   have h01 : TotalSpace.mk' (E := Trivial ℝ (Fin 2)) (Fin 2) (0 : ℝ) (0 : Fin 2) =
@@ -86,4 +87,4 @@ private theorem empty_base_compactness_boundary :
     infer_instance
   · exact not_compactSpace_iff.mpr (inferInstance : NoncompactSpace ℝ)
 
-end VectorBundlesTest.FiberBundleProper
+end Bundle.Trivial

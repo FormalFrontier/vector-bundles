@@ -16,8 +16,7 @@ An empty frame gives the rank-zero trivialization, and a plane bundle over the e
 requires no choice of a base point.
 -/
 
--- These bundle clients are intentionally private and export no declarations.
-set_option linter.privateModule false
+-- The plane and its coordinate criterion are public; frame constructions remain private.
 
 @[expose] public section
 
@@ -28,7 +27,8 @@ universe uB
 
 namespace VectorBundleFrameExamples
 
-private abbrev Plane := Fin 2 → ℝ
+/-- The real plane as two-coordinate functions, with the function-space sup norm. -/
+public abbrev Plane := Fin 2 → ℝ
 
 private noncomputable def planeBasis : Basis (Fin 2) ℝ Plane :=
   Pi.basisFun ℝ (Fin 2)
@@ -65,7 +65,8 @@ private theorem continuous_plane_basis_coordinates :
     (F := Plane) (E := Bundle.Trivial ℝ Plane)
     (fun _ : ℝ ↦ planeBasis) continuous_plane_basis
 
-private theorem continuous_plane_section_iff_coordinates (s : ℝ → Plane) :
+/-- A section of the trivial real plane bundle is continuous exactly when both coordinates are. -/
+public theorem continuous_plane_section_iff_coordinates (s : ℝ → Plane) :
     Continuous (fun x ↦ TotalSpace.mk' Plane (E := Bundle.Trivial ℝ Plane) x (s x)) ↔
       Continuous (fun x ↦ s x 0) ∧ Continuous (fun x ↦ s x 1) := by
   rw [VectorBundle.continuous_section_iff_basis_coeff

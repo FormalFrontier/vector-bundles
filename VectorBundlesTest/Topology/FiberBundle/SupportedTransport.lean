@@ -4,8 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import VectorBundles.Topology.FiberBundle.SupportedTransport
-import Mathlib.Analysis.SpecialFunctions.Exp
+public import VectorBundles.Topology.FiberBundle.SupportedTransport
+public import Mathlib.Analysis.SpecialFunctions.Exp
 
 /-!
 # Supported rescaling in a real line bundle
@@ -18,14 +18,14 @@ fixes the original total-space point. The empty supporting subset gives a zero
 step.
 -/
 
--- These examples are private witnesses rather than an exported fixture API.
-set_option linter.privateModule false
+-- Evaluation lemmas describe the base maps and the resulting fiberwise rescaling.
 
 open Bundle Set
 
 namespace Bundle.Trivialization.SupportedTransportExamples
 
-@[reducible] private noncomputable def E := Bundle.Trivial ℝ ℝ
+/-- The constant real line bundle on `ℝ`, with each fiber definitionally `ℝ`. -/
+@[expose, reducible] public noncomputable def E : ℝ → Type := Bundle.Trivial ℝ ℝ
 
 private theorem scaledCoordinates_left_inv :
     Function.LeftInverse (fun z : ℝ × ℝ ↦ (z.1, Real.exp (-z.1) * z.2))
@@ -78,14 +78,24 @@ private noncomputable def scaledChart : Trivialization ℝ (π ℝ E) :=
 private theorem scaledChart_apply (z : TotalSpace ℝ E) :
     scaledChart z = (z.proj, Real.exp z.proj * z.2) := rfl
 
-private noncomputable def f₀ : C(ℝ, ℝ) := ContinuousMap.id ℝ
+/-- The identity base map for supported transport. -/
+public noncomputable def f₀ : C(ℝ, ℝ) := ContinuousMap.id ℝ
 
 private theorem f₁_continuous : Continuous (fun x : ℝ ↦ x + max 0 (1 - x ^ 2)) := by
   fun_prop
 
-private noncomputable def f₁ : C(ℝ, ℝ) where
+/-- The base map `x ↦ x + max 0 (1 - x²)`, equal to `x` off `[-1,1]`. -/
+public noncomputable def f₁ : C(ℝ, ℝ) where
   toFun x := x + max 0 (1 - x ^ 2)
   continuous_toFun := f₁_continuous
+
+/-- Evaluation of the identity base map. -/
+public theorem f₀_apply (x : ℝ) : f₀ x = x := by
+  rfl
+
+/-- Evaluation of the compactly supported change of base map. -/
+public theorem f₁_apply (x : ℝ) : f₁ x = x + max 0 (1 - x ^ 2) := by
+  rfl
 
 private noncomputable def K : Set ℝ := Icc (-1) 1
 
@@ -113,13 +123,15 @@ private theorem f₁_mapsTo : MapsTo f₁ K scaledChart.baseSet := by
   · have hmax : max 0 (1 - x ^ 2) ≤ 1 := max_le (by norm_num) (by nlinarith [sq_nonneg x])
     linarith [hx.2]
 
-private noncomputable def transport :
+/-- Supported transport from the exponential chart restricted to `(-2,3)`;
+it preserves the domain point. -/
+public noncomputable def transport :
     TotalSpace ℝ ((f₀ : ℝ → ℝ) *ᵖ E) ≃ₜ TotalSpace ℝ ((f₁ : ℝ → ℝ) *ᵖ E) :=
   scaledChart.supportedPullbackHomeomorph f₀ f₁ K isClosed_Icc agree_off
     f₀_mapsTo f₁_mapsTo
 
-/-- Retaining `exp(b) * v` gives a nonconstant fiber rescaling. -/
-private theorem transport_apply (x v : ℝ) :
+/-- The fiber coordinate is multiplied by `exp (-max 0 (1 - x²))`. -/
+public theorem transport_apply (x v : ℝ) :
     transport (⟨x, v⟩ : TotalSpace ℝ ((f₀ : ℝ → ℝ) *ᵖ E)) =
       ⟨x, Real.exp (-max 0 (1 - x ^ 2)) * v⟩ := by
   have hp : (transport (⟨x, v⟩ : TotalSpace ℝ ((f₀ : ℝ → ℝ) *ᵖ E))).proj = x :=
@@ -162,16 +174,16 @@ private theorem scaledChart_isLinear : scaledChart.IsLinear ℝ := by
     change Real.exp b * (c * x) = c * (Real.exp b * x)
     ring
 
-/-- The supported rescaling is linear on each fiber. -/
-private theorem transport_isLinear (a : ℝ) :
+/-- The supported rescaling is real-linear on each fiber. -/
+public theorem transport_isLinear (a : ℝ) :
     IsLinearMap ℝ (fun v : ℝ ↦
       (transport (⟨a, v⟩ : TotalSpace ℝ ((f₀ : ℝ → ℝ) *ᵖ E))).2) := by
   let : scaledChart.IsLinear ℝ := scaledChart_isLinear
   exact scaledChart.supportedPullbackHomeomorph_isLinearMap f₀ f₁ K isClosed_Icc
     agree_off f₀_mapsTo f₁_mapsTo a
 
-/-- At zero the fiber coordinate changes, rather than merely its presentation. -/
-private theorem transport_nontrivial :
+/-- At `x = 0`, the unit fiber vector is sent to `exp (-1)`, not to `1`. -/
+public theorem transport_nontrivial :
     (transport (⟨0, (1 : ℝ)⟩ : TotalSpace ℝ ((f₀ : ℝ → ℝ) *ᵖ E))).2 = Real.exp (-1) ∧
       (transport (⟨0, (1 : ℝ)⟩ : TotalSpace ℝ ((f₀ : ℝ → ℝ) *ᵖ E))).2 ≠ (1 : ℝ) := by
   rw [transport_apply]

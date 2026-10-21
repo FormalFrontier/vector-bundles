@@ -55,12 +55,12 @@ private theorem weight_pos (t : ℝ) : 0 < weight t := by
 
 /-- On the stock plane over the real line, add the constant compatible metric to its
 rescaling by the continuous positive function `1 + t²`. -/
-noncomputable def planeMetric (κ : Type uκ) [RCLike κ] :
+public noncomputable def planeMetric (κ : Type uκ) [RCLike κ] :
     ContinuousHermitianMetric κ (κ × κ) (Bundle.Trivial ℝ (κ × κ)) :=
   (constantMetric κ).add ((constantMetric κ).rescale weight weight_pos)
 
 /-- The combined metric has coefficient `2 + t²` relative to the chosen model form. -/
-theorem planeMetric_inner_apply (κ : Type uκ) [RCLike κ] (t : ℝ) (v w : κ × κ) :
+public theorem planeMetric_inner_apply (κ : Type uκ) [RCLike κ] (t : ℝ) (v w : κ × κ) :
     (planeMetric κ).inner t v w =
       ((2 + t ^ 2 : ℝ) : κ) * (HermitianMetric.ofFiniteDimensional κ (κ × κ)).inner () v w := by
   simp only [planeMetric, ContinuousHermitianMetric.add_inner_apply,
@@ -102,7 +102,7 @@ theorem continuous_planeMetric_inner (κ : Type uκ) [RCLike κ] (v w : κ × κ
 
 /-- On a nonzero coordinate vector the real diagonal is `2Q` at zero and `3Q` at one,
 where `Q` is strictly positive, so the metric genuinely varies. -/
-theorem planeMetric_coordinate_variation (κ : Type uκ) [RCLike κ] :
+public theorem planeMetric_coordinate_variation (κ : Type uκ) [RCLike κ] :
     let Q := RCLike.re ((HermitianMetric.ofFiniteDimensional κ (κ × κ)).inner () (1, 0) (1, 0))
     0 < Q ∧
       RCLike.re ((planeMetric κ).inner 0 (1, 0) (1, 0)) = 2 * Q ∧

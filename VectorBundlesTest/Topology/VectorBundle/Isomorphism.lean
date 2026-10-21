@@ -120,8 +120,9 @@ The algebraic family and its forward total-space continuity are the inputs for t
 homeomorphism construction. The expected forward formula is `(b, (x, y)) ↦ (b, (x + b * y, y))`,
 and the algebraic inverse formula is `(b, (x, y)) ↦ (b, (x - b * y, y))`. Only forward continuity
 is supplied to the constructor; the target module topology gives inverse continuity over the
-incomplete field `ℚ`. The units examples also recover continuity of a unit-valued map from continuity
-of its value, and apply the value embedding to the rational plane and rank-zero endomorphism rings.
+incomplete field `ℚ`. The units examples also recover continuity of a unit-valued map from
+continuity of its value, and apply the value embedding to the rational plane and rank-zero
+endomorphism rings.
 -/
 
 namespace VectorBundleIsomorphismTests
@@ -131,10 +132,14 @@ noncomputable section
 section RationalShear
 
 -- Use the stock trivial-bundle dictionaries for the total space and its bundle structures.
-local instance : TopologicalSpace (TotalSpace (ℚ × ℚ) (Trivial ℚ (ℚ × ℚ))) :=
+/-- The product topology on the total space of the trivial rational plane bundle. -/
+local instance instTopologicalSpaceTotalSpaceRatProdTrivial :
+    TopologicalSpace (TotalSpace (ℚ × ℚ) (Trivial ℚ (ℚ × ℚ))) :=
   Trivial.topologicalSpace ℚ (ℚ × ℚ)
 
-local instance : FiberBundle (ℚ × ℚ) (Trivial ℚ (ℚ × ℚ)) :=
+/-- The trivial bundle structure with rational plane fiber over the rational line. -/
+local instance instFiberBundleRatProdTrivial :
+    FiberBundle (ℚ × ℚ) (Trivial ℚ (ℚ × ℚ)) :=
   Trivial.fiberBundle ℚ (ℚ × ℚ)
 
 local instance : VectorBundle ℚ (ℚ × ℚ) (Trivial ℚ (ℚ × ℚ)) :=

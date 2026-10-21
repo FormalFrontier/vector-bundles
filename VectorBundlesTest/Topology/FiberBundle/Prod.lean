@@ -6,7 +6,7 @@ module
 
 public import VectorBundles.Topology.FiberBundle.Prod
 public import Mathlib.Topology.VectorBundle.Constructions
-public import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum
 
 /-!
 # Examples for symmetry and associativity of fiberwise products
@@ -19,16 +19,17 @@ summand gives a distinct boundary case with inhabited fibers.
 
 @[expose] public section
 
--- Private examples exercise the public interface without enlarging it.
-set_option linter.privateModule false
+-- Coordinate permutation theorems are public; boundary and pullback examples remain private.
 
 open Bundle
 
 universe uB uF₁ uF₂ uF₃ uE₁ uE₂ uE₃
 
-namespace IncubatorTest.FiberBundleProd
+namespace FiberBundle.Prod
 
-private theorem real_comm_coordinates (b : ℝ) (v : ℝ × (ℝ × ℝ)) :
+/-- Swapping a real line and a real plane gives the coordinate permutation, its inverse,
+preserves the base point, and acts fiberwise as `LinearEquiv.prodComm`. -/
+public theorem real_comm_coordinates (b : ℝ) (v : ℝ × (ℝ × ℝ)) :
     @FiberBundle.Prod.homeomorphComm ℝ ℝ (Trivial ℝ ℝ)
         (ℝ × ℝ) (Trivial ℝ (ℝ × ℝ))
         (@Bundle.Trivial.topologicalSpace ℝ ℝ inferInstance inferInstance)
@@ -71,7 +72,9 @@ private theorem real_comm_coordinates (b : ℝ) (v : ℝ × (ℝ × ℝ)) :
       (t₂ := @Bundle.Trivial.topologicalSpace ℝ (ℝ × ℝ) inferInstance inferInstance)
       ℝ b v
 
-private theorem real_assoc_coordinates (b : ℝ) (v : (ℝ × (ℝ × ℝ)) × ℝ) :
+/-- Reassociating real line, plane, and line fibers gives the coordinate permutation, its inverse,
+preserves the base point, and acts fiberwise as `LinearEquiv.prodAssoc`. -/
+public theorem real_assoc_coordinates (b : ℝ) (v : (ℝ × (ℝ × ℝ)) × ℝ) :
     @FiberBundle.Prod.homeomorphAssoc ℝ ℝ (Trivial ℝ ℝ)
         (ℝ × ℝ) (Trivial ℝ (ℝ × ℝ)) ℝ (Trivial ℝ ℝ)
         (@Bundle.Trivial.topologicalSpace ℝ ℝ inferInstance inferInstance)
@@ -156,10 +159,10 @@ private theorem real_rankZero_coordinates (b x y : ℝ) :
   · rw [FiberBundle.Prod.homeomorphComm_apply]
   · rw [FiberBundle.Prod.homeomorphAssoc_apply]
 
-end IncubatorTest.FiberBundleProd
+end FiberBundle.Prod
 
 
-namespace IncubatorTest.FiberBundleProd
+namespace FiberBundle.Prod
 
 -- The original trivial real line and plane, pulled back along the same square map.
 -- The original nonzero line coordinate and all module data are independent of the comparison.
@@ -269,4 +272,4 @@ private theorem real_square_pullback_rankZero :
     (t₂ := @Bundle.Trivial.topologicalSpace ℝ ℝ inferInstance inferInstance)
     (TotalSpace.mk' ((Fin 0 → ℝ) × ℝ) (2 : ℝ) ((0 : Fin 0 → ℝ), (1 : ℝ)))
 
-end IncubatorTest.FiberBundleProd
+end FiberBundle.Prod

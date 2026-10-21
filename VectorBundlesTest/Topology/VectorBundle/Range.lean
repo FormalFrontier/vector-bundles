@@ -4,25 +4,33 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import VectorBundles.Topology.VectorBundle.Range
+public import VectorBundles.Topology.VectorBundle.Range
 
 /-!
 # A proper coordinate-axis range bundle
 
 The trivial real line bundle over the noncompact real line maps into the horizontal axis
 of `ℝ × ℝ`. Its total embedding is proved using the trivial-bundle product
-homeomorphism, independently of the range-bundle construction. The resulting coupled
-bundle data are installed in a proof, and the homeomorphism and fiber linearity APIs
-are used on this proper, positive-rank image.
--/
+homeomorphism, independently of the range-bundle construction. The induced topology and
+coupled bundle data come from `VectorBundle.rangeTotalSpaceTopology` and
+`VectorBundle.rangeBundle`.
 
--- This leaf contains only named private client checks, not a public library API.
-set_option linter.privateModule false
+The public coordinate map, topology, and homeomorphism describe this positive-rank
+range bundle, together with forward and inverse formulas and a point outside every
+range fiber. Continuity of the zero section, fiber linearity, and the total inclusion
+embedding are retained as private examples.
+-/
 
 open Bundle
 
-private def axisMap (_b : ℝ) : Bundle.Trivial ℝ ℝ _b →ₗ[ℝ] ℝ × ℝ :=
+namespace VectorBundle.RangeExamples
+
+/-- The horizontal-axis linear map from the trivial real line bundle to `ℝ × ℝ`. -/
+@[expose] public def axisMap (_b : ℝ) : Bundle.Trivial ℝ ℝ _b →ₗ[ℝ] ℝ × ℝ :=
   LinearMap.inl ℝ ℝ ℝ
+
+/-- The coordinate-axis map sends a fiber coordinate `v` to `(v, 0)`. -/
+public theorem axisMap_apply (b v : ℝ) : axisMap b v = (v, 0) := rfl
 
 private theorem axis_total_isEmbedding :
     Topology.IsEmbedding (fun p : TotalSpace ℝ (Bundle.Trivial ℝ ℝ) ↦
@@ -32,7 +40,8 @@ private theorem axis_total_isEmbedding :
   exact (Topology.IsEmbedding.id.prodMap (isEmbedding_prodMkLeft (0 : ℝ))).comp
     (Bundle.Trivial.homeomorphProd ℝ ℝ).isEmbedding
 
-private abbrev axisTopology :
+/-- The range total-space topology induced by inclusion into `ℝ × (ℝ × ℝ)`. -/
+public abbrev axisTopology :
     TopologicalSpace (TotalSpace ℝ (fun b ↦ (axisMap b).range)) :=
   VectorBundle.rangeTotalSpaceTopology (F := ℝ) axisMap
 
@@ -49,17 +58,21 @@ private theorem axis_zeroSection_continuous :
   let : VectorBundle ℝ ℝ (fun b ↦ (axisMap b).range) := axisBundle.2
   exact Bundle.Trivialization.continuous_zeroSection ℝ
 
-private noncomputable def axisHomeomorph :
+/-- The trivial real line bundle is homeomorphic to its coordinate-axis range bundle,
+with the induced total-space topology. -/
+public noncomputable def axisHomeomorph :
     @Homeomorph (TotalSpace ℝ (Bundle.Trivial ℝ ℝ))
       (TotalSpace ℝ (fun b ↦ (axisMap b).range)) inferInstance axisTopology :=
   VectorBundle.imageHomeomorph axisMap axis_total_isEmbedding
 
-private theorem axis_forward (b v : ℝ) :
+/-- The range homeomorphism sends a fiber coordinate to its horizontal-axis witness. -/
+public theorem axisHomeomorph_apply (b v : ℝ) :
     axisHomeomorph (TotalSpace.mk' ℝ b v) =
       TotalSpace.mk' ℝ b (⟨(v, 0), ⟨v, rfl⟩⟩ : (axisMap b).range) := by
   exact VectorBundle.imageHomeomorph_apply axisMap axis_total_isEmbedding b v
 
-private theorem axis_inverse (b v : ℝ) :
+/-- The inverse range homeomorphism recovers the coordinate of a horizontal-axis witness. -/
+public theorem axisHomeomorph_symm_apply (b v : ℝ) :
     (@Homeomorph.symm _ _ inferInstance axisTopology axisHomeomorph)
       (TotalSpace.mk' ℝ b (⟨(v, 0), ⟨v, rfl⟩⟩ : (axisMap b).range)) =
         TotalSpace.mk' ℝ b v := by
@@ -84,6 +97,9 @@ private theorem axis_inclusion_isEmbedding :
       axisTopology inferInstance (fun p ↦ (p.proj, (p.2 : ℝ × ℝ))) :=
   VectorBundle.rangeInclusion_isEmbedding axisMap
 
-private theorem axis_fiber_proper (b : ℝ) : (0, 1) ∉ (axisMap b).range := by
+/-- The point `(0, 1)` lies outside every coordinate-axis range fiber. -/
+public theorem not_mem_axisMap_range (b : ℝ) : (0, 1) ∉ (axisMap b).range := by
   rintro ⟨v, hv⟩
   exact zero_ne_one (congrArg Prod.snd hv)
+
+end VectorBundle.RangeExamples

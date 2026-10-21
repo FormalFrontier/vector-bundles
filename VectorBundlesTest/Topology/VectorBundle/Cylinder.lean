@@ -5,7 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 import VectorBundles.Topology.FiberBundle.Pullback
-import VectorBundles.Topology.VectorBundle.Cylinder
+public import VectorBundles.Topology.VectorBundle.Cylinder
 import Mathlib.Topology.VectorBundle.Constructions
 
 /-!
@@ -17,14 +17,14 @@ uniformly at all times, with its inverse, and on closed slab restrictions.
 A rank-zero product bundle over `PUnit × unitInterval` includes both endpoints.
 -/
 
--- All fixtures and their statements are named and private.
-set_option linter.privateModule false
+-- The real-line bundle and its slice range and closed-embedding theorems are public.
 
 open Bundle Set TopologicalSpace
 
 namespace VectorBundle.CylinderExamples
 
-private abbrev RealLine := Bundle.Trivial (ℝ × unitInterval) ℝ
+/-- The trivial real line bundle over the real cylinder `ℝ × unitInterval`. -/
+public abbrev RealLine := Bundle.Trivial (ℝ × unitInterval) ℝ
 
 private noncomputable def realLineChart (x : ℝ) : Trivialization ℝ (π ℝ RealLine) :=
   VectorBundle.cylinderTrivialization ℝ ℝ RealLine x
@@ -69,7 +69,8 @@ private theorem realLineClosedChart_linear (x : ℝ) (a b : unitInterval)
   exact (realLineChart x).linear ℝ
     (VectorBundle.mem_cylinderTrivialization_baseSet ℝ ℝ RealLine x q.property.1 q.val.2)
 
-private theorem realLine_slice_lift_range :
+/-- The lift from the time-zero slice has range equal to the preimage of that slice. -/
+public theorem realLine_slice_lift_range :
     Set.range (@Bundle.Pullback.lift (ℝ × unitInterval) ℝ RealLine
       {q : ℝ × unitInterval // q.2 = 0} Subtype.val) =
         (π ℝ RealLine) ⁻¹' {q : ℝ × unitInterval | q.2 = 0} := by
@@ -91,7 +92,8 @@ private theorem realLine_slice_lift_isEmbedding :
     (Subtype.val : {q : ℝ × unitInterval // q.2 = 0} → ℝ × unitInterval)
     Topology.IsEmbedding.subtypeVal (FiberBundle.continuous_proj ℝ RealLine)
 
-private theorem realLine_slice_lift_isClosedEmbedding :
+/-- The pullback lift from the time-zero slice is a closed embedding. -/
+public theorem realLine_slice_lift_isClosedEmbedding :
     Topology.IsClosedEmbedding (@Bundle.Pullback.lift (ℝ × unitInterval) ℝ RealLine
       {q : ℝ × unitInterval // q.2 = 0} Subtype.val) := by
   exact Bundle.Pullback.isClosedEmbedding_lift ℝ RealLine

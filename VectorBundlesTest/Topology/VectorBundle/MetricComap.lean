@@ -4,8 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import VectorBundles.Topology.VectorBundle.MetricComap
-import VectorBundlesTest.Topology.VectorBundle.OrthogonalComparison
+public import VectorBundles.Topology.VectorBundle.MetricComap
+public import VectorBundlesTest.Topology.VectorBundle.OrthogonalComparison
 
 /-!
 # Comapping the standard metric by the Euclidean shear
@@ -46,8 +46,9 @@ private theorem continuous_shear_section : Continuous
   simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates]
 
 /-- The general construction recovers the independently supplied shear metric. -/
-private theorem comap_standard_eq_shearMetric :
-    standardMetric.comap (G := Plane) shear shear_isEmbedding continuous_shear_section =
+public theorem comap_standard_eq_shearMetric :
+    standardMetric.comap (G := Plane) shear
+      (by exact shear_isEmbedding) (by exact continuous_shear_section) =
       shearMetric := by
   -- Use ContinuousHermitianMetric.ext and ContinuousHermitianMetric.comap_inner_apply,
   -- then ContinuousHermitianMetric.trivial_inner and shearForm_apply.

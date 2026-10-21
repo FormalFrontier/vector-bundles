@@ -21,8 +21,7 @@ The model's rank-zero formula, the trivial-bundle comparison for locally finite 
 and a scaled real positive form check the supporting constructions.
 -/
 
--- These bundle clients are intentionally private and export no declarations.
-set_option linter.privateModule false
+-- The scaled real sublevel theorem is public; bundle metric clients remain private.
 
 @[expose] public section
 
@@ -78,8 +77,9 @@ private theorem continuous_finsum_trivial_section (hs : ∀ i, Continuous (s i))
 
 end TrivialBundle
 
--- The ambient norm on `ℝ` is not the norm induced by this scaled form.
-private theorem isVonNBounded_scaled_real_unit_sublevel :
+/-- The open unit sublevel of the positive form `q v w = 2 * v * w` is von Neumann bounded
+for the ambient real norm, which differs from the norm induced by this form. -/
+public theorem isVonNBounded_scaled_real_unit_sublevel :
     IsVonNBounded ℝ {x : ℝ | 2 * x * x < 1} := by
   let q : ℝ →L[ℝ] ℝ →L[ℝ] ℝ :=
     2 • ContinuousLinearMap.toSpanSingleton ℝ (ContinuousLinearMap.id ℝ ℝ)

@@ -5,8 +5,9 @@ Authors: Formal Frontier Agents
 module
 
 import VectorBundles.Topology.Separable.Basic
-import VectorBundles.Topology.FiberBundle.Separable
-import Mathlib.Topology.FiberBundle.Constructions
+public import VectorBundles.Topology.FiberBundle.Separable
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import Mathlib.Topology.FiberBundle.Constructions
 import Mathlib.Topology.MetricSpace.ProperSpace
 
 /-!
@@ -69,7 +70,8 @@ example : TopologicalSpace.IsSeparable
   exact hs.preimage_of_isOpenMap_of_isSeparable_fibers isOpenMap_fst isSeparable_fst_fiber
 
 -- The original trivial real-line bundle over the real line.
-example : SeparableSpace (TotalSpace ℝ (Trivial ℝ ℝ)) := by
+/-- The total space of the standard trivial real-line bundle over `ℝ` is separable. -/
+theorem Bundle.Trivial.separableSpace_realLine : SeparableSpace (TotalSpace ℝ (Trivial ℝ ℝ)) := by
   exact FiberBundle.separableSpace_totalSpace ℝ (Trivial ℝ ℝ)
 
 -- The same nonempty base, with empty model and the original trivial-bundle topology.
@@ -90,7 +92,7 @@ universe uB uF uE
 -- A specified point suffices for model reflection in a generic product.
 example {B : Type uB} {F : Type uF} [TopologicalSpace B] [TopologicalSpace F]
     (b : B) [SeparableSpace (B × F)] : SeparableSpace F := by
-  letI : SeparableSpace (TotalSpace F (Trivial B F)) :=
+  let : SeparableSpace (TotalSpace F (Trivial B F)) :=
     (Trivial.homeomorphProd B F).symm.surjective.denseRange.separableSpace
       (Trivial.homeomorphProd B F).symm.continuous
   exact FiberBundle.separableSpace_model F (Trivial B F) b
@@ -126,13 +128,13 @@ example {B : Type uB} {F : Type uF} [TopologicalSpace B] [TopologicalSpace F]
   have h := FiberBundle.separableSpace_totalSpace_iff F (Trivial B F)
   constructor
   · intro hProd
-    letI : SeparableSpace (B × F) := hProd
-    letI : SeparableSpace (TotalSpace F (Trivial B F)) :=
+    let : SeparableSpace (B × F) := hProd
+    let : SeparableSpace (TotalSpace F (Trivial B F)) :=
       (Trivial.homeomorphProd B F).symm.surjective.denseRange.separableSpace
         (Trivial.homeomorphProd B F).symm.continuous
     exact h.mp inferInstance
   · rintro ⟨hB, hF⟩
-    letI : SeparableSpace (TotalSpace F (Trivial B F)) := h.mpr ⟨hB, hF⟩
+    let : SeparableSpace (TotalSpace F (Trivial B F)) := h.mpr ⟨hB, hF⟩
     exact (Trivial.homeomorphProd B F).surjective.denseRange.separableSpace
       (Trivial.homeomorphProd B F).continuous
 
@@ -154,7 +156,7 @@ example {B : Type uB} (F : Type uF) (E : B → Type uE)
     ⟨FiberBundle.surjective_proj F E, FiberBundle.continuous_proj F E,
       FiberBundle.isOpenMap_proj F E⟩
   refine hq.isSeparable_preimage_iff (fun b => ?_) s
-  letI : SeparableSpace (E b) :=
+  let : SeparableSpace (E b) :=
     (FiberBundle.homeomorphAt F E b).symm.surjective.denseRange.separableSpace
       (FiberBundle.homeomorphAt F E b).symm.continuous
   simpa only [TotalSpace.range_mk] using
@@ -162,8 +164,8 @@ example {B : Type uB} (F : Type uF) (E : B → Type uE)
 
 -- A base point does not require a nonempty model or a nonempty total space.
 example {B : Type uB} [TopologicalSpace B] (b : B) : SeparableSpace Empty := by
-  letI : IsEmpty (TotalSpace Empty (Trivial B Empty)) := ⟨fun x => Empty.elim x.snd⟩
-  letI : SeparableSpace (TotalSpace Empty (Trivial B Empty)) := inferInstance
+  let : IsEmpty (TotalSpace Empty (Trivial B Empty)) := ⟨fun x => Empty.elim x.snd⟩
+  let : SeparableSpace (TotalSpace Empty (Trivial B Empty)) := inferInstance
   exact FiberBundle.separableSpace_model Empty (Trivial B Empty) b
 
 -- An empty base gives separable total space for every model; no model conclusion
@@ -171,7 +173,7 @@ example {B : Type uB} [TopologicalSpace B] (b : B) : SeparableSpace Empty := by
 -- independently of base separability, explaining the nonempty-model hypothesis.
 example (F : Type uF) [TopologicalSpace F] :
     SeparableSpace (TotalSpace F (Trivial Empty F)) := by
-  letI : IsEmpty (TotalSpace F (Trivial Empty F)) := ⟨fun x => Empty.elim x.proj⟩
+  let : IsEmpty (TotalSpace F (Trivial Empty F)) := ⟨fun x => Empty.elim x.proj⟩
   infer_instance
 
 end
