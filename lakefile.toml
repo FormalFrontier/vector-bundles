@@ -93,6 +93,7 @@ name = "VectorBundlesTest"
 globs = [
   "VectorBundlesTest",
   "VectorBundlesTest.Topology.ContinuousMap.Algebra",
+  "VectorBundlesTest.Topology.ContinuousMap.PiBasis",
   "VectorBundlesTest.Topology.VectorBundle.HermitianMetric.Operations",
   "VectorBundlesTest.OpenMap",
   "VectorBundlesTest.Topology.Compactness.CountablyCompact",
