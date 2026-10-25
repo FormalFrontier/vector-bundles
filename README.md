@@ -18,6 +18,15 @@ topological fiber bundles.
   the empty base. Both directions preserve the base coordinate, using the original
   fiber topologies and the bundle topology of continuous linear maps.
 
+- **Surjectivity loci of pointwise-continuous linear families.**
+  Over a field with a T₁ topology making it a topological ring,
+  [`LinearMap.eventually_surjective_of_continuousAt`](VectorBundles/Topology/Algebra/Module/OpenMap.lean)
+  gives local persistence of surjectivity from continuity of each fixed-vector evaluation
+  at a base point.
+  [`LinearMap.isOpen_setOf_surjective`](VectorBundles/Topology/Algebra/Module/OpenMap.lean)
+  gives an open surjectivity locus for pointwise-continuous families. The source module
+  needs no topology; the finite-dimensional target retains its given `IsModuleTopology`.
+  No scalar norm, continuous inversion or completeness is assumed.
 - **Openness of surjective linear families and bundle maps.**
   Over a nontrivially normed field,
   [`LinearMap.isOpenMap_prodMap`](VectorBundles/Topology/Algebra/Module/OpenMap.lean)

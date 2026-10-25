@@ -6,17 +6,26 @@ module
 
 public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
 import VectorBundles.Topology.VectorBundle.KernelProjection
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Constructions
+import Mathlib.Topology.Instances.Matrix
 
 /-!
-# Open maps from surjective linear families
+# Surjectivity loci and open maps of linear families
+
+For a pointwise-continuous family of algebraic linear maps into a finite-dimensional target
+with its given module topology, the surjectivity locus is open. The source module needs no
+topology. Local persistence uses determinants in finite coordinates, continuous scalar ring
+operations, and the fact that zero is closed. Neither a norm nor continuous inversion is required
+for this persistence statement.
 
 A jointly continuous family of surjective algebraic linear maps is open as a map of total
 spaces when the target has finitely many continuous linear coordinates. The source needs only
 a topological vector space structure; no norm or finite-dimensionality is required on it.
 
-The proof chooses an algebraic section at a single parameter. On its finite-dimensional
+The total-space proof chooses an algebraic section at a single parameter. On its finite-dimensional
 coordinate domain, evaluation continuity implies operator continuity. The local inverse
 construction in `ContinuousLinearMap.exists_local_section_inverse` then supplies local right
 sections. Translating these sections through any prescribed preimage proves openness.
@@ -29,6 +38,87 @@ open Filter Topology
 universe uκ uX uF uG
 
 namespace LinearMap
+
+section SurjectivityLocus
+
+open scoped Topology
+
+/-- Surjectivity persists near a parameter where an algebraic linear family is surjective,
+provided evaluation at every fixed vector is continuous there. The source module needs no
+topology. The finite-dimensional target carries its given module topology. -/
+theorem eventually_surjective_of_continuousAt
+    {κ : Type uκ} [Field κ] [TopologicalSpace κ] [IsTopologicalRing κ] [T1Space κ]
+    {B : Type uX} [TopologicalSpace B]
+    {F : Type uF} [AddCommGroup F] [Module κ F]
+    {G : Type uG} [AddCommGroup G] [Module κ G] [TopologicalSpace G]
+    [FiniteDimensional κ G] [IsModuleTopology κ G]
+    (f : B → F →ₗ[κ] G) {b₀ : B}
+    (hf : ∀ v, ContinuousAt (fun b ↦ f b v) b₀)
+    (hsurj : Function.Surjective (f b₀)) :
+    ∀ᶠ b in 𝓝 b₀, Function.Surjective (f b) := by
+  classical
+  let n := Module.finrank κ G
+  let e : G ≃ₗ[κ] (Fin n → κ) := (Module.finBasis κ G).equivFun
+  let B₀ : F →ₗ[κ] (Fin n → κ) := e.toLinearMap.comp (f b₀)
+  have hB₀ : Function.Surjective B₀ := e.surjective.comp hsurj
+  obtain ⟨j, hj⟩ := B₀.exists_rightInverse_of_surjective
+    (LinearMap.range_eq_top.mpr hB₀)
+  let A : B → (Fin n → κ) →ₗ[κ] (Fin n → κ) := fun b ↦
+    e.toLinearMap.comp ((f b).comp j)
+  have hA₀ : A b₀ = LinearMap.id := by
+    apply LinearMap.ext
+    intro w
+    change (B₀.comp j) w = w
+    rw [hj, LinearMap.id_apply]
+  let M : B → Matrix (Fin n) (Fin n) κ := fun b ↦ LinearMap.toMatrix' (A b)
+  have he : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
+  have hM : ContinuousAt M b₀ := by
+    apply continuousAt_pi.mpr
+    intro i
+    apply continuousAt_pi.mpr
+    intro k
+    change ContinuousAt (fun b ↦ LinearMap.toMatrix' (A b) i k) b₀
+    simp only [LinearMap.toMatrix'_apply]
+    change ContinuousAt (fun b ↦ e (f b (j (Pi.single k 1))) i) b₀
+    exact ((continuous_apply i).comp he).continuousAt.comp (hf _)
+  have hM₀ : M b₀ = 1 := by
+    simp only [M, hA₀, LinearMap.toMatrix'_id]
+  have hdet : Continuous (fun N : Matrix (Fin n) (Fin n) κ ↦ N.det) :=
+    (continuous_id : Continuous (fun N : Matrix (Fin n) (Fin n) κ ↦ N)).matrix_det
+  have hdetAt : ContinuousAt (fun b ↦ (M b).det) b₀ :=
+    hdet.continuousAt.comp hM
+  have hdet₀ : (M b₀).det ≠ 0 := by
+    rw [hM₀, Matrix.det_one]
+    exact one_ne_zero
+  have hnz : ∀ᶠ b in 𝓝 b₀, (M b).det ≠ 0 :=
+    hdetAt.eventually (isClosed_singleton.isOpen_compl.mem_nhds hdet₀)
+  filter_upwards [hnz] with b hb
+  have hunit : IsUnit (M b) :=
+    (Matrix.isUnit_iff_isUnit_det (M b)).mpr (isUnit_iff_ne_zero.mpr hb)
+  intro y
+  obtain ⟨x, hx⟩ := (Matrix.mulVec_surjective_iff_isUnit (A := M b)).mpr hunit (e y)
+  have hcoord : Matrix.toLin' (M b) = A b := Matrix.toLin'_toMatrix' (A b)
+  have hx' : A b x = e y := by
+    rw [← hcoord, Matrix.toLin'_apply]
+    exact hx
+  exact ⟨j x, e.injective hx'⟩
+
+/-- The surjectivity locus of a pointwise-continuous algebraic linear family is open.
+The source module needs no topology. The given module topology on the finite-dimensional
+target is essential; an arbitrary normed-space topology need not suffice over incomplete fields. -/
+theorem isOpen_setOf_surjective
+    {κ : Type uκ} [Field κ] [TopologicalSpace κ] [IsTopologicalRing κ] [T1Space κ]
+    {B : Type uX} [TopologicalSpace B]
+    {F : Type uF} [AddCommGroup F] [Module κ F]
+    {G : Type uG} [AddCommGroup G] [Module κ G] [TopologicalSpace G]
+    [FiniteDimensional κ G] [IsModuleTopology κ G]
+    (f : B → F →ₗ[κ] G)
+    (hf : ∀ v, Continuous (fun b ↦ f b v)) :
+    IsOpen {b | Function.Surjective (f b)} := by
+  exact isOpen_iff_mem_nhds.mpr fun b hb ↦
+    eventually_surjective_of_continuousAt f (fun v ↦ (hf v).continuousAt) hb
+
+end SurjectivityLocus
 
 variable {𝕜 : Type uκ} [NontriviallyNormedField 𝕜]
   {X : Type uX} [TopologicalSpace X]

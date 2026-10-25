@@ -95,7 +95,7 @@ globs = [
   "VectorBundlesTest.Topology.ContinuousMap.Algebra",
   "VectorBundlesTest.Topology.ContinuousMap.PiBasis",
   "VectorBundlesTest.Topology.VectorBundle.HermitianMetric.Operations",
-  "VectorBundlesTest.OpenMap",
+  "VectorBundlesTest.OpenMap", "VectorBundlesTest.SurjectivityLocus",
   "VectorBundlesTest.Topology.Compactness.CountablyCompact",
   "VectorBundlesTest.Topology.Compactness.SigmaCompact",
   "VectorBundlesTest.Topology.LocallyFinite",

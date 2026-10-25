@@ -39,7 +39,7 @@ fibers or changing their topologies.
   `Topology.VectorBundle.Hom`.
 * ProjectiveModules, `Invertible.Topology`, for the module topology and continuous scalar
   endomorphism equivalence, and `Invertible.Endomorphism`, for the algebraic scalar
-  endomorphism equivalence contributed by Prism.
+  endomorphism equivalence.
 -/
 
 @[expose] public section
