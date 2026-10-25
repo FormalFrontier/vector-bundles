@@ -7,6 +7,7 @@ module
 public import VectorBundles.Analysis.InnerProductSpace.PositiveForm
 public import VectorBundles.Analysis.Normed.Ring.Units
 public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
+public import VectorBundles.Topology.Algebra.Module.OpenMap
 public import VectorBundles.Topology.ContinuousMap.Algebra
 public import VectorBundles.Topology.Compactness.CountablyCompact
 public import VectorBundles.Topology.Compactness.Lindelof
@@ -47,6 +48,7 @@ public import VectorBundles.Topology.VectorBundle.Metric
 public import VectorBundles.Topology.VectorBundle.MetricPullback
 public import VectorBundles.Topology.VectorBundle.MetricExistence
 public import VectorBundles.Topology.VectorBundle.MetricModel
+public import VectorBundles.Topology.VectorBundle.OpenMap
 public import VectorBundles.Topology.VectorBundle.OrthogonalAddition
 public import VectorBundles.Topology.VectorBundle.OrthogonalComplement
 public import VectorBundles.Topology.VectorBundle.OrthogonalComparison

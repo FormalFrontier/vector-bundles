@@ -11,6 +11,16 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Openness of surjective linear families and bundle maps.**
+  Over a nontrivially normed field,
+  [`LinearMap.isOpenMap_prodMap`](VectorBundles/Topology/Algebra/Module/OpenMap.lean)
+  makes a jointly continuous family of algebraic linear surjections between topological
+  vector spaces open on products when the finite-dimensional target carries its given
+  `IsModuleTopology`.
+  [`Bundle.isOpenMap_totalSpaceMap`](VectorBundles/Topology/VectorBundle/OpenMap.lean)
+  transfers this to bundles over their common base with given linear trivializations,
+  retaining the original fibre and total-space topologies. Neither model requires a
+  norm; the source need not be finite-dimensional, and no completeness is assumed.
 - **Compact inverse images and ranges of proper maps.**
   [`IsProperMap.isCompact_preimage_iff`](VectorBundles/Topology/Maps/Proper.lean)
   characterizes compactness of `f ⁻¹' s` by compactness of `s ∩ Set.range f` for a
