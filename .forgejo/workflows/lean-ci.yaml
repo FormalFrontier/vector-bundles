@@ -45,6 +45,9 @@ jobs:
       - name: Build and run the configured audit
         if: steps.reuse.outputs.reused != 'true'
         run: ff-lean-ci run
+      - name: Record the lint tool digest
+        if: steps.reuse.outputs.reused != 'true'
+        run: ff-lean-lint tools-sha
       - name: Lint the configured libraries
         if: steps.reuse.outputs.reused != 'true'
         run: ff-lean-lint run

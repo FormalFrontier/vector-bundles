@@ -13,6 +13,7 @@ weak.linter.style.header = false
 name = "VectorBundles"
 globs = [
   "VectorBundles",
+  "VectorBundles.Topology.ContinuousMap.Algebra",
   "VectorBundles.Topology.Bornology.Bounded",
   "VectorBundles.Topology.VectorBundle.Section",
   "VectorBundles.Topology.VectorBundle.HermitianMetric.Operations",
@@ -88,6 +89,7 @@ globs = [
 name = "VectorBundlesTest"
 globs = [
   "VectorBundlesTest",
+  "VectorBundlesTest.Topology.ContinuousMap.Algebra",
   "VectorBundlesTest.Topology.VectorBundle.HermitianMetric.Operations",
   "VectorBundlesTest.Topology.Compactness.CountablyCompact",
   "VectorBundlesTest.Topology.Compactness.SigmaCompact",

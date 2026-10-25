@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import VectorBundlesTest.Topology.ContinuousMap.Algebra
 public import VectorBundlesTest.Topology.Compactness.CountablyCompact
 public import VectorBundlesTest.Topology.Compactness.SigmaCompact
 public import VectorBundlesTest.Topology.LocallyFinite
