@@ -54,6 +54,7 @@ public import VectorBundles.Topology.VectorBundle.OrthogonalComplement
 public import VectorBundles.Topology.VectorBundle.OrthogonalComparison
 public import VectorBundles.Topology.VectorBundle.OrthogonalProjection
 public import VectorBundles.Topology.VectorBundle.OrthonormalTrivialization
+public import VectorBundles.Topology.VectorBundle.ScalarEnd
 public import VectorBundles.Topology.VectorBundle.SemilinearEvaluation
 public import VectorBundles.Topology.VectorBundle.WeightedForm
 

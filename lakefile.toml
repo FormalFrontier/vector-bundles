@@ -84,6 +84,7 @@ globs = [
   "VectorBundles.Topology.VectorBundle.Frame",
   "VectorBundles.Topology.VectorBundle.KernelProjection",
   "VectorBundles.Topology.VectorBundle.Range",
+  "VectorBundles.Topology.VectorBundle.ScalarEnd",
   "VectorBundles.Topology.VectorBundle.TrivialMetric",
 ]
 
@@ -138,6 +139,7 @@ globs = [
   "VectorBundlesTest.Topology.VectorBundle.FiniteEmbedding",
   "VectorBundlesTest.Topology.VectorBundle.Frame",
   "VectorBundlesTest.Topology.VectorBundle.Range",
+  "VectorBundlesTest.Topology.VectorBundle.ScalarEnd",
   "VectorBundlesTest.Topology.VectorBundle.TrivialMetric",
 ]
 
@@ -150,3 +152,8 @@ rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
 name = "metrization"
 git = "https://github.com/FormalFrontier/metrization.git"
 rev = "4dcc0f6f903ba4d0c66f230d21f7ac4c31d4ea57"
+
+[[require]]
+name = "projective-modules"
+git = "https://github.com/FormalFrontier/projective-modules.git"
+rev = "8e4495425bb19187fbeb7271d40a111b8ddf36de"

@@ -11,6 +11,13 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Scalar endomorphisms of a line bundle.**
+  [`VectorBundle.scalarEndHomeomorph`](VectorBundles/Topology/VectorBundle/ScalarEnd.lean)
+  identifies `B × κ` with the endomorphism bundle of a line bundle modeled on a
+  nontrivially normed field `κ`, over an arbitrary topological base `B`, including
+  the empty base. Both directions preserve the base coordinate, using the original
+  fiber topologies and the bundle topology of continuous linear maps.
+
 - **Openness of surjective linear families and bundle maps.**
   Over a nontrivially normed field,
   [`LinearMap.isOpenMap_prodMap`](VectorBundles/Topology/Algebra/Module/OpenMap.lean)
@@ -447,10 +454,13 @@ The raw product model has its sup norm, which is not an inner-product norm.
 
 Lean is pinned to `leanprover/lean4:v4.34.0-rc2`. The direct dependencies are
 [Mathlib](https://github.com/leanprover-community/mathlib4) at
-`83abb3e776bdefcbc447a1e44d0debe4010039e5` and
+`83abb3e776bdefcbc447a1e44d0debe4010039e5`,
 [Metrization](https://github.com/FormalFrontier/metrization) at
-`4dcc0f6f903ba4d0c66f230d21f7ac4c31d4ea57`, with the same Mathlib revision.
-Their upstream dependencies are pinned in `lake-manifest.json`.
+`4dcc0f6f903ba4d0c66f230d21f7ac4c31d4ea57`, and
+[ProjectiveModules](https://github.com/FormalFrontier/projective-modules) at
+`8e4495425bb19187fbeb7271d40a111b8ddf36de`.
+Both deliverables use the Mathlib revision listed above. Their transitive
+dependencies are pinned in `lake-manifest.json`.
 
 ```sh
 lake exe cache get
@@ -497,6 +507,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.VectorBundle.CoordinateMap`](VectorBundles/Topology/VectorBundle/CoordinateMap.lean) | Linear-chart evaluations, operators and linear-atlas criterion |
 | [`Topology.VectorBundle.FiniteSum`](VectorBundles/Topology/VectorBundle/FiniteSum.lean) | Locally finite sums of continuous sections |
 | [`Topology.VectorBundle.Hom`](VectorBundles/Topology/VectorBundle/Hom.lean) | Identity and composition of continuous native Hom sections, with the model operator-norm topology |
+| [`Topology.VectorBundle.ScalarEnd`](VectorBundles/Topology/VectorBundle/ScalarEnd.lean) | Base-preserving product homeomorphism for the endomorphism bundle of a line, with the original fiber topologies |
 | [`Topology.VectorBundle.SemilinearEvaluation`](VectorBundles/Topology/VectorBundle/SemilinearEvaluation.lean) | One- and two-argument evaluation on Mathlib's Hom topology |
 | [`Topology.VectorBundle.WeightedForm`](VectorBundles/Topology/VectorBundle/WeightedForm.lean) | Supported weighted forms in linear charts |
 | [`Topology.VectorBundle.HermitianMetric`](VectorBundles/Topology/VectorBundle/HermitianMetric.lean) | Hermitian metric data, continuity, Core conversion and real bridges |
@@ -583,4 +594,7 @@ and uses Metrization's locally finite closed-neighbourhood-cover criterion.
 The locally finite and paracompactness statements use Yury Kudryashov's locally
 finite-family API, Reid Barton and Yury Kudryashov's paracompactness formalization,
 and Anatole Dedecker and Etienne Marion's proper-map API in Mathlib.
+The scalar-endomorphism construction uses ProjectiveModules' invertible-module
+topology and continuous scalar-endomorphism equivalence, and Prism's formalization
+of the algebraic scalar-endomorphism equivalence.
 Licensed under Apache-2.0; see [LICENSE](LICENSE).

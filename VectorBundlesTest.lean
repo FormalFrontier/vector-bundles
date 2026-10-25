@@ -38,6 +38,7 @@ public import VectorBundlesTest.Topology.VectorBundle.OrthogonalComplement
 public import VectorBundlesTest.Topology.VectorBundle.OrthogonalComparison
 public import VectorBundlesTest.Topology.VectorBundle.OrthogonalProjection
 public import VectorBundlesTest.Topology.VectorBundle.OrthonormalTrivialization
+public import VectorBundlesTest.Topology.VectorBundle.ScalarEnd
 public import VectorBundlesTest.Topology.VectorBundle.SemilinearEvaluation
 
 public import VectorBundlesTest.Topology.FiberBundle.ClosedCylinder
