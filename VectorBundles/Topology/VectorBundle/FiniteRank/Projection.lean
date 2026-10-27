@@ -193,6 +193,40 @@ theorem t2Space_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
       hu.preimage A.continuous_proj, hv.preimage A.continuous_proj, hpu, hqv, ?_⟩
     exact Set.disjoint_left.mpr (fun z hz hz' => Set.disjoint_left.mp huv hz hz')
 
+/-- The total space of a finite-rank atlas is locally compact if the base and every
+chart-coordinate space are locally compact, for their given topologies. Chart ranks
+may vary and may be zero; neither local compactness of the scalar field nor
+Hausdorffness is assumed. -/
+theorem locallyCompactSpace_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    [LocallyCompactSpace B] [∀ i : A.Index, LocallyCompactSpace (Fin (A.rank i) → K)] :
+    LocallyCompactSpace (TotalSpace P E) := by
+  constructor
+  intro p s hs
+  obtain ⟨i, hi⟩ := A.exists_mem_baseSet p.proj
+  have : LocallyCompactSpace (A.chart i).baseSet :=
+    (A.chart i).open_baseSet.isOpenEmbedding_subtypeVal.locallyCompactSpace
+  have : LocallyCompactSpace (A.chart i).source :=
+    (A.sourceHomeomorph i).isOpenEmbedding.locallyCompactSpace
+  let p' : (A.chart i).source := ⟨p, (A.mem_source_iff i p).mpr hi⟩
+  have hpre : (Subtype.val : (A.chart i).source → TotalSpace P E) ⁻¹' s ∈ 𝓝 p' := by
+    obtain ⟨u, hus, hu, hpu⟩ := mem_nhds_iff.mp hs
+    exact mem_nhds_iff.mpr ⟨Subtype.val ⁻¹' u, Set.preimage_mono hus,
+      hu.preimage continuous_subtype_val, hpu⟩
+  obtain ⟨v, hvs, hv, hpv⟩ := mem_nhds_iff.mp hpre
+  obtain ⟨c, hcompact, hpc, hcv⟩ := exists_compact_subset hv hpv
+  have hc : c ∈ 𝓝 p' :=
+    mem_nhds_iff.mpr ⟨interior c, interior_subset, isOpen_interior, hpc⟩
+  have hcs : c ⊆ (Subtype.val : (A.chart i).source → TotalSpace P E) ⁻¹' s :=
+    hcv.trans hvs
+  refine ⟨Subtype.val '' c, ?_, ?_, hcompact.image continuous_subtype_val⟩
+  · -- Openness of the original source makes its neighbourhoods ambient neighbourhoods.
+    obtain ⟨v, hvc, hv, hpv⟩ := mem_nhds_iff.mp hc
+    refine mem_nhds_iff.mpr ⟨Subtype.val '' v, Set.image_mono hvc, ?_, ?_⟩
+    · exact (A.chart i).open_source.isOpenEmbedding_subtypeVal.isOpenMap v hv
+    · exact ⟨p', hpv, rfl⟩
+  · rintro q ⟨q', hq', rfl⟩
+    exact hcs hq'
+
 universe uY
 
 /-- A map from the base to any topological space is continuous exactly when its
