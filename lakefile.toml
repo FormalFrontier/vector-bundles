@@ -12,6 +12,7 @@ weak.linter.style.header = false
 [[lean_lib]]
 name = "VectorBundles"
 globs = [
+  "VectorBundles.Analysis.Normed.Operator.Composition",
   "VectorBundles",
   "VectorBundles.Topology.ContinuousMap.Algebra",
   "VectorBundles.Topology.Bornology.Bounded",
@@ -86,12 +87,21 @@ globs = [
   "VectorBundles.Topology.VectorBundle.Range",
   "VectorBundles.Topology.VectorBundle.ScalarEnd",
   "VectorBundles.Topology.VectorBundle.TrivialMetric",
+  "VectorBundles.Topology.VectorBundle.EqualBase",
+  "VectorBundles.Topology.VectorBundle.FiniteRank",
+  "VectorBundles.Topology.VectorBundle.FiniteRank.Discrete",
+  "VectorBundles.Topology.VectorBundle.FiniteRank.LinearEquiv",
+  "VectorBundles.Topology.VectorBundle.FiniteRank.Patch",
+  "VectorBundles.Topology.VectorBundle.FiniteRank.Projection",
+  "VectorBundles.Topology.VectorBundle.FiniteRank.Trivial",
 ]
 
 [[lean_lib]]
 name = "VectorBundlesTest"
 globs = [
+  "VectorBundlesTest.AntiDualPrecomposition",
   "VectorBundlesTest",
+  "VectorBundlesTest.Topology.VectorBundle.EqualBase",
   "VectorBundlesTest.Topology.ContinuousMap.Algebra",
   "VectorBundlesTest.Topology.ContinuousMap.PiBasis",
   "VectorBundlesTest.Topology.VectorBundle.HermitianMetric.Operations",
