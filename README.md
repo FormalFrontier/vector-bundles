@@ -37,6 +37,13 @@ topological fiber bundles.
   These results hold for any supplied finite-rank atlas. Chart ranks may vary and may
   be zero, with no common model, scalar-operation continuity or base separation hypothesis.
 
+- **Hausdorff total spaces for finite-rank atlases:**
+  [`Bundle.FiniteRankAtlas.t2Space_totalSpace`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
+  proves that the original total space is Hausdorff when the given base and every
+  chart-coordinate space `Fin (A.rank i) → K` are Hausdorff. These coordinate spaces
+  use the Pi topology from the given scalar topology. Ranks may vary and may be zero;
+  no Hausdorff scalar-field hypothesis is required.
+
 The [detailed results guide](docs/Results.md) groups statements and examples by
 topic, with their individual hypotheses and distinctions from existing Mathlib
 constructions. Selected results include:

@@ -148,6 +148,51 @@ theorem isClosed_iff_preimage_proj (A : FiniteRankAtlas.{_, _, _, _, uI} K P E) 
     IsClosed s ↔ IsClosed ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' s) :=
   A.isQuotientMap_proj.isClosed_preimage.symm
 
+/-- The total space of a finite-rank atlas is Hausdorff if the base and every
+chart-coordinate space are Hausdorff, for their given topologies. The chart ranks may
+vary and may be zero; Hausdorffness of the scalar field is not required. -/
+theorem t2Space_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    [T2Space B] [∀ i : A.Index, T2Space (Fin (A.rank i) → K)] :
+    T2Space (TotalSpace P E) := by
+  classical
+  constructor
+  intro p q hpq
+  by_cases hbase : p.proj = q.proj
+  · obtain ⟨i, hi⟩ := A.exists_mem_baseSet p.proj
+    -- The full-fibre source of this one chart contains both points.
+    have hp : p ∈ (A.chart i).source := (A.mem_source_iff i p).mpr hi
+    have hq : q ∈ (A.chart i).source := by
+      apply (A.mem_source_iff i q).mpr
+      rw [← hbase]
+      exact hi
+    let p' : (A.chart i).source := ⟨p, hp⟩
+    let q' : (A.chart i).source := ⟨q, hq⟩
+    have hne : A.sourceHomeomorph i p' ≠ A.sourceHomeomorph i q' := by
+      intro h
+      exact hpq (congrArg Subtype.val ((A.sourceHomeomorph i).injective h))
+    obtain ⟨u, v, hu, hv, hpu, hqv, huv⟩ := t2_separation hne
+    let f : (A.chart i).baseSet × (Fin (A.rank i) → K) → TotalSpace P E :=
+      (Subtype.val : (A.chart i).source → TotalSpace P E) ∘
+        (A.sourceHomeomorph i).symm
+    have hf : IsOpenMap f :=
+      (A.chart i).open_source.isOpenEmbedding_subtypeVal.isOpenMap.comp
+        (A.sourceHomeomorph i).symm.isOpenMap
+    refine ⟨f '' u, f '' v, hf u hu, hf v hv, ?_, ?_, ?_⟩
+    · exact ⟨A.sourceHomeomorph i p', hpu,
+        congrArg Subtype.val ((A.sourceHomeomorph i).symm_apply_apply p')⟩
+    · exact ⟨A.sourceHomeomorph i q', hqv,
+        congrArg Subtype.val ((A.sourceHomeomorph i).symm_apply_apply q')⟩
+    · apply Set.disjoint_left.mpr
+      rintro z ⟨x, hxu, hxz⟩ ⟨y, hyv, hyz⟩
+      have hxy : x = y := (A.sourceHomeomorph i).symm.injective
+        (Subtype.ext (hxz.trans hyz.symm))
+      subst y
+      exact Set.disjoint_left.mp huv hxu hyv
+  · obtain ⟨u, v, hu, hv, hpu, hqv, huv⟩ := t2_separation hbase
+    refine ⟨TotalSpace.proj ⁻¹' u, TotalSpace.proj ⁻¹' v,
+      hu.preimage A.continuous_proj, hv.preimage A.continuous_proj, hpu, hqv, ?_⟩
+    exact Set.disjoint_left.mpr (fun z hz hz' => Set.disjoint_left.mp huv hz hz')
+
 universe uY
 
 /-- A map from the base to any topological space is continuous exactly when its
