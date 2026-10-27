@@ -227,6 +227,46 @@ theorem locallyCompactSpace_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P
   · rintro q ⟨q', hq', rfl⟩
     exact hcs hq'
 
+/-- The total space of a finite-rank atlas is first countable if the base and every
+chart-coordinate space are first countable, for their given topologies. Chart ranks
+may vary and may be zero; first countability of the scalar field is not required. -/
+theorem firstCountableTopology_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    [FirstCountableTopology B]
+    [∀ i : A.Index, FirstCountableTopology (Fin (A.rank i) → K)] :
+    FirstCountableTopology (TotalSpace P E) := by
+  constructor
+  intro p
+  obtain ⟨i, hi⟩ := A.exists_mem_baseSet p.proj
+  have hp : p ∈ (A.chart i).source := (A.mem_source_iff i p).mpr hi
+  let p' : (A.chart i).source := ⟨p, hp⟩
+  let H := A.sourceHomeomorph i
+  let q := H p'
+  let j : (A.chart i).baseSet × (Fin (A.rank i) → K) → TotalSpace P E :=
+    (Subtype.val : (A.chart i).source → TotalSpace P E) ∘ H.symm
+  have hj : IsOpenMap j :=
+    (A.chart i).open_source.isOpenEmbedding_subtypeVal.isOpenMap.comp H.symm.isOpenMap
+  have hjcont : Continuous j := continuous_subtype_val.comp H.symm.continuous
+  have hjq : j q = p := congrArg Subtype.val (H.symm_apply_apply p')
+  -- The original open source upgrades chart neighbourhoods to ambient neighbourhoods.
+  have hmap : Filter.map j (𝓝 q) = 𝓝 p := by
+    ext s
+    change j ⁻¹' s ∈ 𝓝 q ↔ s ∈ 𝓝 p
+    constructor
+    · intro hs
+      obtain ⟨v, hvs, hv, hqv⟩ := mem_nhds_iff.mp hs
+      refine mem_nhds_iff.mpr ⟨j '' v, ?_, hj v hv, ⟨q, hqv, hjq⟩⟩
+      rintro _ ⟨x, hx, rfl⟩
+      exact hvs hx
+    · intro hs
+      obtain ⟨u, hus, hu, hpu⟩ := mem_nhds_iff.mp hs
+      refine mem_nhds_iff.mpr ⟨j ⁻¹' u, Set.preimage_mono hus,
+        hu.preimage hjcont, ?_⟩
+      change j q ∈ u
+      rw [hjq]
+      exact hpu
+  rw [← hmap]
+  infer_instance
+
 universe uY
 
 /-- A map from the base to any topological space is continuous exactly when its

@@ -51,6 +51,14 @@ topological fiber bundles.
   spaces use the Pi topology from the given scalar topology. Ranks may vary and may
   be zero; neither local compactness of the scalar field nor Hausdorffness is required.
 
+- **First-countable total spaces for finite-rank atlases:**
+  [`Bundle.FiniteRankAtlas.firstCountableTopology_totalSpace`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
+  proves first countability of the original total space when the given base and every
+  exact chart-coordinate space `Fin (A.rank i) → K` are first countable. These coordinate
+  spaces carry the Pi topology from the given scalar topology. Ranks may vary without
+  a global bound, including zero with its singleton zero fibre. No scalar-field
+  first-countability, second-countability or countable-atlas hypothesis is required.
+
 The [detailed results guide](docs/Results.md) groups statements and examples by
 topic, with their individual hypotheses and distinctions from existing Mathlib
 constructions. Selected results include:
