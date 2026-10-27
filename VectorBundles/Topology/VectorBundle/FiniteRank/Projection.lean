@@ -10,9 +10,10 @@ public import VectorBundles.Topology.VectorBundle.FiniteRank
 # Projections, zero sections and descent for finite-rank atlases
 
 The projection of a finite-rank atlas is continuous, open and a quotient map for the
-given total-space and base topologies. A map from the base to any topological space
-is continuous exactly when its composition with the projection is continuous. The
-canonical zero section is also continuous.
+given total-space and base topologies. A subset of the base is open or closed exactly
+when its preimage under the projection has the same property. A map from the base to
+any topological space is continuous exactly when its composition with the projection
+is continuous. The canonical zero section is also continuous.
 
 On each open chart source the projection is the first chart coordinate, followed by
 the inclusion of the open chart base set. Over its open base set, inverse zero
@@ -134,6 +135,18 @@ theorem isQuotientMap_proj (A : FiniteRankAtlas.{_, _, _, _, uI} K P E) :
     Topology.IsQuotientMap (TotalSpace.proj : TotalSpace P E → B) := by
   exact A.isOpenMap_proj.isQuotientMap A.continuous_proj
     (fun b => ⟨(TotalSpace.mk b (0 : E b) : TotalSpace P E), rfl⟩)
+
+/-- A subset of the base is open exactly when its preimage under the original
+total-space projection is open. -/
+theorem isOpen_iff_preimage_proj (A : FiniteRankAtlas.{_, _, _, _, uI} K P E) (s : Set B) :
+    IsOpen s ↔ IsOpen ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' s) :=
+  A.isQuotientMap_proj.isOpen_preimage.symm
+
+/-- A subset of the base is closed exactly when its preimage under the original
+total-space projection is closed. -/
+theorem isClosed_iff_preimage_proj (A : FiniteRankAtlas.{_, _, _, _, uI} K P E) (s : Set B) :
+    IsClosed s ↔ IsClosed ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' s) :=
+  A.isQuotientMap_proj.isClosed_preimage.symm
 
 universe uY
 

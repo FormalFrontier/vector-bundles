@@ -26,7 +26,10 @@ topological fiber bundles.
   and [`Bundle.FiniteRankAtlas.isOpenMap_proj`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
   prove that the original projection is continuous and open.
   [`Bundle.FiniteRankAtlas.isQuotientMap_proj`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  makes it a quotient map, and
+  makes it a quotient map.
+  [`Bundle.FiniteRankAtlas.isOpen_iff_preimage_proj`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
+  and [`Bundle.FiniteRankAtlas.isClosed_iff_preimage_proj`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
+  characterize open and closed base subsets by their projection preimages.
   [`Bundle.FiniteRankAtlas.continuous_iff_comp_proj`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
   characterizes continuity of maps from the base to any topological space by continuity
   after composition with this projection. The canonical zero section is continuous by
