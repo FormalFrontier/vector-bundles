@@ -5,7 +5,10 @@ module
 
 public import VectorBundles.Topology.VectorBundle.EqualBase
 public import VectorBundles.Topology.VectorBundle.FiniteRank.Discrete
+public import VectorBundles.Topology.Algebra.GroupWithZero
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Algebra.GroupWithZero
 
 /-!
 # Equal-base sum interface tests
@@ -20,13 +23,18 @@ topologies of two discrete families with opposite ranks.
 
 open Bundle
 
-universe uK uX uP uE uEta uInputIndex uEtaIndex
+universe uK uX uP uE uEta uInputIndex uEtaIndex uI
 
 namespace Bundle
 
 namespace FiniteRankAtlas
 
-/-- Records the intended theorem type, not an additional public predicate. -/
+/-- Records the intended theorem type, not an additional public predicate.
+
+The compact Hausdorff hypotheses specify the class of bases in this statement,
+even though forming the proposition does not depend on their property instances.
+-/
+@[nolint unusedArguments]
 private def compactFiniteRankComplementType
     (K : Type uK) [RCLike K]
     (X : Type uX) [TopologicalSpace X] [CompactSpace X] [T2Space X]
@@ -67,7 +75,12 @@ def reverseTwoPointRank : TwoPoint → ℕ
   | .right => 0
 
 /-- Pairing vectors in opposite-rank discrete fibres is continuous for the given
-final total-space topologies. -/
+final total-space topologies.
+
+The field assumption retains the uniform field/vector-space model scope of this
+example; the pairing-continuity argument itself uses only the given topologies.
+-/
+@[nolint unusedArguments]
 theorem continuous_oppositeRank_mk (K : Type uK) [Field K] [TopologicalSpace K]
     (x : TwoPoint) :
     Continuous (fun p : Fiber K twoPointRank x × Fiber K reverseTwoPointRank x =>
@@ -78,3 +91,56 @@ theorem continuous_oppositeRank_mk (K : Type uK) [Field K] [TopologicalSpace K]
     (continuous_mk K reverseTwoPointRank x).comp continuous_snd⟩
 
 end Bundle.DiscreteFiniteRank
+
+/-!
+## Scalar normalization for finite-weight gluing
+
+The propositions below describe reciprocals of finite sums of real squares, with
+bundled weights or continuity hypotheses on a specified finite set of indices.
+The original finite-type statement is a specialization of
+`continuous_inv_finset_sum_sq`.
+-/
+
+section ScalarNormalization
+
+open scoped BigOperators
+
+/-- Reciprocal squared-weight continuity under pointwise nonvanishing. -/
+private def continuousInvSumSquares : Prop :=
+  ∀ (X : Type uX) [TopologicalSpace X] (I : Type uI) [Fintype I]
+    (w : I → C(X, ℝ)),
+    (∀ x : X, ∃ i : I, w i x ≠ 0) →
+      Continuous (fun x : X => (∑ i : I, (w i x) ^ 2)⁻¹)
+
+set_option pp.universes true in
+#print continuousInvSumSquares
+
+private theorem continuousInvSumSquares_holds : continuousInvSumSquares.{uX, uI} := by
+  intro X _ I _ w h
+  refine continuous_inv_finset_sum_sq Finset.univ (fun i x => w i x)
+    (fun i _hi => (w i).continuous) ?_
+  intro x
+  obtain ⟨i, hi⟩ := h x
+  exact ⟨i, Finset.mem_univ i, hi⟩
+
+/-- Reciprocal squared-weight continuity for a specified finite set of indices. -/
+private def continuousInvFinsetSumSquares : Prop :=
+  ∀ (X : Type uX) [TopologicalSpace X] (I : Type uI) (s : Finset I)
+    (w : I → C(X, ℝ)),
+    (∀ x : X, ∃ i ∈ s, w i x ≠ 0) →
+      Continuous (fun x : X => (s.sum (fun i => (w i x) ^ 2))⁻¹)
+
+set_option pp.universes true in
+#print continuousInvFinsetSumSquares
+
+end ScalarNormalization
+
+private def continuousInvFinsetSumSquaresOfContinuous : Prop :=
+  ∀ (X : Type uX) [TopologicalSpace X] (I : Type uI)
+    (s : Finset I) (w : I → X → ℝ),
+    (∀ i ∈ s, Continuous (w i)) →
+    (∀ x, ∃ i ∈ s, w i x ≠ 0) →
+    Continuous (fun x => (Finset.sum s (fun i => (w i x) ^ 2))⁻¹)
+
+set_option pp.universes true in
+#print continuousInvFinsetSumSquaresOfContinuous

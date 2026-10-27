@@ -13,7 +13,9 @@ The projection of a finite-rank atlas is continuous, open and a quotient map for
 given total-space and base topologies. A subset of the base is open or closed exactly
 when its preimage under the projection has the same property. A map from the base to
 any topological space is continuous exactly when its composition with the projection
-is continuous. The canonical zero section is also continuous.
+is continuous. The canonical zero section is continuous and detects continuity of
+maps from any topological domain into the base: composing with the continuous
+projection recovers the original map. The zero section is a topological embedding.
 
 On each open chart source the projection is the first chart coordinate, followed by
 the inclusion of the open chart base set. Over its open base set, inverse zero
@@ -267,7 +269,99 @@ theorem firstCountableTopology_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} 
   rw [← hmap]
   infer_instance
 
+/-- The total space of a finite-rank atlas is T1 if the base and every exact
+chart-coordinate space are T1, for their given topologies. Chart ranks may vary
+without a global bound and may be zero; the scalar field need not be T1. -/
+theorem t1Space_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    [T1Space B] [∀ i : A.Index, T1Space (Fin (A.rank i) → K)] :
+    T1Space (TotalSpace P E) := by
+  classical
+  constructor
+  intro p
+  let j (i : A.Index) : (A.chart i).baseSet × (Fin (A.rank i) → K) → TotalSpace P E :=
+    (Subtype.val : (A.chart i).source → TotalSpace P E) ∘ (A.sourceHomeomorph i).symm
+  have hj (i : A.Index) : IsOpenMap (j i) :=
+    (A.chart i).open_source.isOpenEmbedding_subtypeVal.isOpenMap.comp
+      (A.sourceHomeomorph i).symm.isOpenMap
+  have hinj (i : A.Index) : Function.Injective (j i) := by
+    intro x y h
+    exact (A.sourceHomeomorph i).symm.injective (Subtype.ext h)
+  let v (i : A.Index) : Set ((A.chart i).baseSet × (Fin (A.rank i) → K)) :=
+    {x | j i x ≠ p}
+  have hv (i : A.Index) : IsOpen (v i) := by
+    have : T1Space ((A.chart i).baseSet × (Fin (A.rank i) → K)) := by infer_instance
+    -- Remove the unique representative of `p` when it lies in this original source.
+    by_cases hp : p ∈ (A.chart i).source
+    · let p' : (A.chart i).source := ⟨p, hp⟩
+      have hrep : j i (A.sourceHomeomorph i p') = p :=
+        congrArg Subtype.val ((A.sourceHomeomorph i).symm_apply_apply p')
+      have heq : v i = {A.sourceHomeomorph i p'}ᶜ := by
+        ext x
+        change j i x ≠ p ↔ x ≠ A.sourceHomeomorph i p'
+        constructor
+        · intro hx h
+          exact hx ((congrArg (j i) h).trans hrep)
+        · intro hx h
+          exact hx (hinj i (h.trans hrep.symm))
+      rw [heq]
+      exact isClosed_singleton.isOpen_compl
+    · have heq : v i = Set.univ := by
+        ext x
+        constructor
+        · intro _
+          exact Set.mem_univ x
+        · intro _
+          change j i x ≠ p
+          intro h
+          have hx : j i x ∈ (A.chart i).source := ((A.sourceHomeomorph i).symm x).2
+          exact hp (h ▸ hx)
+      rw [heq]
+      exact isOpen_univ
+  -- The original open chart cover supplies every point other than `p`.
+  have heq : ({p} : Set (TotalSpace P E))ᶜ = ⋃ i : A.Index, j i '' v i := by
+    ext q
+    constructor
+    · intro hq
+      change q ≠ p at hq
+      obtain ⟨i, hi⟩ := A.exists_mem_baseSet q.proj
+      let q' : (A.chart i).source := ⟨q, (A.mem_source_iff i q).mpr hi⟩
+      have hjq : j i (A.sourceHomeomorph i q') = q :=
+        congrArg Subtype.val ((A.sourceHomeomorph i).symm_apply_apply q')
+      refine Set.mem_iUnion.mpr ⟨i, ⟨A.sourceHomeomorph i q', ?_, hjq⟩⟩
+      change j i (A.sourceHomeomorph i q') ≠ p
+      rwa [hjq]
+    · intro hq
+      rcases Set.mem_iUnion.mp hq with ⟨i, x, hx, rfl⟩
+      change j i x ≠ p
+      exact hx
+  apply isOpen_compl_iff.mp
+  rw [heq]
+  exact isOpen_iUnion (fun i => hj i _ (hv i))
+
+/-- The canonical zero section of a finite-rank atlas is a topological embedding
+for the given original total-space and base topologies. -/
+theorem isEmbedding_zeroSection (A : FiniteRankAtlas.{_, _, _, _, uI} K P E) :
+    Topology.IsEmbedding
+      (fun b : B => (TotalSpace.mk b (0 : E b) : TotalSpace P E)) := by
+  have hz := A.continuous_zeroSection
+  have hp := A.continuous_proj
+  have hret : ∀ b : B,
+      (TotalSpace.mk b (0 : E b) : TotalSpace P E).proj = b := fun _ => rfl
+  exact IsEmbedding.of_leftInverse hret hp hz
+
 universe uY
+
+/-- A map from any topological space into the base is continuous exactly when its
+composition with the canonical zero section is continuous, for the given topologies. -/
+theorem continuous_iff_zeroSection_comp (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    {Y : Type uY} [TopologicalSpace Y] (h : Y → B) :
+    Continuous h ↔ Continuous
+      ((fun b : B => (TotalSpace.mk b (0 : E b) : TotalSpace P E)) ∘ h) := by
+  constructor
+  · intro hh
+    exact A.continuous_zeroSection.comp hh
+  · intro hz
+    exact A.continuous_proj.comp hz
 
 /-- A map from the base to any topological space is continuous exactly when its
 composition with the original total-space projection is continuous. -/

@@ -6,6 +6,7 @@ module
 
 public import VectorBundlesTest.OpenMap
 public import VectorBundlesTest.Topology.ContinuousMap.Algebra
+public import VectorBundlesTest.Topology.VectorBundle.EqualBase
 public import VectorBundlesTest.Topology.ContinuousMap.PiBasis
 public import VectorBundlesTest.Topology.Compactness.CountablyCompact
 public import VectorBundlesTest.Topology.Compactness.SigmaCompact

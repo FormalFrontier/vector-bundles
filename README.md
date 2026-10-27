@@ -34,6 +34,12 @@ topological fiber bundles.
   characterizes continuity of maps from the base to any topological space by continuity
   after composition with this projection. The canonical zero section is continuous by
   [`Bundle.FiniteRankAtlas.continuous_zeroSection`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean).
+  It is a topological embedding by
+  [`Bundle.FiniteRankAtlas.isEmbedding_zeroSection`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean).
+  [`Bundle.FiniteRankAtlas.continuous_iff_zeroSection_comp`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
+  characterizes continuity of maps from any topological domain into the base by
+  continuity after composition with the zero section, using the given total-space
+  topology and no additional continuity hypotheses.
   These results hold for any supplied finite-rank atlas. Chart ranks may vary and may
   be zero, with no common model, scalar-operation continuity or base separation hypothesis.
 
@@ -58,6 +64,14 @@ topological fiber bundles.
   spaces carry the Pi topology from the given scalar topology. Ranks may vary without
   a global bound, including zero with its singleton zero fibre. No scalar-field
   first-countability, second-countability or countable-atlas hypothesis is required.
+
+- **T1 total spaces for finite-rank atlases:**
+  [`Bundle.FiniteRankAtlas.t1Space_totalSpace`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
+  proves that the original total space is T1 when the given base and every exact
+  chart-coordinate space `Fin (A.rank i) → K` are T1. These coordinate spaces carry
+  the Pi topology from the given scalar topology. Ranks may vary without a global
+  bound, including zero with its singleton zero fibre; the scalar field need not be
+  T1. No Hausdorffness or countability hypothesis is required.
 
 The [detailed results guide](docs/Results.md) groups statements and examples by
 topic, with their individual hypotheses and distinctions from existing Mathlib
@@ -106,6 +120,14 @@ constructions. Selected results include:
   model is finite-dimensional; the target normed model has `IsModuleTopology`.
   Empty bases and zero rank are allowed, and models need not be globally identified.
   A complete-field constructor derives the target properties at each base point.
+
+- **Reciprocal finite sums of real squares.**
+  [`continuous_inv_finset_sum_sq`](VectorBundles/Topology/Algebra/GroupWithZero.lean)
+  gives continuity of the reciprocal of a selected finite sum of real squares
+  when the selected weights are continuous and, at each point, some selected
+  weight is nonzero. Weights outside the selected set are unrestricted; the
+  topological base may be empty. This is a real, ordered-square specialization,
+  not a statement about sums of complex squares.
 
 - **Scalar endomorphisms of line bundles.**
   [`VectorBundle.scalarEndHomeomorph`](VectorBundles/Topology/VectorBundle/ScalarEnd.lean)
@@ -190,6 +212,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | --- | --- |
 | [`Analysis.InnerProductSpace.PositiveForm`](VectorBundles/Analysis/InnerProductSpace/PositiveForm.lean) | Bounded positive-form unit sublevels in the original topology |
 | [`Analysis.Normed.Ring.Units`](VectorBundles/Analysis/Normed/Ring/Units.lean) | Value embedding for units of a seminormed ring |
+| [`Topology.Algebra.GroupWithZero`](VectorBundles/Topology/Algebra/GroupWithZero.lean) | Continuity of reciprocal selected finite sums of real squares under pointwise nonzero coverage |
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
 | [`Topology.Bornology.Inducing`](VectorBundles/Topology/Bornology/Inducing.lean) | `IsVonNBounded.preimage_of_isInducing` over a general `NormedDivisionRing`, without injectivity or topological vector-space hypotheses |
 | [`Topology.Compactness.CountablyCompact`](VectorBundles/Topology/Compactness/CountablyCompact.lean) | Countably compact preimages under proper maps exactly when the target subset intersected with the range is countably compact |
