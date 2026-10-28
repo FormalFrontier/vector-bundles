@@ -516,6 +516,19 @@ theorem isEmbedding_zeroSection (A : FiniteRankAtlas.{_, _, _, _, uI} K P E) :
       (TotalSpace.mk b (0 : E b) : TotalSpace P E).proj = b := fun _ => rfl
   exact IsEmbedding.of_leftInverse hret hp hz
 
+/-- If every exact chart-coordinate space `Fin (A.rank i) → K` is regular, the original
+total space is regular if and only if the base is regular, for their given topologies. -/
+theorem regularSpace_totalSpace_iff (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    [∀ i : A.Index, RegularSpace (Fin (A.rank i) → K)] :
+    RegularSpace (TotalSpace P E) ↔ RegularSpace B := by
+  constructor
+  · intro htotal
+    have : RegularSpace (TotalSpace P E) := htotal
+    exact IsInducing.regularSpace A.isEmbedding_zeroSection.isInducing
+  · intro hbase
+    have : RegularSpace B := hbase
+    exact A.regularSpace_totalSpace
+
 universe uY
 
 /-- A map from any topological space into the base is continuous exactly when its
