@@ -376,6 +376,135 @@ theorem t1Space_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
   rw [heq]
   exact isOpen_iUnion (fun i => hj i _ (hv i))
 
+/-- The total space of a finite-rank atlas is regular if the given base and every exact
+chart-coordinate space are regular, for their given topologies. Ranks may vary without
+a global bound and may be zero; regularity of the scalar field is not required.
+
+A closed neighbourhood in the base supplies an ambient-closed buffer inside a chart
+source. Within this buffer, a source-closed neighbourhood is also ambient closed. -/
+theorem regularSpace_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    [RegularSpace B] [∀ i : A.Index, RegularSpace (Fin (A.rank i) → K)] :
+    RegularSpace (TotalSpace P E) := by
+  classical
+  have hproj : Continuous (TotalSpace.proj : TotalSpace P E → B) := A.continuous_proj
+  have hbuffer (p : TotalSpace P E) :
+      ∃ (i : A.Index) (F : Set B),
+        IsClosed F ∧ p.proj ∈ interior F ∧ F ⊆ (A.chart i).baseSet ∧
+          IsClosed ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' F) ∧
+          ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' F) ∈ 𝓝 p ∧
+          ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' F) ⊆ (A.chart i).source := by
+    obtain ⟨i, hi⟩ := A.exists_mem_baseSet p.proj
+    have hU : IsOpen ((A.chart i).baseSet) := (A.chart i).open_baseSet
+    rcases exists_mem_nhds_isClosed_subset (hU.mem_nhds hi) with
+      ⟨F, hFp, hFclosed, hFsub⟩
+    have hFinterior : p.proj ∈ interior F := mem_interior_iff_mem_nhds.mpr hFp
+    have hDclosed : IsClosed ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' F) :=
+      hFclosed.preimage hproj
+    have hDnhds : ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' F) ∈ 𝓝 p := by
+      refine mem_nhds_iff.mpr
+        ⟨(TotalSpace.proj : TotalSpace P E → B) ⁻¹' interior F, ?_,
+          isOpen_interior.preimage hproj, hFinterior⟩
+      intro q hq
+      exact (interior_subset : interior F ⊆ F) hq
+    have hDsource : ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' F) ⊆
+        (A.chart i).source := by
+      intro q hq
+      exact (A.mem_source_iff i q).mpr (hFsub hq)
+    exact ⟨i, F, hFclosed, hFinterior, hFsub, hDclosed, hDnhds, hDsource⟩
+  -- Each original chart source is regular via its product homeomorphism.
+  have hsource : ∀ i : A.Index, RegularSpace (A.chart i).source := ?_
+  swap
+  · intro i
+    have hproduct : RegularSpace ((A.chart i).baseSet × (Fin (A.rank i) → K)) := by
+      infer_instance
+    have e : (A.chart i).source ≃ₜ
+        (A.chart i).baseSet × (Fin (A.rank i) → K) := A.sourceHomeomorph i
+    -- Both factors carry their original subtype and Pi topologies.
+    refine IsInducing.regularSpace (show IsInducing e from ?_)
+    exact Homeomorph.isInducing e
+  -- Construct closed neighbourhoods in the original total space.
+  refine RegularSpace.of_exists_mem_nhds_isClosed_subset ?_
+  intro a W hW
+  obtain ⟨i, F, hFclosed, haFinterior, hFsub, hDclosed, hDnhds, hDsource⟩ := hbuffer a
+  -- Fix the regular original source containing the point.
+  have hsource_a : RegularSpace (A.chart i).source := hsource i
+  have ha_source : a ∈ (A.chart i).source :=
+    (A.mem_source_iff i a).mpr
+      (hFsub ((interior_subset : interior F ⊆ F) haFinterior))
+  let a' : (A.chart i).source := ⟨a, ha_source⟩
+  let j : (A.chart i).source → TotalSpace P E := Subtype.val
+  let D : Set (TotalSpace P E) :=
+    (TotalSpace.proj : TotalSpace P E → B) ⁻¹' F
+  have hDS : D ⊆ (A.chart i).source := hDsource
+  -- W and the interior of the closed buffer give an ambient neighbourhood.
+  have haDinterior : a ∈ interior D := mem_interior_iff_mem_nhds.mpr hDnhds
+  have hWD : W ∩ interior D ∈ 𝓝 a := by
+    obtain ⟨u, huW, hu, hau⟩ := mem_nhds_iff.mp hW
+    refine mem_nhds_iff.mpr
+      ⟨u ∩ interior D, ?_, hu.inter isOpen_interior, ⟨hau, haDinterior⟩⟩
+    intro q hq
+    exact ⟨huW hq.1, hq.2⟩
+  -- Pull back that neighbourhood to the original source subtype.
+  have hpre : j ⁻¹' (W ∩ interior D) ∈ 𝓝 a' := by
+    obtain ⟨u, huWD, hu, hau⟩ := mem_nhds_iff.mp hWD
+    exact mem_nhds_iff.mpr
+      ⟨j ⁻¹' u, Set.preimage_mono huWD, hu.preimage continuous_subtype_val, hau⟩
+  -- Choose a closed neighbourhood in the original source.
+  rcases exists_mem_nhds_isClosed_subset hpre with
+    ⟨C', hC'nhds, hC'closed, hC'sub⟩
+  let C : Set (TotalSpace P E) := j '' C'
+  have hpreimage_image : j ⁻¹' C = C' := by
+    ext q
+    change j q ∈ j '' C' ↔ q ∈ C'
+    constructor
+    · rintro ⟨r, hr, hrq⟩
+      have hrq' : r = q := Subtype.ext hrq
+      exact hrq' ▸ hr
+    · intro hq
+      exact ⟨q, hq, rfl⟩
+  have hCrel : IsClosed (j ⁻¹' C) := by
+    rw [hpreimage_image]
+    exact hC'closed
+  have hCD : C ⊆ D := by
+    rintro q ⟨q', hq', rfl⟩
+    exact (interior_subset : interior D ⊆ D) ((hC'sub hq').2)
+  have hCW : C ⊆ W := by
+    rintro q ⟨q', hq', rfl⟩
+    exact (hC'sub hq').1
+  -- The source-closed C lies in the ambient-closed buffer D, itself inside the source.
+  -- Its ambient complement is therefore an open source image together with Dᶜ.
+  have hcompeq : Cᶜ = j '' (j ⁻¹' C)ᶜ ∪ Dᶜ := by
+    ext q
+    constructor
+    · intro hq
+      by_cases hqD : q ∈ D
+      · left
+        refine ⟨⟨q, hDS hqD⟩, ?_, rfl⟩
+        change q ∉ C
+        exact hq
+      · right
+        exact hqD
+    · intro hq
+      rcases hq with ⟨q', hq', rfl⟩ | hqD
+      · change j q' ∉ C
+        exact hq'
+      · intro hqC
+        exact hqD (hCD hqC)
+  have hCclosed : IsClosed C := by
+    apply isOpen_compl_iff.mp
+    rw [hcompeq]
+    exact
+      ((A.chart i).open_source.isOpenEmbedding_subtypeVal.isOpenMap
+        ((j ⁻¹' C)ᶜ) hCrel.isOpen_compl).union hDclosed.isOpen_compl
+  -- Openness of the source transports its neighbourhood to the ambient space.
+  have hCnhds : C ∈ 𝓝 a := by
+    obtain ⟨v, hvc, hv, hav⟩ := mem_nhds_iff.mp hC'nhds
+    refine mem_nhds_iff.mpr ⟨j '' v, ?_, ?_, ?_⟩
+    · exact Set.image_mono hvc
+    · exact (A.chart i).open_source.isOpenEmbedding_subtypeVal.isOpenMap v hv
+    · exact ⟨a', hav, rfl⟩
+  exact ⟨C, hCnhds, hCclosed, hCW⟩
+
 /-- The canonical zero section of a finite-rank atlas is a topological embedding
 for the given original total-space and base topologies. -/
 theorem isEmbedding_zeroSection (A : FiniteRankAtlas.{_, _, _, _, uI} K P E) :

@@ -81,6 +81,15 @@ topological fiber bundles.
   bound, including zero with its singleton zero fibre; the scalar field need not be
   T1. No Hausdorffness or countability hypothesis is required.
 
+- **Regular total spaces for finite-rank atlases:**
+  [`Bundle.FiniteRankAtlas.regularSpace_totalSpace`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
+  proves regularity of the original total space when the given base and every exact
+  chart-coordinate space `Fin (A.rank i) → K` are regular. These coordinate spaces
+  carry the Pi topology from the given scalar topology. Apply it as
+  `A.regularSpace_totalSpace` under these hypotheses. Ranks may vary without a global
+  bound, including zero with its singleton zero fibre. No scalar-field regularity,
+  Hausdorffness, local compactness or countability hypothesis is required.
+
 The [detailed results guide](docs/Results.md) groups statements and examples by
 topic, with their individual hypotheses and distinctions from existing Mathlib
 constructions. Selected results include:
