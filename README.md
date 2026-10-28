@@ -65,6 +65,14 @@ topological fiber bundles.
   a global bound, including zero with its singleton zero fibre. No scalar-field
   first-countability, second-countability or countable-atlas hypothesis is required.
 
+- **T0 total spaces for finite-rank atlases:**
+  [`Bundle.FiniteRankAtlas.t0Space_totalSpace`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
+  proves that the original total space is T0 when the given base and every exact
+  chart-coordinate space `Fin (A.rank i) → K` are T0. These coordinate spaces carry
+  the Pi topology from the given scalar topology. Ranks may vary without a global
+  bound, including zero with its singleton zero fibre; the scalar field need not be
+  T0. No T1, Hausdorffness or countability hypothesis is required.
+
 - **T1 total spaces for finite-rank atlases:**
   [`Bundle.FiniteRankAtlas.t1Space_totalSpace`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
   proves that the original total space is T1 when the given base and every exact

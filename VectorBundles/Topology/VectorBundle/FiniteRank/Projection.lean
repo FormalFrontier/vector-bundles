@@ -24,6 +24,10 @@ surjectivity of the projection, so the quotient property follows from Mathlib's
 continuous, open, surjective criterion. Chart ranks may vary and may be zero; no
 common model or continuity of scalar operations is required.
 
+The total space is T0 when the base and each full chart-coordinate space are T0 for
+their given topologies. The coordinate ranks may vary without a global bound and may
+be zero; the scalar field need not be T0.
+
 ## References
 
 * The fibre-bundle and topology APIs of Mathlib.
@@ -268,6 +272,40 @@ theorem firstCountableTopology_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} 
       exact hpu
   rw [← hmap]
   infer_instance
+
+/-- The total space of a finite-rank atlas is T0 if the base and every exact
+chart-coordinate space are T0, for their given topologies. Chart ranks may vary
+without a global bound and may be zero; the scalar field need not be T0. -/
+theorem t0Space_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    [T0Space B] [∀ i : A.Index, T0Space (Fin (A.rank i) → K)] :
+    T0Space (TotalSpace P E) := by
+  constructor
+  intro p q hpq
+  obtain ⟨i, hi⟩ := A.exists_mem_baseSet p.proj
+  have hp : p ∈ (A.chart i).source := (A.mem_source_iff i p).mpr hi
+  have hS := (A.chart i).open_source
+  have hq : q ∈ (A.chart i).source :=
+    (Inseparable.mem_open_iff hpq hS).mp hp
+  have hchartCONTon := (A.chart i).continuousOn_toFun
+  have himage : Inseparable (A.chart i p) (A.chart i q) :=
+    Inseparable.map_of_continuousOn hpq hchartCONTon hp hq
+  have himageEq : A.chart i p = A.chart i q := by
+    rcases (inferInstance : T0Space (B × (Fin (A.rank i) → K))) with ⟨hT0⟩
+    exact hT0 himage
+  -- Recover the original points using this chart only on its source.
+  have hbase : p.proj = q.proj := by
+    simpa only [A.chart_proj i p hp, A.chart_proj i q hq] using
+      congrArg Prod.fst himageEq
+  let p' : (A.chart i).source := ⟨p, hp⟩
+  let q' : (A.chart i).source := ⟨q, hq⟩
+  have hsource : A.sourceHomeomorph i p' = A.sourceHomeomorph i q' := by
+    apply Prod.ext
+    · apply Subtype.ext
+      exact (A.sourceHomeomorph_fst_coe i p').trans
+        (hbase.trans (A.sourceHomeomorph_fst_coe i q').symm)
+    · exact (A.sourceHomeomorph_snd i p').trans
+        ((congrArg Prod.snd himageEq).trans (A.sourceHomeomorph_snd i q').symm)
+  exact congrArg Subtype.val ((A.sourceHomeomorph i).injective hsource)
 
 /-- The total space of a finite-rank atlas is T1 if the base and every exact
 chart-coordinate space are T1, for their given topologies. Chart ranks may vary
