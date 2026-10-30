@@ -71,6 +71,9 @@ public import VectorBundles.Topology.FiberBundle.Prod
 public import VectorBundles.Topology.FiberBundle.Pullback
 public import VectorBundles.Topology.FiberBundle.Pullback.Proper
 public import VectorBundles.Topology.FiberBundle.SupportedTransport
+public import VectorBundles.Topology.FiberBundle.FiniteTransport
+public import VectorBundles.Topology.FiberBundle.FiniteTransport.Projection
+public import VectorBundles.Topology.FiberBundle.FiniteTransport.Existence
 public import VectorBundles.Topology.MetricSpace.Antilipschitz
 public import VectorBundles.Topology.VectorBundle.Cylinder
 public import VectorBundles.Topology.VectorBundle.Embedding
@@ -95,5 +98,10 @@ orthogonal complements. The projection modules give open-embedding criteria by s
 fibers, canonical projection homeomorphisms when every fiber is also nonempty, and the
 proper-projection criterion by compactness of every fiber. Finite-support open-cover
 shrinkings and continuous real partitions of unity on normal spaces have subordinate
-closures without additional separation assumptions.
+closures without additional separation assumptions. Finite ordered cylinder charts with
+given subordinate weights yield base-preserving transport from the standard pullback of
+the entire zero restriction to the given total space, including for an arbitrary
+projection, with bottom and independent endpoint comparisons. Matching linear coordinates
+give fiber-linearity over any semiring. On a normal space, a finite open cylinder-chart
+cover supplies the weights.
 -/

@@ -3,9 +3,9 @@
 Foundational geometry of topological vector bundles: compatible real and complex
 fiber metrics and their pullbacks, orthogonal splitting and comparison for supplied
 metrics, and homeomorphisms induced by fiberwise linear equivalences, together with
-products, pullbacks, cylinder charts, frames, finite embeddings, ranges and
-complementary bundles. The library extends Mathlib's bundle structures and uses
-their original fiber and total-space topologies. It also gives projection criteria,
+products, pullbacks, cylinder charts, finite ordered cylinder transport, frames,
+finite embeddings, ranges and complementary bundles. The library extends Mathlib's
+bundle structures and uses their original fiber and total-space topologies. It also gives projection criteria,
 canonical projection homeomorphisms, properness criteria and compactness transfer for
 topological fiber bundles.
 
@@ -29,6 +29,58 @@ topological fiber bundles.
   continuous maps off `s`, and sum to one over `s` at each point. For every index `i`,
   `closure {x | w i x ≠ 0} ⊆ U i`. No compactness, nonemptiness, T1 or Hausdorff assumption,
   finiteness of `J`, or openness off `s` is required.
+
+- **Finite ordered cylinder transport with given weights:**
+  [`Bundle.Trivialization.finiteCylinderTransport`](VectorBundles/Topology/FiberBundle/FiniteTransport.lean)
+  gives a homeomorphism from the iterated standard pullback of the entire original
+  zero-time restriction to the same given total space over `X × unitInterval`.
+  The input is an ordered family of charts indexed by `Fin n`, with possibly
+  varying topological models `F j` independent of the unstructured total-space
+  parameter `P`, covering cylinders `U j × unitInterval` whose sets `U j` cover `X`.
+  Continuous real weights lie in `[0, 1]`, sum to one, and satisfy
+  `closure {x | w j x ≠ 0} ⊆ U j`. No normality of `X` or openness of `U j` is needed.
+  Both directions preserve the entire cylinder base point and fix every bottom
+  point. The [prefix API](VectorBundles/Topology/FiberBundle/FiniteTransport.lean)
+  gives zero, ordered successor and last-stage laws, including unchanged original
+  points off each closed support. The top restriction agrees with the independently
+  ordered `finiteCylinderEndpointTransport` between the standard endpoint pullbacks.
+
+- **Cylinder transport for a given projection:**
+  [`Bundle.Trivialization.finiteCylinderTransportOfProjection`](VectorBundles/Topology/FiberBundle/FiniteTransport/Projection.lean)
+  applies the same weighted construction to any map `p : T → X × unitInterval`
+  with the given topology on `T` and the cylinder charts above. Its source is the
+  standard product-subspace pullback of the entire original zero restriction;
+  its target is the same `T`. Continuity of `p` follows from the covering charts.
+  Both directions preserve the whole base point and fix every original bottom
+  point, including points in the closed supports.
+  `finiteCylinderTransportOfProjection_apply_eq_last` characterizes its value at
+  every time by an ordered sequence of the original chart lifts in `T`.
+  The independently constructed `finiteCylinderEndpointTransportOfProjection`
+  compares the entire original zero and one slices, with their inherited topologies,
+  and agrees with cylinder transport on the top slice.
+  Given modules on the original fibers and the models `F j` over any possibly
+  noncommutative semiring `R`, and linear coordinate equivalences agreeing with
+  the charts, the [family](VectorBundles/Topology/FiberBundle/FiniteTransport.lean)
+  and [projection](VectorBundles/Topology/FiberBundle/FiniteTransport/Projection.lean)
+  linearity theorems make this same transport fiberwise `R`-linear. Real numbers
+  parametrize time only: no topology on `R` or continuity of module operations
+  is required, nor a common model, rank, finite-dimensionality, field, further
+  separation or nonempty-fiber hypothesis.
+
+- **Finite open cylinder-chart covers, without given weights:**
+  For a normal topological space `X`, a finite ordered family of given charts
+  covering whole cylinders `U j × unitInterval`, where the `U j` are open and
+  cover `X`, gives the
+  [family transport](VectorBundles/Topology/FiberBundle/FiniteTransport/Existence.lean)
+  `Bundle.Trivialization.exists_finiteCylinderTransport` without input weights.
+  With the original-fiber modules and matching linear chart coordinates above,
+  [`Bundle.Trivialization.exists_finiteCylinderTransportOfProjection`](VectorBundles/Topology/FiberBundle/FiniteTransport/Existence.lean)
+  returns subordinate weights and their bounds, sum and closed-cozero certificates,
+  together with a homeomorphism equal to `finiteCylinderTransportOfProjection`
+  for those same weights. Its conclusions include both base and bottom laws,
+  linearity on the given original fibers over `R`, and top-slice equality with
+  the independently constructed full-slice endpoint transport using those same
+  weights. No separation assumption beyond `NormalSpace X` is added.
 
 - **Locally varying finite-rank atlas data:** covering fibrewise-linear charts on
   given module fibres and their given total-space topology, with linear coordinate
@@ -290,7 +342,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.FiberBundle.Paracompact`](VectorBundles/Topology/FiberBundle/Paracompact.lean) | Paracompact model from an ambient-closed nonempty chart base patch; R₀-base point consequence and compact-model total spaces; empty-aware compact-model base equivalence |
 | [`Topology.VectorBundle.CoordinateMap`](VectorBundles/Topology/VectorBundle/CoordinateMap.lean) | Linear-chart evaluations, operators and linear-atlas criterion |
 | [`Topology.VectorBundle.FiniteSum`](VectorBundles/Topology/VectorBundle/FiniteSum.lean) | Locally finite sums of continuous sections |
-| [`Topology.VectorBundle.Hom`](VectorBundles/Topology/VectorBundle/Hom.lean) | Identity and composition of continuous native Hom sections, with the model operator-norm topology |
+| [`Topology.VectorBundle.Hom`](VectorBundles/Topology/VectorBundle/Hom.lean) | Identity and composition of continuous Hom sections, with the model operator-norm topology |
 | [`Topology.VectorBundle.ScalarEnd`](VectorBundles/Topology/VectorBundle/ScalarEnd.lean) | Base-preserving product homeomorphism for the endomorphism bundle of a line, with the original fiber topologies |
 | [`Topology.VectorBundle.SemilinearEvaluation`](VectorBundles/Topology/VectorBundle/SemilinearEvaluation.lean) | One- and two-argument evaluation on Mathlib's Hom topology |
 | [`Topology.VectorBundle.WeightedForm`](VectorBundles/Topology/VectorBundle/WeightedForm.lean) | Supported weighted forms in linear charts |
@@ -319,6 +371,9 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.FiberBundle.Pullback`](VectorBundles/Topology/FiberBundle/Pullback.lean) | Compatible-pair total spaces and universal pullback maps |
 | [`Topology.FiberBundle.Pullback.Proper`](VectorBundles/Topology/FiberBundle/Pullback/Proper.lean) | Proper canonical lifts from proper base maps and continuity of the original projection; [two direct examples](VectorBundlesTest/Topology/FiberBundle/Pullback/Proper.lean) for a noninjective two-sheeted base and empty original fibers |
 | [`Topology.FiberBundle.SupportedTransport`](VectorBundles/Topology/FiberBundle/SupportedTransport.lean) | Pullback transport localized to one chart by a closed subset, with independent original dummy and chart model; given linear coordinates make each fiber map linear over an arbitrary semiring |
+| [`Topology.FiberBundle.FiniteTransport`](VectorBundles/Topology/FiberBundle/FiniteTransport.lean) | Weighted finite ordered cylinder transport on a given family, with prefix laws, independent endpoint transport and linearity from given coordinates over any semiring |
+| [`Topology.FiberBundle.FiniteTransport.Projection`](VectorBundles/Topology/FiberBundle/FiniteTransport/Projection.lean) | Transport from the standard pullback of the entire original zero restriction to the same given projection space, with ordered chart-lift characterization, both base and bottom laws, original-fiber linearity and independent full-slice endpoints |
+| [`Topology.FiberBundle.FiniteTransport.Existence`](VectorBundles/Topology/FiberBundle/FiniteTransport/Existence.lean) | Finite open cylinder-chart covers of normal spaces supply weights for family transport; with original-fiber modules and matching linear coordinates, the projection theorem returns the same weighted constructor, linearity and endpoint comparison |
 | [`Topology.MetricSpace.Antilipschitz`](VectorBundles/Topology/MetricSpace/Antilipschitz.lean) | Product embeddings from locally uniform antilipschitz bounds |
 | [`Topology.VectorBundle.Cylinder`](VectorBundles/Topology/VectorBundle/Cylinder.lean) | Linear charts near a compact interval cylinder |
 | [`Topology.VectorBundle.Embedding`](VectorBundles/Topology/VectorBundle/Embedding.lean) | Total-space embeddings from fiberwise injective linear maps |
@@ -344,8 +399,11 @@ Metric existence and supplied-metric splitting have different hypotheses. The
 latter is not a metric-existence assertion. The finite complement construction
 asserts neither classification nor complementarity to a prescribed embedding. No general
 homotopy-invariance, constant-rank kernel-bundle, tensor-product or
-projective-section theorem is provided here. The units embedding does not assert
-that the unit locus is open or that partial inversion on the ambient ring is continuous. The finite-operator
+projective-section theorem is provided here. Finite cylinder transport assumes a
+finite ordered family of whole-interval charts. It does not assert independence
+from weights or chart order, or the full statement of Hatcher's Proposition 1.7.
+The units embedding does not assert that the unit locus is open or that partial
+inversion on the ambient ring is continuous. The finite-operator
 criterion requires the source's module topology, which cannot simply be dropped
 over an incomplete field.
 
@@ -360,6 +418,10 @@ over an incomplete field.
   The latter uses Yury Kudryashov's
   [Mathlib formalization](https://github.com/leanprover-community/mathlib4/blob/83abb3e776bdefcbc447a1e44d0debe4010039e5/Mathlib/Topology/UrysohnsLemma.lean).
   Hatcher's version 2.2, printed p. 20 (PDF p. 24), motivates this finite-cover formulation.
+- Hatcher's Proposition 1.7 is a motivating comparison problem for finite cylinder
+  transport. The results here assume finitely many ordered cylinder charts,
+  allow arbitrary semirings and varying chart models, and do not assert the full
+  proposition.
 - Mathlib's [bundle geometry](https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5/Mathlib/Topology/VectorBundle),
   module topology, bounded-convergence operator topology, inner products,
   orthogonal complements, partitions of unity and continuous functional calculus.
@@ -378,7 +440,9 @@ Pullback bundle constructions follow Nicolò Cavalleri, Sébastien Gouëzel, Hea
 Macbeth and Floris van Doorn; quotient-complement equivalences and projections
 follow Yury Kudryashov's Mathlib formalization.
 The Hermitian and semilinear APIs extend those prior formalizations; the other
-modules document their own mathematical and formalization sources.
+modules document their own mathematical and formalization sources. Finite cylinder
+transport reuses Mathlib's bundle, pullback-topology and trivialization APIs through
+the supported chart transport and standard pullback comparisons.
 Fiber-bundle metrizability follows the original formalization by Formal Frontier Agents
 and uses Metrization's locally finite closed-neighbourhood-cover criterion.
 The locally finite and paracompactness statements use Yury Kudryashov's locally
