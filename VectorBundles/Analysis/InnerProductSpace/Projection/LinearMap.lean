@@ -21,14 +21,25 @@ or topology on the domain or completeness on the ambient space.
   residual-orthogonality laws for a specified linear map.
 * `LinearMap.orthogonalRetraction` lifts Mathlib's projection to the original module;
   `LinearMap.image_orthogonalRetraction` identifies its image with that projection.
+* `LinearMap.isClosed_ker_orthogonalRetraction` shows that the retraction has
+  closed kernel in the ambient inner product space.
 * `LinearMap.orthogonalRetractionOfFiniteDimensional` supplies the projection
   capability from finite-dimensionality of the domain.
+* `LinearMap.IsOrthogonalRetraction.ker_eq_orthogonal` identifies the kernel of
+  a specified orthogonal retraction with the orthogonal complement of the range.
+  `LinearMap.isOrthogonalRetraction_iff_leftInverse_and_ker_eq_orthogonal`
+  characterizes orthogonal retractions by this kernel equality and a left inverse.
+* `LinearMap.isCompl_range_ker_orthogonalRetraction` shows that the range and the
+  constructed retraction's kernel are algebraic complements.
 
 ## Limitations
 
 The construction has an image/preimage characterization and a left-inverse law.
-No theorem here asserts that it satisfies the residual-orthogonality field of
-`LinearMap.IsOrthogonalRetraction`. No continuity in parameters is asserted.
+The orthogonal-kernel characterization is conditional on
+`LinearMap.IsOrthogonalRetraction`; no theorem here asserts that the constructed
+retraction satisfies its residual-orthogonality field or that its kernel equals
+the orthogonal complement of the range. No continuity in parameters or
+principal-bundle construction is asserted.
 
 ## References
 
@@ -60,6 +71,45 @@ theorem isOrthogonalRetraction_iff (β : F →ₗ[K] A) (r : A →ₗ[K] F) :
     β.IsOrthogonalRetraction r ↔
       (∀ v, r (β v) = v) ∧ ∀ a v, inner K (a - β (r a)) (β v) = 0 :=
   ⟨fun h => ⟨h.left_inv, h.residual_inner⟩, fun h => ⟨h.1, h.2⟩⟩
+
+/-- The kernel of an orthogonal retraction is the orthogonal complement of the range. -/
+theorem IsOrthogonalRetraction.ker_eq_orthogonal {β : F →ₗ[K] A} {r : A →ₗ[K] F}
+    (h : β.IsOrthogonalRetraction r) : r.ker = β.rangeᗮ := by
+  ext a
+  constructor
+  · intro ha
+    have hra : r a = 0 := ha
+    apply (β.range.mem_orthogonal' a).2
+    rintro _ ⟨v, rfl⟩
+    simpa only [hra, map_zero, sub_zero] using h.residual_inner a v
+  · intro ha
+    have hinner : inner K (β (r a)) (β (r a)) = 0 := by
+      have ha' := (β.range.mem_orthogonal' a).1 ha (β (r a)) ⟨r a, rfl⟩
+      have hres := h.residual_inner a (r a)
+      simpa only [inner_sub_left, ha', zero_sub, neg_eq_zero] using hres
+    have hz : β (r a) = 0 := inner_self_eq_zero.mp hinner
+    change r a = 0
+    calc
+      r a = r (β (r a)) := (h.left_inv (r a)).symm
+      _ = 0 := by rw [hz, map_zero]
+
+/-- A linear map is an orthogonal retraction exactly when it is a left inverse
+and its kernel is the orthogonal complement of the range. -/
+theorem isOrthogonalRetraction_iff_leftInverse_and_ker_eq_orthogonal
+    (β : F →ₗ[K] A) (r : A →ₗ[K] F) :
+    β.IsOrthogonalRetraction r ↔
+      Function.LeftInverse r β ∧ r.ker = β.rangeᗮ := by
+  constructor
+  · intro h
+    exact ⟨h.left_inv, h.ker_eq_orthogonal⟩
+  · rintro ⟨hleft, hker⟩
+    refine ⟨hleft, ?_⟩
+    intro a v
+    have hmem : a - β (r a) ∈ r.ker := by
+      change r (a - β (r a)) = 0
+      rw [map_sub, hleft (r a), sub_self]
+    rw [hker] at hmem
+    exact (β.range.mem_orthogonal' _).1 hmem (β v) ⟨v, rfl⟩
 
 /-- Project onto the range, with its inherited ambient norm, then take its unique
 preimage in the original module. The range need only admit an orthogonal projection;
@@ -106,6 +156,41 @@ theorem orthogonalRetraction_eq_iff (β : F →ₗ[K] A)
   constructor
   · exact congrArg β
   · exact fun h => hβ h
+
+/-- The range and the kernel of the projection/preimage retraction are algebraic
+complements, using only its left-inverse law. -/
+theorem isCompl_range_ker_orthogonalRetraction (β : F →ₗ[K] A)
+    [β.range.HasOrthogonalProjection] (hβ : Function.Injective β) :
+    IsCompl β.range (β.orthogonalRetraction hβ).ker := by
+  constructor
+  · rw [Submodule.disjoint_def]
+    rintro a ⟨v, rfl⟩ ha
+    change β.orthogonalRetraction hβ (β v) = 0 at ha
+    rw [orthogonalRetraction_apply_image] at ha
+    rw [ha, map_zero]
+  · rw [codisjoint_iff, Submodule.eq_top_iff']
+    intro a
+    have hres : a - β (β.orthogonalRetraction hβ a) ∈
+        (β.orthogonalRetraction hβ).ker := by
+      change β.orthogonalRetraction hβ (a - β (β.orthogonalRetraction hβ a)) = 0
+      rw [map_sub, orthogonalRetraction_apply_image, sub_self]
+    have himage : β (β.orthogonalRetraction hβ a) ∈ β.range := ⟨_, rfl⟩
+    simpa only [sub_add_cancel] using
+      (β.range ⊔ (β.orthogonalRetraction hβ).ker).add_mem
+        (Submodule.mem_sup_right hres) (Submodule.mem_sup_left himage)
+
+/-- The kernel of the projection/preimage retraction is closed in the ambient space. -/
+theorem isClosed_ker_orthogonalRetraction (β : F →ₗ[K] A)
+    [β.range.HasOrthogonalProjection] (hβ : Function.Injective β) :
+    IsClosed ((β.orthogonalRetraction hβ).ker : Set A) := by
+  have hker : ((β.orthogonalRetraction hβ).ker : Set A) =
+      (β.range.orthogonalProjectionOnto.ker : Set A) := by
+    ext a
+    change β.orthogonalRetraction hβ a = 0 ↔ β.range.orthogonalProjectionOnto a = 0
+    rw [orthogonalRetraction_eq_iff, map_zero]
+    exact ⟨fun h => Subtype.ext h, fun h => congrArg Subtype.val h⟩
+  rw [hker]
+  exact β.range.orthogonalProjectionOnto.isClosed_ker
 
 section FiniteDimensional
 

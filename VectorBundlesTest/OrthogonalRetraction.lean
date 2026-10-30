@@ -13,7 +13,9 @@ public import Mathlib.Algebra.Module.TransferInstance
 
 The usual real part retracts the proper real-linear subspace of real complex
 numbers. The residual is purely imaginary, orthogonal to every real vector in
-the given real inner product on `ℂ`. This is a positive-rank, proper-range example.
+the given real inner product on `ℂ`. The kernel characterization places the
+imaginary unit in the orthogonal complement of the real axis. This is a
+positive-rank, proper-range example.
 The product projection `Bool × ℝ → Bool` also illustrates the total-space
 construction on fixed fibre module structures, with the real axis as each image.
 The fibre operations are fixed once using Mathlib's algebraic structure-transport
@@ -60,6 +62,12 @@ theorem realAxis_injective : Function.Injective realAxis := by
 theorem I_not_mem_realAxis_range : I ∉ realAxis.range := by
   rintro ⟨x, hx⟩
   simpa using congrArg Complex.im hx
+
+/-- The imaginary unit belongs to the orthogonal complement of the real axis. -/
+theorem I_mem_realAxis_orthogonal : I ∈ realAxis.rangeᗮ := by
+  rw [← realPart_isOrthogonalRetraction.ker_eq_orthogonal]
+  change realPart I = 0
+  simp
 
 /-- The finite-dimensional construction retracts the real axis in this proper-range example. -/
 theorem orthogonalRetraction_realAxis (x : ℝ) :
