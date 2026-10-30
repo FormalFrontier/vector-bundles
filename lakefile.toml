@@ -96,6 +96,8 @@ globs = [
   "VectorBundles.Topology.VectorBundle.Embedding",
   "VectorBundles.Topology.VectorBundle.FiniteComplement",
   "VectorBundles.Topology.VectorBundle.FiniteEmbedding",
+  "VectorBundles.Topology.VectorBundle.FiniteEmbedding.Chart",
+  "VectorBundles.Topology.VectorBundle.FiniteEmbedding.LocalCharts",
   "VectorBundles.Topology.VectorBundle.Frame",
   "VectorBundles.Topology.VectorBundle.KernelProjection",
   "VectorBundles.Topology.VectorBundle.Range",
