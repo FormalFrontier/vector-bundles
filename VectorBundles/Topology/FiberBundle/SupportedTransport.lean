@@ -21,7 +21,15 @@ two inverse images of the chart's base set, and equality of the base maps on the
 complement of the closed subset. These are an open cover. Chart cancellation
 identifies the formulas on the overlap; open-cover pasting applies in both
 directions. The topology on each pullback is Mathlib's topology determined by its
-projection and `Pullback.lift`.
+projection and `Pullback.lift` into the same given original total space
+`TotalSpace P E`. The original dummy parameter `P` and chart model `F` have
+independent types and universes; no topology on `P` is needed.
+
+Given coordinate linear equivalences `L b : E b ≃ₗ[R] F` agreeing with the chart,
+transport on each fiber is linear over any semiring `R`: on the closed subset it
+is `L (f₁ a)⁻¹ ∘ L (f₀ a)`, and off it is the equality cast between the original
+fibers. This uses the given module structures without continuity of their
+operations or a topology on `R`.
 
 ## References
 
@@ -37,15 +45,17 @@ open Bundle Set
 
 namespace Bundle.Trivialization
 
-universe uA uB uF uE
+universe uA uB uP uF uE uR
 
-variable {A : Type uA} {B : Type uB} {F : Type uF} {E : B → Type uE}
+section Transport
+
+variable {A : Type uA} {B : Type uB} {P : Type uP} {F : Type uF} {E : B → Type uE}
 variable [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace F]
-variable [TopologicalSpace (TotalSpace F E)]
+variable [TopologicalSpace (TotalSpace P E)]
 
 omit [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace F]
-  [TopologicalSpace (TotalSpace F E)] in
-private theorem pullback_ext {f : A → B} {z w : TotalSpace F (f *ᵖ E)}
+  [TopologicalSpace (TotalSpace P E)] in
+private theorem pullback_ext {f : A → B} {z w : TotalSpace P (f *ᵖ E)}
     (hp : z.proj = w.proj) (hl : Pullback.lift f z = Pullback.lift f w) : z = w := by
   cases z with | mk a v =>
     cases w with | mk b w =>
@@ -55,42 +65,42 @@ private theorem pullback_ext {f : A → B} {z w : TotalSpace F (f *ᵖ E)}
       cases eq_of_heq hv
       rfl
 
-private noncomputable def supportedLift (e : Trivialization F (π F E)) (f₀ f₁ : C(A, B))
-    (K : Set A) (z : TotalSpace F ((f₀ : A → B) *ᵖ E)) : TotalSpace F E := by
+private noncomputable def supportedLift (e : Trivialization F (π P E)) (f₀ f₁ : C(A, B))
+    (K : Set A) (z : TotalSpace P ((f₀ : A → B) *ᵖ E)) : TotalSpace P E := by
   classical
   exact if z.proj ∈ K then e.lift (Pullback.lift f₀ z) (f₁ z.proj)
     else Pullback.lift f₀ z
 
-private theorem supportedLift_proj (e : Trivialization F (π F E)) (f₀ f₁ : C(A, B))
+private theorem supportedLift_proj (e : Trivialization F (π P E)) (f₀ f₁ : C(A, B))
     (K : Set A) (hEq : EqOn (f₀ : A → B) f₁ Kᶜ) (h₁ : MapsTo f₁ K e.baseSet)
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E)) :
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E)) :
     (supportedLift e f₀ f₁ K z).proj = f₁ z.proj := by
   classical
   by_cases hz : z.proj ∈ K
   · simpa [supportedLift, hz] using e.proj_lift (h₁ hz)
   · simpa [supportedLift, hz] using hEq hz
 
-private noncomputable def supportedMap (e : Trivialization F (π F E)) (f₀ f₁ : C(A, B))
+private noncomputable def supportedMap (e : Trivialization F (π P E)) (f₀ f₁ : C(A, B))
     (K : Set A) (hEq : EqOn (f₀ : A → B) f₁ Kᶜ) (h₁ : MapsTo f₁ K e.baseSet)
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E)) :
-    TotalSpace F ((f₁ : A → B) *ᵖ E) :=
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E)) :
+    TotalSpace P ((f₁ : A → B) *ᵖ E) :=
   ⟨z.proj, cast (congrArg E (supportedLift_proj e f₀ f₁ K hEq h₁ z))
     (supportedLift e f₀ f₁ K z).2⟩
 
-private theorem supportedMap_proj (e : Trivialization F (π F E)) (f₀ f₁ : C(A, B))
+private theorem supportedMap_proj (e : Trivialization F (π P E)) (f₀ f₁ : C(A, B))
     (K : Set A) (hEq : EqOn (f₀ : A → B) f₁ Kᶜ) (h₁ : MapsTo f₁ K e.baseSet)
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E)) :
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E)) :
     (supportedMap e f₀ f₁ K hEq h₁ z).proj = z.proj := rfl
 
-private theorem supportedMap_lift (e : Trivialization F (π F E)) (f₀ f₁ : C(A, B))
+private theorem supportedMap_lift (e : Trivialization F (π P E)) (f₀ f₁ : C(A, B))
     (K : Set A) (hEq : EqOn (f₀ : A → B) f₁ Kᶜ) (h₁ : MapsTo f₁ K e.baseSet)
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E)) :
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E)) :
     Pullback.lift f₁ (supportedMap e f₀ f₁ K hEq h₁ z) = supportedLift e f₀ f₁ K z := by
   exact TotalSpace.mk_cast (supportedLift_proj e f₀ f₁ K hEq h₁ z) _
 
-private theorem supportedMap_lift_chart (e : Trivialization F (π F E)) (f₀ f₁ : C(A, B))
+private theorem supportedMap_lift_chart (e : Trivialization F (π P E)) (f₀ f₁ : C(A, B))
     (K : Set A) (hEq : EqOn (f₀ : A → B) f₁ Kᶜ) (h₁ : MapsTo f₁ K e.baseSet)
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E))
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E))
     (hz : z.proj ∈ (f₀ ⁻¹' e.baseSet) ∩ (f₁ ⁻¹' e.baseSet)) :
     Pullback.lift f₁ (supportedMap e f₀ f₁ K hEq h₁ z) =
       e.lift (Pullback.lift f₀ z) (f₁ z.proj) := by
@@ -101,51 +111,51 @@ private theorem supportedMap_lift_chart (e : Trivialization F (π F E)) (f₀ f�
   · rw [← hEq h]
     exact (Trivialization.lift_self (T := e) (z := Pullback.lift f₀ z) hz.1).symm
 
-private theorem supportedMap_lift_off (e : Trivialization F (π F E)) (f₀ f₁ : C(A, B))
+private theorem supportedMap_lift_off (e : Trivialization F (π P E)) (f₀ f₁ : C(A, B))
     (K : Set A) (hEq : EqOn (f₀ : A → B) f₁ Kᶜ) (h₁ : MapsTo f₁ K e.baseSet)
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E)) (hz : z.proj ∉ K) :
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E)) (hz : z.proj ∉ K) :
     Pullback.lift f₁ (supportedMap e f₀ f₁ K hEq h₁ z) = Pullback.lift f₀ z := by
   classical
   simp [supportedMap_lift, supportedLift, hz]
 
-private theorem supportedMap_continuous (e : Trivialization F (π F E)) (f₀ f₁ : C(A, B))
+private theorem supportedMap_continuous (e : Trivialization F (π P E)) (f₀ f₁ : C(A, B))
     (K : Set A) (hK : IsClosed K) (hEq : EqOn (f₀ : A → B) f₁ Kᶜ)
     (h₀ : MapsTo f₀ K e.baseSet) (h₁ : MapsTo f₁ K e.baseSet) :
     Continuous (supportedMap e f₀ f₁ K hEq h₁) := by
-  apply (inducing_pullbackTotalSpaceEmbedding (F := F) (E := E) f₁).continuous_iff.mpr
-  apply (Pullback.continuous_proj F E f₀).prodMk
-  let W : Set (TotalSpace F ((f₀ : A → B) *ᵖ E)) :=
+  apply (inducing_pullbackTotalSpaceEmbedding (F := P) (E := E) f₁).continuous_iff.mpr
+  apply (Pullback.continuous_proj P E f₀).prodMk
+  let W : Set (TotalSpace P ((f₀ : A → B) *ᵖ E)) :=
     {z | f₀ z.proj ∈ e.baseSet ∧ f₁ z.proj ∈ e.baseSet}
-  let V : Set (TotalSpace F ((f₀ : A → B) *ᵖ E)) := {z | z.proj ∉ K}
+  let V : Set (TotalSpace P ((f₀ : A → B) *ᵖ E)) := {z | z.proj ∉ K}
   have hW : IsOpen W :=
-    (e.open_baseSet.preimage (f₀.continuous.comp (Pullback.continuous_proj F E f₀))).inter
-      (e.open_baseSet.preimage (f₁.continuous.comp (Pullback.continuous_proj F E f₀)))
-  have hV : IsOpen V := hK.isOpen_compl.preimage (Pullback.continuous_proj F E f₀)
+    (e.open_baseSet.preimage (f₀.continuous.comp (Pullback.continuous_proj P E f₀))).inter
+      (e.open_baseSet.preimage (f₁.continuous.comp (Pullback.continuous_proj P E f₀)))
+  have hV : IsOpen V := hK.isOpen_compl.preimage (Pullback.continuous_proj P E f₀)
   have cover : W ∪ V = univ := by
     ext z
     simp only [mem_union, mem_univ, iff_true]
     by_cases hz : z.proj ∈ K
     · exact Or.inl ⟨h₀ hz, h₁ hz⟩
     · exact Or.inr hz
-  have chart : ContinuousOn (fun z : TotalSpace F ((f₀ : A → B) *ᵖ E) ↦
+  have chart : ContinuousOn (fun z : TotalSpace P ((f₀ : A → B) *ᵖ E) ↦
       e.lift (Pullback.lift f₀ z) (f₁ z.proj)) W := by
     rw [continuousOn_iff_continuous_domRestrict]
     exact continuous_subtype_val.comp (e.liftCM.continuous.comp
-      (((Pullback.continuous_lift F E f₀).comp continuous_subtype_val).subtype_mk
+      (((Pullback.continuous_lift P E f₀).comp continuous_subtype_val).subtype_mk
         (fun z ↦ e.mem_source.mpr z.2.1) |>.prodMk
-        ((f₁.continuous.comp ((Pullback.continuous_proj F E f₀).comp
+        ((f₁.continuous.comp ((Pullback.continuous_proj P E f₀).comp
           continuous_subtype_val)).subtype_mk (fun z ↦ z.2.2))))
   have onW : ContinuousOn (fun z ↦ Pullback.lift f₁ (supportedMap e f₀ f₁ K hEq h₁ z)) W :=
     chart.congr (fun z hz ↦ supportedMap_lift_chart e f₀ f₁ K hEq h₁ z hz)
   have onV : ContinuousOn (fun z ↦ Pullback.lift f₁ (supportedMap e f₀ f₁ K hEq h₁ z)) V :=
-    (Pullback.continuous_lift F E f₀).continuousOn.congr
+    (Pullback.continuous_lift P E f₀).continuousOn.congr
       (fun z hz ↦ supportedMap_lift_off e f₀ f₁ K hEq h₁ z hz)
   exact continuousOn_univ.mp (cover ▸ onW.union_of_isOpen onV hW hV)
 
-private theorem supportedMap_inverse (e : Trivialization F (π F E)) (f₀ f₁ : C(A, B))
+private theorem supportedMap_inverse (e : Trivialization F (π P E)) (f₀ f₁ : C(A, B))
     (K : Set A) (hEq : EqOn (f₀ : A → B) f₁ Kᶜ)
     (h₀ : MapsTo f₀ K e.baseSet) (h₁ : MapsTo f₁ K e.baseSet)
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E)) :
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E)) :
     supportedMap e f₁ f₀ K hEq.symm h₀ (supportedMap e f₀ f₁ K hEq h₁ z) = z := by
   refine pullback_ext (f := (f₀ : A → B)) (by rfl) ?_
   by_cases hz : z.proj ∈ K
@@ -163,36 +173,39 @@ point of the original total space elsewhere. On the open set
 `f₀ ⁻¹' e.baseSet ∩ f₁ ⁻¹' e.baseSet`, retain the chart's fiber coordinate and
 replace `f₀ a` by `f₁ a`.
 
-The chart need not be global, and no local compactness or nonemptiness assumption
-on the spaces or fibers is required. This is the one-chart localization step in
-Hatcher's Proposition 1.7, not a homotopy-invariance theorem. -/
+The original total-space dummy `P` is independent of the chart model `F`. Both
+pullbacks retain `P` and use the given original total-space topology to define
+their standard pullback topologies. No topology on `P` is needed. The chart need
+not be global, and no local compactness or nonemptiness assumption on the spaces
+or fibers is required. This is the one-chart localization step in Hatcher's
+Proposition 1.7, not a homotopy-invariance theorem. -/
 noncomputable def supportedPullbackHomeomorph
-    (e : Trivialization F (π F E)) (f₀ f₁ : C(A, B)) (K : Set A)
+    (e : Trivialization F (π P E)) (f₀ f₁ : C(A, B)) (K : Set A)
     (hK : IsClosed K) (hEq : EqOn (f₀ : A → B) f₁ Kᶜ)
     (h₀ : MapsTo f₀ K e.baseSet) (h₁ : MapsTo f₁ K e.baseSet) :
-    TotalSpace F ((f₀ : A → B) *ᵖ E) ≃ₜ TotalSpace F ((f₁ : A → B) *ᵖ E) := {
-  toFun := private_decl% (show TotalSpace F ((f₀ : A → B) *ᵖ E) →
-    TotalSpace F ((f₁ : A → B) *ᵖ E) from supportedMap e f₀ f₁ K hEq h₁)
-  invFun := private_decl% (show TotalSpace F ((f₁ : A → B) *ᵖ E) →
-    TotalSpace F ((f₀ : A → B) *ᵖ E) from supportedMap e f₁ f₀ K hEq.symm h₀)
+    TotalSpace P ((f₀ : A → B) *ᵖ E) ≃ₜ TotalSpace P ((f₁ : A → B) *ᵖ E) := {
+  toFun := private_decl% (show TotalSpace P ((f₀ : A → B) *ᵖ E) →
+    TotalSpace P ((f₁ : A → B) *ᵖ E) from supportedMap e f₀ f₁ K hEq h₁)
+  invFun := private_decl% (show TotalSpace P ((f₁ : A → B) *ᵖ E) →
+    TotalSpace P ((f₀ : A → B) *ᵖ E) from supportedMap e f₁ f₀ K hEq.symm h₀)
   left_inv := by exact supportedMap_inverse e f₀ f₁ K hEq h₀ h₁
   right_inv := by exact supportedMap_inverse e f₁ f₀ K hEq.symm h₁ h₀
   continuous_toFun := by exact supportedMap_continuous e f₀ f₁ K hK hEq h₀ h₁
   continuous_invFun := by exact supportedMap_continuous e f₁ f₀ K hK hEq.symm h₁ h₀ }
 
-variable (e : Trivialization F (π F E)) (f₀ f₁ : C(A, B)) (K : Set A)
+variable (e : Trivialization F (π P E)) (f₀ f₁ : C(A, B)) (K : Set A)
 variable (hK : IsClosed K) (hEq : EqOn (f₀ : A → B) f₁ Kᶜ)
 variable (h₀ : MapsTo f₀ K e.baseSet) (h₁ : MapsTo f₁ K e.baseSet)
 
 /-- Supported transport preserves the point of the domain. -/
 @[simp] theorem supportedPullbackHomeomorph_proj
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E)) :
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E)) :
     (e.supportedPullbackHomeomorph f₀ f₁ K hK hEq h₀ h₁ z).proj = z.proj := by
   rfl
 
 /-- On the common chart domain, the lifted point is the existing chart lift. -/
 theorem supportedPullbackHomeomorph_lift_of_mem
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E))
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E))
     (hz : z.proj ∈ (f₀ ⁻¹' e.baseSet) ∩ (f₁ ⁻¹' e.baseSet)) :
     Pullback.lift f₁ (e.supportedPullbackHomeomorph f₀ f₁ K hK hEq h₀ h₁ z) =
       e.lift (Pullback.lift f₀ z) (f₁ z.proj) := by
@@ -200,7 +213,7 @@ theorem supportedPullbackHomeomorph_lift_of_mem
 
 /-- The chart-domain formula agrees with Mathlib's jointly continuous chart lift. -/
 theorem supportedPullbackHomeomorph_lift_eq_liftCM
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E))
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E))
     (hz₀ : f₀ z.proj ∈ e.baseSet) (hz₁ : f₁ z.proj ∈ e.baseSet) :
     Pullback.lift f₁ (e.supportedPullbackHomeomorph f₀ f₁ K hK hEq h₀ h₁ z) =
       (e.liftCM (⟨Pullback.lift f₀ z, e.mem_source.mpr hz₀⟩,
@@ -209,7 +222,7 @@ theorem supportedPullbackHomeomorph_lift_eq_liftCM
 
 /-- The chart fiber coordinate is unchanged on the common chart domain. -/
 theorem supportedPullbackHomeomorph_chart
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E))
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E))
     (hz : z.proj ∈ (f₀ ⁻¹' e.baseSet) ∩ (f₁ ⁻¹' e.baseSet)) :
     e (Pullback.lift f₁ (e.supportedPullbackHomeomorph f₀ f₁ K hK hEq h₀ h₁ z)) =
       (f₁ z.proj, (e (Pullback.lift f₀ z)).2) := by
@@ -218,7 +231,7 @@ theorem supportedPullbackHomeomorph_chart
 
 /-- Off the closed subset, the original total-space point is unchanged. -/
 theorem supportedPullbackHomeomorph_lift_of_notMem
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E)) (hz : z.proj ∉ K) :
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E)) (hz : z.proj ∉ K) :
     Pullback.lift f₁ (e.supportedPullbackHomeomorph f₀ f₁ K hK hEq h₀ h₁ z) =
       Pullback.lift f₀ z := by
   exact supportedMap_lift_off e f₀ f₁ K hEq h₁ z hz
@@ -226,7 +239,7 @@ theorem supportedPullbackHomeomorph_lift_of_notMem
 /-- Off the closed subset, supported transport is the canonical equality cast
 between the two fibers. -/
 theorem supportedPullbackHomeomorph_apply_of_notMem
-    (z : TotalSpace F ((f₀ : A → B) *ᵖ E)) (hz : z.proj ∉ K) :
+    (z : TotalSpace P ((f₀ : A → B) *ᵖ E)) (hz : z.proj ∉ K) :
     e.supportedPullbackHomeomorph f₀ f₁ K hK hEq h₀ h₁ z =
       ⟨z.proj, cast (congrArg E (hEq hz)) z.2⟩ := by
   refine pullback_ext (f := (f₁ : A → B))
@@ -244,7 +257,7 @@ theorem supportedPullbackHomeomorph_symm :
 characterize supported transport. This also permits local comparisons without
 choosing a distinguished supporting subset. -/
 theorem supportedPullbackHomeomorph_unique
-    (H : TotalSpace F ((f₀ : A → B) *ᵖ E) ≃ₜ TotalSpace F ((f₁ : A → B) *ᵖ E))
+    (H : TotalSpace P ((f₀ : A → B) *ᵖ E) ≃ₜ TotalSpace P ((f₁ : A → B) *ᵖ E))
     (hproj : ∀ z, (H z).proj = z.proj)
     (hin : ∀ z, z.proj ∈ K →
       Pullback.lift f₁ (H z) = e.lift (Pullback.lift f₀ z) (f₁ z.proj))
@@ -282,7 +295,7 @@ theorem supportedPullbackHomeomorph_congr_support
 @[simp] theorem supportedPullbackHomeomorph_refl
     (f : C(A, B)) (h : MapsTo f K e.baseSet) :
     e.supportedPullbackHomeomorph f f K hK (fun _ _ ↦ rfl) h h =
-      Homeomorph.refl (TotalSpace F ((f : A → B) *ᵖ E)) := by
+      Homeomorph.refl (TotalSpace P ((f : A → B) *ᵖ E)) := by
   symm
   apply e.supportedPullbackHomeomorph_unique f f K hK (fun _ _ ↦ rfl) h h
   · exact fun _ ↦ rfl
@@ -324,32 +337,94 @@ after lifting both results to the original total space. The support on the new
 domain is the inverse image of the original support. -/
 theorem supportedPullbackHomeomorph_lift_comp
     {A' : Type uA'} [TopologicalSpace A'] (r : C(A', A))
-    (z : TotalSpace F (((f₀.comp r) : A' → B) *ᵖ E)) :
+    (z : TotalSpace P (((f₀.comp r) : A' → B) *ᵖ E)) :
     Pullback.lift (f₁.comp r)
         (e.supportedPullbackHomeomorph (f₀.comp r) (f₁.comp r) (r ⁻¹' K)
           (hK.preimage r.continuous) (fun _ hz ↦ hEq hz)
           (fun _ hz ↦ h₀ hz) (fun _ hz ↦ h₁ hz) z) =
       Pullback.lift f₁
         (e.supportedPullbackHomeomorph f₀ f₁ K hK hEq h₀ h₁
-          (TotalSpace.mk' F (r z.proj) z.snd)) := by
+          (TotalSpace.mk' P (r z.proj) z.snd)) := by
   by_cases hz : r z.proj ∈ K
   · rw [e.supportedPullbackHomeomorph_lift_of_mem
         (f₀.comp r) (f₁.comp r) (r ⁻¹' K) (hK.preimage r.continuous)
         (fun _ hx ↦ hEq hx) (fun _ hx ↦ h₀ hx) (fun _ hx ↦ h₁ hx) z
         ⟨h₀ hz, h₁ hz⟩,
       e.supportedPullbackHomeomorph_lift_of_mem f₀ f₁ K hK hEq h₀ h₁
-        (TotalSpace.mk' F (r z.proj) z.snd) ⟨h₀ hz, h₁ hz⟩]
+        (TotalSpace.mk' P (r z.proj) z.snd) ⟨h₀ hz, h₁ hz⟩]
     rfl
   · rw [e.supportedPullbackHomeomorph_lift_of_notMem
         (f₀.comp r) (f₁.comp r) (r ⁻¹' K) (hK.preimage r.continuous)
         (fun _ hx ↦ hEq hx) (fun _ hx ↦ h₀ hx) (fun _ hx ↦ h₁ hx) z hz,
       e.supportedPullbackHomeomorph_lift_of_notMem f₀ f₁ K hK hEq h₀ h₁
-        (TotalSpace.mk' F (r z.proj) z.snd) hz]
+        (TotalSpace.mk' P (r z.proj) z.snd) hz]
     rfl
 
 section Linear
 
-variable {R : Type*} [Semiring R] [AddCommMonoid F] [Module R F]
+variable {R : Type uR} [Semiring R] [AddCommMonoid F] [Module R F]
+variable [∀ b, AddCommMonoid (E b)] [∀ b, Module R (E b)]
+
+/-- Linear coordinate equivalences for the given chart make supported transport
+linear on each original fiber. On `K` the fiber map is `L₁⁻¹ ∘ L₀`; off `K` it is
+the equality cast from `hEq`. The cast in the conclusion uses only the projection
+equation. No topology on the semiring or continuity of module operations is needed. -/
+theorem supportedPullbackHomeomorph_isLinearMap_of_coordinates
+    (L : ∀ b, b ∈ e.baseSet → E b ≃ₗ[R] F)
+    (hL : ∀ b (hb : b ∈ e.baseSet) (v : E b),
+      L b hb v = (e (⟨b, v⟩ : TotalSpace P E)).2) (a : A) :
+    IsLinearMap R (fun v : E (f₀ a) ↦
+      cast (congrArg (fun x : A ↦ E (f₁ x))
+        (e.supportedPullbackHomeomorph_proj f₀ f₁ K hK hEq h₀ h₁
+          (⟨a, v⟩ : TotalSpace P ((f₀ : A → B) *ᵖ E))))
+        (e.supportedPullbackHomeomorph f₀ f₁ K hK hEq h₀ h₁ ⟨a, v⟩).2) := by
+  let H := e.supportedPullbackHomeomorph f₀ f₁ K hK hEq h₀ h₁
+  let out : E (f₀ a) → E (f₁ a) := fun v ↦
+    cast (congrArg (fun x : A ↦ E (f₁ x))
+      (e.supportedPullbackHomeomorph_proj f₀ f₁ K hK hEq h₀ h₁ ⟨a, v⟩))
+      (H ⟨a, v⟩).2
+  change IsLinearMap R out
+  have point (v : E (f₀ a)) :
+      (⟨a, out v⟩ : TotalSpace P ((f₁ : A → B) *ᵖ E)) = H ⟨a, v⟩ :=
+    TotalSpace.mk_cast (e.supportedPullbackHomeomorph_proj f₀ f₁ K hK hEq h₀ h₁ ⟨a, v⟩) _
+  by_cases ha : a ∈ K
+  · let φ : E (f₀ a) →ₗ[R] E (f₁ a) :=
+      (L (f₁ a) (h₁ ha)).symm.toLinearMap.comp (L (f₀ a) (h₀ ha)).toLinearMap
+    have eq : out = φ := by
+      funext v
+      apply (L (f₁ a) (h₁ ha)).injective
+      change L (f₁ a) (h₁ ha) (out v) =
+        L (f₁ a) (h₁ ha) ((L (f₁ a) (h₁ ha)).symm (L (f₀ a) (h₀ ha) v))
+      rw [LinearEquiv.apply_symm_apply, hL (f₁ a) (h₁ ha), hL (f₀ a) (h₀ ha)]
+      have hc := congrArg Prod.snd
+        (e.supportedPullbackHomeomorph_chart f₀ f₁ K hK hEq h₀ h₁ ⟨a, v⟩ ⟨h₀ ha, h₁ ha⟩)
+      exact (congrArg (fun z ↦ (e (Pullback.lift f₁ z)).2) (point v)).trans hc
+    rw [eq]
+    exact φ.isLinear
+  · have eq : out = fun v ↦ cast (congrArg E (hEq ha)) v := by
+      funext v
+      exact (TotalSpace.mk_inj (F := P) (E := (f₁ : A → B) *ᵖ E) (b := a)).mp ((point v).trans
+        (e.supportedPullbackHomeomorph_apply_of_notMem f₀ f₁ K hK hEq h₀ h₁ ⟨a, v⟩ ha))
+    rw [eq]
+    have cast_linear {b c : B} (hb : b = c) :
+        IsLinearMap R (fun v : E b ↦ cast (congrArg E hb) v) := by
+      cases hb
+      exact (LinearMap.id : E b →ₗ[R] E b).isLinear
+    exact cast_linear (hEq ha)
+
+end Linear
+
+end Transport
+
+section Linear
+
+variable {A : Type uA} {B : Type uB} {F : Type uF} {E : B → Type uE}
+variable [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace F]
+variable [TopologicalSpace (TotalSpace F E)]
+variable (e : Trivialization F (π F E)) (f₀ f₁ : C(A, B)) (K : Set A)
+variable (hK : IsClosed K) (hEq : EqOn (f₀ : A → B) f₁ Kᶜ)
+variable (h₀ : MapsTo f₀ K e.baseSet) (h₁ : MapsTo f₁ K e.baseSet)
+variable {R : Type uR} [Semiring R] [AddCommMonoid F] [Module R F]
 variable [∀ b, AddCommMonoid (E b)] [∀ b, Module R (E b)]
 
 /-- A linear chart makes supported transport linear on each fiber. The cast only
@@ -361,42 +436,8 @@ theorem supportedPullbackHomeomorph_isLinearMap [e.IsLinear R] (a : A) :
         (e.supportedPullbackHomeomorph_proj f₀ f₁ K hK hEq h₀ h₁
           (⟨a, v⟩ : TotalSpace F ((f₀ : A → B) *ᵖ E))))
         (e.supportedPullbackHomeomorph f₀ f₁ K hK hEq h₀ h₁ ⟨a, v⟩).2) := by
-  let H := e.supportedPullbackHomeomorph f₀ f₁ K hK hEq h₀ h₁
-  let out : E (f₀ a) → E (f₁ a) := fun v ↦
-    cast (congrArg (fun x : A ↦ E (f₁ x))
-      (e.supportedPullbackHomeomorph_proj f₀ f₁ K hK hEq h₀ h₁ ⟨a, v⟩))
-      (H ⟨a, v⟩).2
-  change IsLinearMap R out
-  have point (v : E (f₀ a)) :
-      (⟨a, out v⟩ : TotalSpace F ((f₁ : A → B) *ᵖ E)) = H ⟨a, v⟩ :=
-    TotalSpace.mk_cast (e.supportedPullbackHomeomorph_proj f₀ f₁ K hK hEq h₀ h₁ ⟨a, v⟩) _
-  by_cases ha : a ∈ K
-  · let L : E (f₀ a) →ₗ[R] E (f₁ a) :=
-      (e.linearEquivAt R (f₁ a) (h₁ ha)).symm.toLinearMap.comp
-        (e.linearEquivAt R (f₀ a) (h₀ ha)).toLinearMap
-    have eq : out = L := by
-      funext v
-      apply (e.linearEquivAt R (f₁ a) (h₁ ha)).injective
-      change (e ⟨f₁ a, out v⟩).2 =
-        e.linearEquivAt R (f₁ a) (h₁ ha)
-          ((e.linearEquivAt R (f₁ a) (h₁ ha)).symm
-            (e.linearEquivAt R (f₀ a) (h₀ ha) v))
-      rw [LinearEquiv.apply_symm_apply]
-      have hc := congrArg Prod.snd
-        (e.supportedPullbackHomeomorph_chart f₀ f₁ K hK hEq h₀ h₁ ⟨a, v⟩ ⟨h₀ ha, h₁ ha⟩)
-      exact (congrArg (fun z ↦ (e (Pullback.lift f₁ z)).2) (point v)).trans hc
-    rw [eq]
-    exact L.isLinear
-  · have eq : out = fun v ↦ cast (congrArg E (hEq ha)) v := by
-      funext v
-      exact (TotalSpace.mk_inj (F := F) (E := (f₁ : A → B) *ᵖ E) (b := a)).mp ((point v).trans
-        (e.supportedPullbackHomeomorph_apply_of_notMem f₀ f₁ K hK hEq h₀ h₁ ⟨a, v⟩ ha))
-    rw [eq]
-    have cast_linear {b c : B} (hb : b = c) :
-        IsLinearMap R (fun v : E b ↦ cast (congrArg E hb) v) := by
-      cases hb
-      exact (LinearMap.id : E b →ₗ[R] E b).isLinear
-    exact cast_linear (hEq ha)
+  exact e.supportedPullbackHomeomorph_isLinearMap_of_coordinates f₀ f₁ K hK hEq h₀ h₁
+    (fun b hb ↦ e.linearEquivAt R b hb) (fun _ _ _ ↦ rfl) a
 
 end Linear
 

@@ -306,7 +306,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.FiberBundle.Prod`](VectorBundles/Topology/FiberBundle/Prod.lean) | Symmetry, associativity and pullback comparison of fiberwise products |
 | [`Topology.FiberBundle.Pullback`](VectorBundles/Topology/FiberBundle/Pullback.lean) | Compatible-pair total spaces and universal pullback maps |
 | [`Topology.FiberBundle.Pullback.Proper`](VectorBundles/Topology/FiberBundle/Pullback/Proper.lean) | Proper canonical lifts from proper base maps and continuity of the original projection; [two direct examples](VectorBundlesTest/Topology/FiberBundle/Pullback/Proper.lean) for a noninjective two-sheeted base and empty original fibers |
-| [`Topology.FiberBundle.SupportedTransport`](VectorBundles/Topology/FiberBundle/SupportedTransport.lean) | Pullback transport localized to one chart by a closed subset |
+| [`Topology.FiberBundle.SupportedTransport`](VectorBundles/Topology/FiberBundle/SupportedTransport.lean) | Pullback transport localized to one chart by a closed subset, with independent original dummy and chart model; given linear coordinates make each fiber map linear over an arbitrary semiring |
 | [`Topology.MetricSpace.Antilipschitz`](VectorBundles/Topology/MetricSpace/Antilipschitz.lean) | Product embeddings from locally uniform antilipschitz bounds |
 | [`Topology.VectorBundle.Cylinder`](VectorBundles/Topology/VectorBundle/Cylinder.lean) | Linear charts near a compact interval cylinder |
 | [`Topology.VectorBundle.Embedding`](VectorBundles/Topology/VectorBundle/Embedding.lean) | Total-space embeddings from fiberwise injective linear maps |
