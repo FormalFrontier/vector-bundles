@@ -11,6 +11,30 @@ topological fiber bundles.
 
 ## Headline results
 
+### Finite product-chart selection
+
+For a compact base `X` and an arbitrary topological parameter space `Y` with a
+chosen point `y₀`, local whole-product charts near every point of `X` admit a
+finite ordered open cover. The selected charts retain their original varying
+models, their homeomorphisms on the original projection preimages, both base
+laws, and agreement with the original coordinates in both directions on the
+slice at `y₀`.
+
+With the given module structures on the original projection fibers over an
+arbitrary semiring, the linear version retains linear coordinates at every
+parameter, their forward and inverse formulas for the same homeomorphism, and
+their identification with the original linear coordinates at `y₀`. The base may
+be empty; the semiring need not be commutative or carry a topology.
+
+The results are
+[`exists_finiteProductCover_of_local`](VectorBundles/Topology/FiberBundle/FiniteCylinderCover.lean)
+and
+[`exists_finiteLinearProductCover_of_local`](VectorBundles/Topology/FiberBundle/FiniteCylinderCover.lean).
+The cylinder-cover APIs are their exact specializations to `Y = I`, `y₀ = 0`.
+The whole-product charts are hypotheses: this does not construct them from an
+ordinary local atlas over an arbitrary parameter space. Neither compactness of
+`Y` nor continuity of the projection is assumed.
+
 - **Algebraic projection/preimage retractions:** for an injective linear map
   `β : F →ₗ[K] A` from a given plain module over an `RCLike` field into a given
   inner product space, `[β.range.HasOrthogonalProjection]` gives
