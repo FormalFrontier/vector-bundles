@@ -31,6 +31,7 @@ globs = [
   "VectorBundles.Topology.CompactOpen",
   "VectorBundles.Topology.Connected.Basic",
   "VectorBundles.Topology.Separable.Basic",
+  "VectorBundles.Topology.ShrinkingLemma",
   "VectorBundles.Topology.FiberBundle.Basic",
   "VectorBundles.Topology.FiberBundle.Connected",
   "VectorBundles.Topology.FiberBundle.Separable",

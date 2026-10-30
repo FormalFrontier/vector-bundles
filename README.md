@@ -92,6 +92,15 @@ topological fiber bundles.
   No scalar-field regularity, Hausdorffness, local compactness or countability
   hypothesis is required.
 
+- **Finite-support shrinking in normal spaces:**
+  [`Set.Finite.exists_open_cover_shrinking`](VectorBundles/Topology/ShrinkingLemma.lean)
+  shrinks a cover indexed by a finite subset `s` of an arbitrary index type to an
+  all-open cover, empty off `s`, with closure containment at every index. Only the
+  original sets indexed by `s` must be open and cover the space. No T1 assumption
+  or finiteness of the whole index type is required.
+  [`Set.Finite.exists_nested_open_cover_shrinking`](VectorBundles/Topology/ShrinkingLemma.lean)
+  gives two such covering families with nested closure containment.
+
 The [detailed results guide](docs/Results.md) groups statements and examples by
 topic, with their individual hypotheses and distinctions from existing Mathlib
 constructions. Selected results include:
@@ -245,6 +254,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.Connected.Basic`](VectorBundles/Topology/Connected/Basic.lean) | Preconnected preimages under open maps with preconnected fibers over a preconnected subset of the range |
 | [`Topology.FiberBundle.Connected`](VectorBundles/Topology/FiberBundle/Connected.lean) | Preconnected projection preimages and preconnected/connected total spaces; [real and empty-model examples](VectorBundlesTest/Topology/FiberBundle/Connected.lean) |
 | [`Topology.Separable.Basic`](VectorBundles/Topology/Separable/Basic.lean) | Ambient-separable preimages under open maps with all ambient fibers separable; arbitrary-set preimage equivalence for open quotient maps; separable domains for separable targets |
+| [`Topology.ShrinkingLemma`](VectorBundles/Topology/ShrinkingLemma.lean) | Open and nested shrinkings supported on a finite subset of an arbitrary index type in a normal space, without T1 |
 | [`Topology.FiberBundle.Separable`](VectorBundles/Topology/FiberBundle/Separable.lean) | Separable total spaces, model reflection at a specified base point, and a global equivalence under nonempty base and model, with original topologies and bundle data; [product, ambient-strip and empty-boundary examples](VectorBundlesTest/Topology/FiberBundle/Separable.lean) |
 | [`Topology.FiberBundle.Projection`](VectorBundles/Topology/FiberBundle/Projection.lean) | Sharp projection criteria, canonical homeomorphism and inverse/zero-section formulas |
 | [`Topology.FiberBundle.Proper`](VectorBundles/Topology/FiberBundle/Proper.lean) | Proper projection exactly when every fiber is compact; compactness transfer and equivalence without separation |
