@@ -68,6 +68,10 @@ public import VectorBundles.Analysis.Normed.Operator.Factorization
 public import VectorBundles.Analysis.Normed.Operator.LowerBound
 public import VectorBundles.Data.Bundle
 public import VectorBundles.Topology.FiberBundle.ClosedCylinder
+public import VectorBundles.Topology.FiberBundle.ClosedCylinderLinear
+public import VectorBundles.Topology.FiberBundle.PreimageHomeomorph
+public import VectorBundles.Topology.FiberBundle.PreimageFiber
+public import VectorBundles.Topology.FiberBundle.ClosedCylinderSlab
 public import VectorBundles.Topology.FiberBundle.FiniteCylinderCover
 public import VectorBundles.Topology.FiberBundle.Prod
 public import VectorBundles.Topology.FiberBundle.Pullback
@@ -109,5 +113,8 @@ cover supplies the weights. Closed-half-cylinder product charts with different m
 paste to a left-model product homeomorphism retaining the entire left chart. An open
 cover of a product with the unit interval has uniform closed subdivisions near each
 base point; on a compact base, supplied local whole-cylinder charts admit a finite
-ordered cover, including their given fiberwise linear coordinates.
+ordered cover, including their given fiberwise linear coordinates. Product charts
+restrict to arbitrary subsets of their bases. The resulting subtype fibers are
+canonically homeomorphic to the original projection fibers and carry linear equivalences
+for the supplied fiber modules.
 -/
