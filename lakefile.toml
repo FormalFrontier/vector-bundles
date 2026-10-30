@@ -12,6 +12,9 @@ weak.linter.style.header = false
 [[lean_lib]]
 name = "VectorBundles"
 globs = [
+  "VectorBundles.LinearAlgebra.Pairing.Adjoint",
+  "VectorBundles.Topology.MetricSpace.PairwiseDistance",
+  "VectorBundles.Analysis.InnerProductSpace.AdjointPair",
   "VectorBundles.Analysis.Normed.Operator.Composition",
   "VectorBundles",
   "VectorBundles.Topology.ContinuousMap.Algebra",
@@ -119,6 +122,7 @@ globs = [
 [[lean_lib]]
 name = "VectorBundlesTest"
 globs = [
+  "VectorBundlesTest.AdjointPair",
   "VectorBundlesTest.AntiDualPrecomposition",
   "VectorBundlesTest.OrthogonalRetraction",
   "VectorBundlesTest",
