@@ -30,6 +30,22 @@ topological fiber bundles.
   `closure {x | w i x ≠ 0} ⊆ U i`. No compactness, nonemptiness, T1 or Hausdorff assumption,
   finiteness of `J`, or openness off `s` is required.
 
+- **Whole-cylinder charts from local atlases:** an open, base-preserving atlas for
+  a continuous projection `p : T → X × unitInterval` gives an open neighborhood `U`
+  of each point of `X` and a homeomorphism
+  `{z : T // (p z).1 ∈ U} ≃ₜ (U × unitInterval) × F j₀`.
+  Both directions preserve the cylinder base point and agree at time zero with
+  one input chart. If `X` is compact, finitely many such neighborhoods cover `X`,
+  without any normality assumption. The
+  [subdivision API](VectorBundles/Topology/FiberBundle/ClosedCylinderSubdivisionData.lean)
+  records the recursively glued charts and their successor and endpoint laws.
+  When the input coordinates on each original projection fiber are linear, the
+  [linear refinement](VectorBundles/Topology/FiberBundle/ClosedCylinderSubdivisionDataLinear.lean)
+  gives linear coordinates for the same homeomorphism at every time. The scalar
+  semiring may be noncommutative, chart models may vary, and the original total
+  space, fiber operations and topologies are unchanged. No fiber norm, finite-rank
+  or scalar-topology assumption is imposed.
+
 - **Finite ordered cylinder transport with given weights:**
   [`Bundle.Trivialization.finiteCylinderTransport`](VectorBundles/Topology/FiberBundle/FiniteTransport.lean)
   gives a homeomorphism from the iterated standard pullback of the entire original

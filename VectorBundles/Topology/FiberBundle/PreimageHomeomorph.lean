@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib.Logic.Equiv.Prod
+public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
@@ -195,5 +196,28 @@ theorem restrictPreimageProd_symm_apply_val (e : (q ⁻¹' V) ≃ₜ V × F)
   exact e.restrictPreimage_symm_apply_val hUI he _
 
 end ProductBase
+
+universe uJ uM
+
+/-- A map with base-preserving product charts is continuous when the chart
+sources are open and cover its domain. The base sets need not be open, and the
+model spaces may vary with the chart. -/
+theorem continuous_of_open_preimage_cover
+    {B : Type uB} {Z : Type uZ} {J : Type uJ} {M : J → Type uM}
+    [TopologicalSpace B] [TopologicalSpace Z] [∀ j, TopologicalSpace (M j)]
+    {p : Z → B} {W : J → Set B}
+    (H : ∀ j, (p ⁻¹' W j) ≃ₜ W j × M j)
+    (he : ∀ j (z : p ⁻¹' W j), (H j z).1.val = p z.val)
+    (hsource : ∀ j, IsOpen (p ⁻¹' W j))
+    (hcover : ∀ z, ∃ j, p z ∈ W j) : Continuous p := by
+  refine continuous_of_cover_nhds (s := fun j => p ⁻¹' W j) ?_ ?_
+  · intro z
+    obtain ⟨j, hz⟩ := hcover z
+    exact ⟨j, (hsource j).mem_nhds hz⟩
+  · intro j
+    apply continuousOn_iff_continuous_domRestrict.mpr
+    have hlocal : Continuous (fun z : p ⁻¹' W j => (H j z).1.val) :=
+      continuous_subtype_val.comp (H j).continuous.fst
+    exact hlocal.congr (he j)
 
 end Homeomorph

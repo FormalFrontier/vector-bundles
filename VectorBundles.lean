@@ -72,6 +72,8 @@ public import VectorBundles.Topology.FiberBundle.ClosedCylinderLinear
 public import VectorBundles.Topology.FiberBundle.PreimageHomeomorph
 public import VectorBundles.Topology.FiberBundle.PreimageFiber
 public import VectorBundles.Topology.FiberBundle.ClosedCylinderSlab
+public import VectorBundles.Topology.FiberBundle.ClosedCylinderSubdivisionData
+public import VectorBundles.Topology.FiberBundle.ClosedCylinderSubdivisionDataLinear
 public import VectorBundles.Topology.FiberBundle.FiniteCylinderCover
 public import VectorBundles.Topology.FiberBundle.Prod
 public import VectorBundles.Topology.FiberBundle.Pullback

@@ -83,6 +83,8 @@ globs = [
   "VectorBundles.Topology.FiberBundle.PreimageHomeomorph",
   "VectorBundles.Topology.FiberBundle.PreimageFiber",
   "VectorBundles.Topology.FiberBundle.ClosedCylinderSlab",
+  "VectorBundles.Topology.FiberBundle.ClosedCylinderSubdivisionData",
+  "VectorBundles.Topology.FiberBundle.ClosedCylinderSubdivisionDataLinear",
   "VectorBundles.Topology.FiberBundle.FiniteCylinderCover",
   "VectorBundles.Topology.FiberBundle.Prod",
   "VectorBundles.Topology.FiberBundle.Pullback",
