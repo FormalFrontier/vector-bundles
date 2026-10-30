@@ -11,6 +11,17 @@ topological fiber bundles.
 
 ## Headline results
 
+### Finite subdivisions of closed real intervals
+
+[`exists_fin_monotone_Icc_subset_open_cover_Icc`](VectorBundles/Topology/UnitInterval.lean)
+subdivides any nonempty closed real interval into finitely many monotone closed slabs,
+each contained in a selected member of the given open cover. The cuts include
+both endpoints and the slabs cover the interval exactly. Covers may be indexed
+by any sort; repeated cuts and at least one slab also cover singleton intervals.
+The product-neighbourhood theorem
+`exists_open_nhds_prod_Icc_subset_open_cover_unitInterval` provides a common open
+neighbourhood for all slabs without separation assumptions on the base space.
+
 ### Finite product-chart selection
 
 For a compact base `X` and an arbitrary topological parameter space `Y` with a
