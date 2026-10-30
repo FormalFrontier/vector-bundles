@@ -15,6 +15,7 @@ globs = [
   "VectorBundles.Analysis.Normed.Operator.Composition",
   "VectorBundles",
   "VectorBundles.Topology.ContinuousMap.Algebra",
+  "VectorBundles.Topology.ContinuousMap.FiniteWeights",
   "VectorBundles.Topology.Bornology.Bounded",
   "VectorBundles.Topology.VectorBundle.Section",
   "VectorBundles.Topology.VectorBundle.HermitianMetric.Operations",

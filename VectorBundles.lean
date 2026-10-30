@@ -10,6 +10,7 @@ public import VectorBundles.Topology.Algebra.GroupWithZero
 public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
 public import VectorBundles.Topology.Algebra.Module.OpenMap
 public import VectorBundles.Topology.ContinuousMap.Algebra
+public import VectorBundles.Topology.ContinuousMap.FiniteWeights
 public import VectorBundles.Topology.Compactness.CountablyCompact
 public import VectorBundles.Topology.Compactness.Lindelof
 public import VectorBundles.Topology.Compactness.Paracompact
@@ -90,6 +91,7 @@ products, pullbacks, cylinder charts, frames, finite embeddings, ranges and comp
 together with pullbacks of supplied Hermitian metrics and canonical comparisons of their
 orthogonal complements. The projection modules give open-embedding criteria by subsingleton
 fibers, canonical projection homeomorphisms when every fiber is also nonempty, and the
-proper-projection criterion by compactness of every fiber. It also includes finite-support
-open-cover shrinkings in normal spaces.
+proper-projection criterion by compactness of every fiber. Finite-support open-cover
+shrinkings and continuous real partitions of unity on normal spaces have subordinate
+closures without additional separation assumptions.
 -/

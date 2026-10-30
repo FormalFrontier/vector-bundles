@@ -11,6 +11,15 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Finite partitions of unity on normal spaces:**
+  [`ContinuousMap.exists_finite_weights`](VectorBundles/Topology/ContinuousMap/FiniteWeights.lean)
+  gives continuous real weights for any normal topological space `X`, arbitrary index type
+  `J`, finite index set `s : Finset J` and family `U : J → Set X` whose members on `s` are
+  open and cover `X`. The weights are defined at every index, lie in `[0, 1]`, vanish as
+  continuous maps off `s`, and sum to one over `s` at each point. For every index `i`,
+  `closure {x | w i x ≠ 0} ⊆ U i`. No compactness, nonemptiness, T1 or Hausdorff assumption,
+  finiteness of `J`, or openness off `s` is required.
+
 - **Locally varying finite-rank atlas data:** covering fibrewise-linear charts on
   given module fibres and their given total-space topology, with linear coordinate
   equivalences, pointwise finite generation of the original fibres, and fixed-model
@@ -241,6 +250,7 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Analysis.InnerProductSpace.PositiveForm`](VectorBundles/Analysis/InnerProductSpace/PositiveForm.lean) | Bounded positive-form unit sublevels in the original topology |
 | [`Analysis.Normed.Ring.Units`](VectorBundles/Analysis/Normed/Ring/Units.lean) | Value embedding for units of a seminormed ring |
 | [`Topology.Algebra.GroupWithZero`](VectorBundles/Topology/Algebra/GroupWithZero.lean) | Continuity of reciprocal selected finite sums of real squares under pointwise nonzero coverage |
+| [`Topology.ContinuousMap.FiniteWeights`](VectorBundles/Topology/ContinuousMap/FiniteWeights.lean) | Finite partitions of unity on normal spaces, with all-index closed-cozero subordination and no further separation assumptions |
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
 | [`Topology.Bornology.Inducing`](VectorBundles/Topology/Bornology/Inducing.lean) | `IsVonNBounded.preimage_of_isInducing` over a general `NormedDivisionRing`, without injectivity or topological vector-space hypotheses |
 | [`Topology.Compactness.CountablyCompact`](VectorBundles/Topology/Compactness/CountablyCompact.lean) | Countably compact preimages under proper maps exactly when the target subset intersected with the range is countably compact |
@@ -334,6 +344,10 @@ over an incomplete field.
   remark, the supplied-metric geometric ingredients of Proposition 1.3,
   finite complements in Proposition 1.4, pullbacks in Proposition 1.5, and
   the two preliminary cylinder facts used in Proposition 1.7.
+- Finite normal shrinking and Urysohn's lemma give the finite partitions of unity.
+  The latter uses Yury Kudryashov's
+  [Mathlib formalization](https://github.com/leanprover-community/mathlib4/blob/83abb3e776bdefcbc447a1e44d0debe4010039e5/Mathlib/Topology/UrysohnsLemma.lean).
+  Hatcher's version 2.2, printed p. 20 (PDF p. 24), motivates this finite-cover formulation.
 - Mathlib's [bundle geometry](https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5/Mathlib/Topology/VectorBundle),
   module topology, bounded-convergence operator topology, inner products,
   orthogonal complements, partitions of unity and continuous functional calculus.
