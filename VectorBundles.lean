@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundles.Analysis.InnerProductSpace.PositiveForm
+public import VectorBundles.Analysis.InnerProductSpace.Projection.Fiberwise
 public import VectorBundles.Analysis.Normed.Ring.Units
 public import VectorBundles.Topology.Algebra.GroupWithZero
 public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
@@ -99,7 +100,8 @@ public import VectorBundles.Topology.VectorBundle.HermitianMetric.Operations
 /-!
 # Geometry of topological vector bundles
 
-This root reexports bundle metrics, orthogonal splitting, fiberwise isomorphisms,
+This root reexports algebraic projection/preimage retractions, bundle metrics,
+orthogonal splitting, fiberwise isomorphisms,
 products, pullbacks, cylinder charts, frames, finite embeddings, ranges and complements,
 together with pullbacks of supplied Hermitian metrics and canonical comparisons of their
 orthogonal complements. The projection modules give open-embedding criteria by subsingleton

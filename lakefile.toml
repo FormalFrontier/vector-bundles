@@ -22,6 +22,8 @@ globs = [
   "VectorBundles.Topology.VectorBundle.Section",
   "VectorBundles.Topology.VectorBundle.HermitianMetric.Operations",
   "VectorBundles.Analysis.InnerProductSpace.PositiveForm",
+  "VectorBundles.Analysis.InnerProductSpace.Projection.LinearMap",
+  "VectorBundles.Analysis.InnerProductSpace.Projection.Fiberwise",
   "VectorBundles.Analysis.Normed.Ring.Units",
   "VectorBundles.Topology.Algebra.GroupWithZero",
   "VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator",
@@ -118,6 +120,7 @@ globs = [
 name = "VectorBundlesTest"
 globs = [
   "VectorBundlesTest.AntiDualPrecomposition",
+  "VectorBundlesTest.OrthogonalRetraction",
   "VectorBundlesTest",
   "VectorBundlesTest.WeightedExtension",
   "VectorBundlesTest.Topology.VectorBundle.EqualBase",

@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundlesTest.OpenMap
+public import VectorBundlesTest.OrthogonalRetraction
 public import VectorBundlesTest.WeightedExtension
 public import VectorBundlesTest.Topology.ContinuousMap.Algebra
 public import VectorBundlesTest.Topology.VectorBundle.EqualBase
@@ -65,5 +66,6 @@ The examples use the library interfaces for metrics, splitting, products, pullba
 cylinder charts, frames, embeddings, ranges and complements, including standard, varying-metric,
 zero-rank and empty-base bundles. They include the canonical projection inverse and its relation
 to the zero section, proper-projection compactness and empty-base boundaries, pullback pairings,
-and moving complements for a shear metric.
+and moving complements for a shear metric. The real-axis example also checks algebraic
+projection/preimage retractions on the original fibres of `Bool × ℝ → Bool`.
 -/

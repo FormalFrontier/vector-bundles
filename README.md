@@ -11,6 +11,24 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Algebraic projection/preimage retractions:** for an injective linear map
+  `β : F →ₗ[K] A` from a given plain module over an `RCLike` field into a given
+  inner product space, `[β.range.HasOrthogonalProjection]` gives
+  [`LinearMap.orthogonalRetraction`](VectorBundles/Analysis/InnerProductSpace/Projection/LinearMap.lean).
+  Its embedded value is Mathlib's orthogonal projection, and it retracts `β`.
+  Finite-dimensional `F` supplies this capability through inherited range
+  completeness, without choosing a norm or topology on `F` or requiring `A` to be
+  complete. The [family API](VectorBundles/Analysis/InnerProductSpace/Projection/Fiberwise.lean)
+  gives `R : X × A → E` for any given `p : E → X`, module structures on its
+  fibres `{t : E // p t = x}`, and injective fibre embeddings with this projection
+  capability; finite-dimensional fibres suffice. It proves `p (R (x, a)) = x`
+  and `R (p t, β (p t) ⟨t, rfl⟩) = t`, including a left-inverse law for any
+  specified map with that image formula. No topology on the base or total space,
+  nonemptiness, or positive-rank hypothesis is needed. The
+  [real-axis example](VectorBundlesTest/OrthogonalRetraction.lean) uses the
+  finite-dimensional construction on the original fibres of `Bool × ℝ → Bool`.
+  These APIs do not assert continuity or a general residual-orthogonality theorem.
+
 - **Constant extension of supported pairings:** for arbitrary topological spaces
   and a continuous pairing `μ : M × V → W` with `μ(m₀, v) = w₀`, a continuous
   weight `w : X → M` and map `g : U → V` admit a continuous extension of
@@ -326,6 +344,8 @@ examples are collected by `VectorBundlesTest.lean`.
 | Module | Contents |
 | --- | --- |
 | [`Analysis.InnerProductSpace.PositiveForm`](VectorBundles/Analysis/InnerProductSpace/PositiveForm.lean) | Bounded positive-form unit sublevels in the original topology |
+| [`Analysis.InnerProductSpace.Projection.LinearMap`](VectorBundles/Analysis/InnerProductSpace/Projection/LinearMap.lean) | Projection/preimage retractions onto injective images of plain modules, with a finite-dimensional specialization |
+| [`Analysis.InnerProductSpace.Projection.Fiberwise`](VectorBundles/Analysis/InnerProductSpace/Projection/Fiberwise.lean) | Algebraic total-space retractions on given projection fibres, with projection and left-inverse laws |
 | [`Analysis.Normed.Ring.Units`](VectorBundles/Analysis/Normed/Ring/Units.lean) | Value embedding for units of a seminormed ring |
 | [`Topology.Algebra.GroupWithZero`](VectorBundles/Topology/Algebra/GroupWithZero.lean) | Continuity of reciprocal selected finite sums of real squares under pointwise nonzero coverage |
 | [`Topology.ContinuousMap.FiniteWeights`](VectorBundles/Topology/ContinuousMap/FiniteWeights.lean) | Finite partitions of unity on normal spaces, with all-index closed-cozero subordination and no further separation assumptions |
@@ -440,6 +460,7 @@ over an incomplete field.
   proposition.
 - Mathlib's [bundle geometry](https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5/Mathlib/Topology/VectorBundle),
   module topology, bounded-convergence operator topology, inner products,
+  submodule-valued orthogonal projections, inherited finite-dimensional completeness,
   orthogonal complements, partitions of unity and continuous functional calculus.
   Individual modules identify the particular APIs and contributors followed.
 
