@@ -8,13 +8,15 @@ public import Mathlib.Topology.FiberBundle.Constructions
 public import Mathlib.Topology.VectorBundle.Basic
 
 /-!
-# Gluing trivializations across a closed cylinder cut
+# Gluing raw charts across a closed cylinder cut
 
 Let `p : Z → X × T`, where `T` is linearly ordered. Global charts on the two
-closed restrictions at a cut `c` need not agree on the common slice. The right
-chart is normalized by the coordinate change from its seam chart to the left
-seam chart, applied at every time on the right. The normalized charts determine
-a global trivialization.
+closed restrictions at a cut `c` need not agree on the common slice or use the
+same model. The right chart is normalized by the coordinate change from its
+seam chart to the left seam chart, applied at every time on the right.
+`glueClosedCylinderHomeomorph` gives a raw product homeomorphism using the left
+model and retaining the whole left chart. In the common-model case,
+`glueClosedCylinder` gives the global trivialization.
 
 `T` may itself be a closed interval: taking `T = Set.Icc a b` and
 `c = ⟨c₀, hac, hcb⟩` gives the pieces `X × [a,c₀]` and `X × [c₀,b]`, up to their
@@ -23,9 +25,12 @@ nonemptiness or local triviality assumption is needed in addition to the two
 supplied charts and continuity of `p`.
 
 The construction uses Mathlib's `Homeomorph` and `Bundle.Trivialization` objects.
-`glueClosedCylinder_isLinear` gives its fiberwise-linear specialization on a
-dependent total space. This is the two-piece triviality fact, not the
-paracompact homotopy theorem.
+The raw heterogeneous construction permits independent model universes and
+needs no nonempty-model hypothesis. It uses only closed rays in the time space.
+`glueClosedCylinder_isLinear` gives the common-model fiberwise-linear
+specialization on a dependent total space; no heterogeneous projection-fiber
+linear refinement is asserted here. This is the two-piece triviality fact,
+not the paracompact homotopy theorem.
 
 ## References
 
@@ -40,7 +45,7 @@ paracompact homotopy theorem.
 
 open Bundle Set
 
-universe uX uT uZ uF uE uK
+universe uX uT uZ uF uG uE uK
 
 namespace Bundle.Trivialization
 
@@ -92,18 +97,22 @@ private theorem seamHomeomorph_apply (s : Set (X × T))
   rfl
 
 
+section Heterogeneous
+
+variable {G : Type uG} [TopologicalSpace G]
+
 variable (h₁ : (p ⁻¹' {b : X × T | b.2 ≤ c}) ≃ₜ {b : X × T | b.2 ≤ c} × F)
-  (h₂ : (p ⁻¹' {b : X × T | c ≤ b.2}) ≃ₜ {b : X × T | c ≤ b.2} × F)
+  (h₂ : (p ⁻¹' {b : X × T | c ≤ b.2}) ≃ₜ {b : X × T | c ≤ b.2} × G)
   (hp₁ : ∀ z : p ⁻¹' {b : X × T | b.2 ≤ c}, (h₁ z).1.val = p z.val)
   (hp₂ : ∀ z : p ⁻¹' {b : X × T | c ≤ b.2}, (h₂ z).1.val = p z.val)
 
 /-- The seam change `h₁,c ∘ h₂,c⁻¹`, from right coordinates to left coordinates. -/
 noncomputable def closedCylinderCoordChange
     (h₁ : (p ⁻¹' {b : X × T | b.2 ≤ c}) ≃ₜ {b : X × T | b.2 ≤ c} × F)
-    (h₂ : (p ⁻¹' {b : X × T | c ≤ b.2}) ≃ₜ {b : X × T | c ≤ b.2} × F)
+    (h₂ : (p ⁻¹' {b : X × T | c ≤ b.2}) ≃ₜ {b : X × T | c ≤ b.2} × G)
     (hp₁ : ∀ z, (h₁ z).1.val = p z.val)
-    (hp₂ : ∀ z, (h₂ z).1.val = p z.val) (x : X) : F ≃ₜ F := private_decl% (show F ≃ₜ F from
-  (seamHomeomorph (F := F) c p {b : X × T | c ≤ b.2} (fun _ ↦ le_rfl) h₂ hp₂ x).symm.trans
+    (hp₂ : ∀ z, (h₂ z).1.val = p z.val) (x : X) : G ≃ₜ F := private_decl% (show G ≃ₜ F from
+  (seamHomeomorph (F := G) c p {b : X × T | c ≤ b.2} (fun _ ↦ le_rfl) h₂ hp₂ x).symm.trans
     (seamHomeomorph (F := F) c p {b : X × T | b.2 ≤ c} (fun _ ↦ le_rfl) h₁ hp₁ x))
 
 /-- At the seam the coordinate change takes right coordinates to left coordinates. -/
@@ -120,12 +129,12 @@ theorem closedCylinderCoordChange_apply (x : X) (z : Z) (hz : p z = (x, c)) :
 omit [LinearOrder T] in
 private theorem continuous_seam_transition (s t : Set (X × T))
     (hs : ∀ x, (x, c) ∈ s) (ht : ∀ x, (x, c) ∈ t)
-    (h : (p ⁻¹' s) ≃ₜ s × F) (k : (p ⁻¹' t) ≃ₜ t × F)
+    (h : (p ⁻¹' s) ≃ₜ s × F) (k : (p ⁻¹' t) ≃ₜ t × G)
     (hk : ∀ z, (k z).1.val = p z.val) :
-    Continuous (fun xv : X × F ↦
+    Continuous (fun xv : X × G ↦
       (h ⟨(k.symm (⟨(xv.1, c), ht xv.1⟩, xv.2)).val, by
         rw [mem_preimage, chart_symm_base k hk]; exact hs xv.1⟩).2) := by
-  have hi : Continuous (fun xv : X × F ↦
+  have hi : Continuous (fun xv : X × G ↦
       (k.symm (⟨(xv.1, c), ht xv.1⟩, xv.2)).val) :=
     continuous_subtype_val.comp (k.symm.continuous.comp
       (((continuous_fst.prodMk continuous_const).subtype_mk _).prodMk continuous_snd))
@@ -133,7 +142,7 @@ private theorem continuous_seam_transition (s t : Set (X × T))
 
 /-- Evaluation of the seam coordinate change is jointly continuous in base and fiber. -/
 theorem continuous_closedCylinderCoordChange :
-    Continuous (fun xv : X × F ↦
+    Continuous (fun xv : X × G ↦
       closedCylinderCoordChange c p h₁ h₂ hp₁ hp₂ xv.1 xv.2) := by
   exact continuous_seam_transition c p {b : X × T | b.2 ≤ c} {b : X × T | c ≤ b.2}
     (fun _ ↦ le_rfl) (fun _ ↦ le_rfl) h₁ h₂ hp₂
@@ -164,7 +173,7 @@ noncomputable def normalizeClosedCylinderRight :
       h₂.continuous.fst.subtype_val.fst.prodMk h₂.continuous.snd
     have hd := (continuous_closedCylinderCoordChange c p h₁ h₂ hp₁ hp₂).comp hc
     change Continuous (fun z ↦ ((h₂ z).1,
-      (fun xv : X × F ↦ closedCylinderCoordChange c p h₁ h₂ hp₁ hp₂ xv.1 xv.2)
+      (fun xv : X × G ↦ closedCylinderCoordChange c p h₁ h₂ hp₁ hp₂ xv.1 xv.2)
         ((h₂ z).1.val.1, (h₂ z).2)))
     exact h₂.continuous.fst.prodMk hd
   continuous_invFun := by
@@ -362,6 +371,104 @@ private theorem cylinderHomeomorph_base [ClosedIicTopology T] [ClosedIciTopology
   · rw [cylinderHomeomorph_left c p h₁ h₂ hp₁ hp₂ hπ z hz]
   · rw [cylinderHomeomorph_right c p h₁ h₂ hp₁ hp₂ hπ z hz]
 
+/-- Glue base-preserving raw charts on the two closed halves of a cylinder.
+
+The models of the left and right charts may have unrelated universes and given
+topologies. The result uses the left model. The right coordinates are changed
+by the base-dependent seam homeomorphism, and the entire left chart is retained.
+Both forward and inverse maps are pasted on closed covers by the same canonical
+engine used by `glueClosedCylinder`.
+
+This raw form needs no nonempty-model hypothesis or total-map junk values. To
+work on a bounded cylinder, one may take `T = Set.Icc a b` and use the original
+preimage over that cylinder as `Z`, with its inherited subspace topology. The
+cut may be either endpoint. Only closed rays, not an order topology, are needed.
+Continuity of `p` is a genuine input, not inferred from the two subtype charts. -/
+noncomputable def glueClosedCylinderHomeomorph (c : T) (p : Z → X × T)
+    (h₁ : (p ⁻¹' {b : X × T | b.2 ≤ c}) ≃ₜ {b : X × T | b.2 ≤ c} × F)
+    (h₂ : (p ⁻¹' {b : X × T | c ≤ b.2}) ≃ₜ {b : X × T | c ≤ b.2} × G)
+    (hp₁ : ∀ z : p ⁻¹' {b : X × T | b.2 ≤ c}, (h₁ z).1.val = p z.val)
+    (hp₂ : ∀ z : p ⁻¹' {b : X × T | c ≤ b.2}, (h₂ z).1.val = p z.val)
+    [ClosedIicTopology T] [ClosedIciTopology T]
+    (hπ : Continuous p) : Z ≃ₜ (X × T) × F := private_decl% (show Z ≃ₜ (X × T) × F from
+  cylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ)
+
+variable [ClosedIicTopology T] [ClosedIciTopology T] (hπ : Continuous p)
+
+/-- Every left-hand point keeps its original coordinates, including the seam. -/
+theorem glueClosedCylinderHomeomorph_apply_left (z : Z) (hz : (p z).2 ≤ c) :
+    glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ z =
+      (p z, (h₁ ⟨z, hz⟩).2) := by
+  exact cylinderHomeomorph_left c p h₁ h₂ hp₁ hp₂ hπ z hz
+
+/-- On the right, use right coordinates followed by the seam change at the same base point. -/
+theorem glueClosedCylinderHomeomorph_apply_right (z : Z) (hz : c ≤ (p z).2) :
+    glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ z =
+      (p z, closedCylinderCoordChange c p h₁ h₂ hp₁ hp₂ (p z).1 (h₂ ⟨z, hz⟩).2) := by
+  have ha := cylinderHomeomorph_right c p h₁ h₂ hp₁ hp₂ hπ z hz
+  rw [normalizeClosedCylinderRight_apply, hp₂] at ha
+  exact ha
+
+/-- The raw glued chart preserves the full original base point. -/
+@[simp] theorem glueClosedCylinderHomeomorph_proj (z : Z) :
+    (glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ z).1 = p z := by
+  exact cylinderHomeomorph_base c p h₁ h₂ hp₁ hp₂ hπ z
+
+/-- The raw inverse preserves the full original base point. -/
+theorem glueClosedCylinderHomeomorph_symm_proj (q : (X × T) × F) :
+    p ((glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ).symm q) = q.1 := by
+  let e := glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ
+  have hb := glueClosedCylinderHomeomorph_proj c p h₁ h₂ hp₁ hp₂ hπ (e.symm q)
+  change (e (e.symm q)).1 = p (e.symm q) at hb
+  rw [e.apply_symm_apply] at hb
+  exact hb.symm
+
+/-- On the whole left prefix the raw inverse is the original left inverse. -/
+theorem glueClosedCylinderHomeomorph_symm_apply_left
+    (b : X × T) (hb : b.2 ≤ c) (v : F) :
+    (glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ).symm (b, v) =
+      (h₁.symm (⟨b, hb⟩, v)).val := by
+  let e := glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ
+  let z := h₁.symm (⟨b, hb⟩, v)
+  have hz : p z.val = b := chart_symm_base h₁ hp₁ _
+  have hzl : (p z.val).2 ≤ c := hz ▸ hb
+  have hf : e z.val = (b, v) := by
+    rw [glueClosedCylinderHomeomorph_apply_left c p h₁ h₂ hp₁ hp₂ hπ z.val hzl]
+    apply Prod.ext hz
+    change (h₁ (h₁.symm (⟨b, hb⟩, v))).2 = v
+    exact congrArg Prod.snd (h₁.apply_symm_apply _)
+  have hi := e.symm_apply_apply z.val
+  rw [hf] at hi
+  exact hi
+
+/-- On the right, undo the same-base seam change before applying the original right inverse. -/
+theorem glueClosedCylinderHomeomorph_symm_apply_right
+    (b : X × T) (hb : c ≤ b.2) (v : F) :
+    (glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ).symm (b, v) =
+      (h₂.symm (⟨b, hb⟩,
+        (closedCylinderCoordChange c p h₁ h₂ hp₁ hp₂ b.1).symm v)).val := by
+  let e := glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ
+  let k := normalizeClosedCylinderRight c p h₁ h₂ hp₁ hp₂
+  let z := k.symm (⟨b, hb⟩, v)
+  have hz : p z.val = b :=
+    chart_symm_base k (normalizeClosedCylinderRight_fst c p h₁ h₂ hp₁ hp₂) _
+  have hzr : c ≤ (p z.val).2 := hz ▸ hb
+  have hf : e z.val = (b, v) := by
+    rw [glueClosedCylinderHomeomorph_apply_right c p h₁ h₂ hp₁ hp₂ hπ z.val hzr]
+    have hk : (k ⟨z.val, hzr⟩).2 = v := congrArg Prod.snd (k.apply_symm_apply _)
+    apply Prod.ext hz
+    simpa only [k, normalizeClosedCylinderRight_apply, hp₂, hz] using hk
+  have hi := e.symm_apply_apply z.val
+  rw [hf] at hi
+  exact hi
+
+end Heterogeneous
+
+variable (h₁ : (p ⁻¹' {b : X × T | b.2 ≤ c}) ≃ₜ {b : X × T | b.2 ≤ c} × F)
+  (h₂ : (p ⁻¹' {b : X × T | c ≤ b.2}) ≃ₜ {b : X × T | c ≤ b.2} × F)
+  (hp₁ : ∀ z : p ⁻¹' {b : X × T | b.2 ≤ c}, (h₁ z).1.val = p z.val)
+  (hp₂ : ∀ z : p ⁻¹' {b : X × T | c ≤ b.2}, (h₂ z).1.val = p z.val)
+
 private theorem trivialization_cast_base {B : Type*} [TopologicalSpace B]
     {q r : Z → B} (h : q = r) (e : Trivialization F q) :
     (h ▸ e : Trivialization F r).baseSet = e.baseSet := by
@@ -383,7 +490,9 @@ continuity and closed time slabs are essential: on three ordered points, a
 noncontinuous projection or nonclosed slabs can admit the two restricted charts
 without a global chart.
 
-This is the construction in Hatcher, Proposition 1.7, preliminary fact (1). -/
+This common-model corollary uses `glueClosedCylinderHomeomorph`, the single
+normalization and closed-pasting engine. It is the construction in Hatcher,
+Proposition 1.7, preliminary fact (1). -/
 noncomputable def glueClosedCylinder (c : T) (p : Z → X × T)
     (h₁ : (p ⁻¹' {b : X × T | b.2 ≤ c}) ≃ₜ {b : X × T | b.2 ≤ c} × F)
     (h₂ : (p ⁻¹' {b : X × T | c ≤ b.2}) ≃ₜ {b : X × T | c ≤ b.2} × F)
@@ -392,10 +501,10 @@ noncomputable def glueClosedCylinder (c : T) (p : Z → X × T)
     [ClosedIicTopology T] [ClosedIciTopology T]
     (hπ : Continuous p) : Trivialization F p := private_decl% (show Trivialization F p from by
   let h : Z ≃ₜ TotalSpace F (Bundle.Trivial (X × T) F) := by
-    exact (cylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ).trans
+    exact (glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ).trans
       (Bundle.Trivial.homeomorphProd (X × T) F).symm
   have hp : (π F (Bundle.Trivial (X × T) F)) ∘ h = p := by
-    exact funext (cylinderHomeomorph_base c p h₁ h₂ hp₁ hp₂ hπ)
+    exact funext (glueClosedCylinderHomeomorph_proj c p h₁ h₂ hp₁ hp₂ hπ)
   exact hp ▸ (Bundle.Trivial.trivialization (X × T) F).compHomeomorph h)
 
 variable [ClosedIicTopology T] [ClosedIciTopology T] (hπ : Continuous p)
@@ -420,7 +529,7 @@ theorem glueClosedCylinder_apply_left (z : Z) (hz : (p z).2 ≤ c) :
   change (glueClosedCylinder._private_1 c p h₁ h₂ hp₁ hp₂ hπ) z = _
   unfold glueClosedCylinder._private_1
   rw [trivialization_cast_apply]
-  exact cylinderHomeomorph_left c p h₁ h₂ hp₁ hp₂ hπ z hz
+  exact glueClosedCylinderHomeomorph_apply_left c p h₁ h₂ hp₁ hp₂ hπ z hz
 
 /-- The glued chart restricts to the normalized right chart, including the seam. -/
 theorem glueClosedCylinder_apply_right (z : Z) (hz : c ≤ (p z).2) :

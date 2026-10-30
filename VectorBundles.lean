@@ -22,6 +22,7 @@ public import VectorBundles.Topology.CompactOpen
 public import VectorBundles.Topology.Connected.Basic
 public import VectorBundles.Topology.Separable.Basic
 public import VectorBundles.Topology.ShrinkingLemma
+public import VectorBundles.Topology.UnitInterval
 public import VectorBundles.Topology.FiberBundle.Basic
 public import VectorBundles.Topology.FiberBundle.Connected
 public import VectorBundles.Topology.FiberBundle.Separable
@@ -67,6 +68,7 @@ public import VectorBundles.Analysis.Normed.Operator.Factorization
 public import VectorBundles.Analysis.Normed.Operator.LowerBound
 public import VectorBundles.Data.Bundle
 public import VectorBundles.Topology.FiberBundle.ClosedCylinder
+public import VectorBundles.Topology.FiberBundle.FiniteCylinderCover
 public import VectorBundles.Topology.FiberBundle.Prod
 public import VectorBundles.Topology.FiberBundle.Pullback
 public import VectorBundles.Topology.FiberBundle.Pullback.Proper
@@ -103,5 +105,9 @@ given subordinate weights yield base-preserving transport from the standard pull
 the entire zero restriction to the given total space, including for an arbitrary
 projection, with bottom and independent endpoint comparisons. Matching linear coordinates
 give fiber-linearity over any semiring. On a normal space, a finite open cylinder-chart
-cover supplies the weights.
+cover supplies the weights. Closed-half-cylinder product charts with different models
+paste to a left-model product homeomorphism retaining the entire left chart. An open
+cover of a product with the unit interval has uniform closed subdivisions near each
+base point; on a compact base, supplied local whole-cylinder charts admit a finite
+ordered cover, including their given fiberwise linear coordinates.
 -/
