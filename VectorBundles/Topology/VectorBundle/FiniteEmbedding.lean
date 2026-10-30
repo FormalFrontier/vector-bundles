@@ -7,6 +7,7 @@ module
 public import Mathlib.Topology.VectorBundle.Constructions
 public import Mathlib.Topology.PartitionOfUnity
 public import Mathlib.Topology.Instances.RealVectorSpace
+public import VectorBundles.Topology.ContinuousMap.WeightedExtension
 
 /-!
 # Embedding a bundle into a finite power of its model
@@ -66,13 +67,27 @@ private theorem continuous_weighted_trivialization
     (hπ : Continuous (π F E)) (e : Trivialization F (π F E)) (ρ : C(B, ℝ))
     (hρ : tsupport (ρ : B → ℝ) ⊆ e.baseSet) :
     Continuous (fun p : TotalSpace F E ↦ ρ p.proj • (e p).2) := by
-  refine continuous_of_tsupport fun p hp ↦ ?_
-  have hb : p.proj ∈ tsupport (ρ : B → ℝ) :=
-    tsupport_comp_subset_preimage (ρ : B → ℝ) hπ
-      (tsupport_smul_subset_left (fun q : TotalSpace F E ↦ ρ q.proj)
-        (fun q ↦ (e q).2) hp)
-  exact (ρ.continuous.comp hπ).continuousAt.smul
-    (e.toOpenPartialHomeomorph.continuousAt (e.mem_source.mpr (hρ hb))).snd
+  let U : Set (TotalSpace F E) := {p | p.proj ∈ e.baseSet}
+  let w : C(TotalSpace F E, ℝ) := ρ.comp ⟨π F E, hπ⟩
+  let g : C(U, F) := ⟨fun p ↦ (e p.val).2, by
+    apply continuous_iff_continuousAt.mpr
+    intro p
+    exact (e.toOpenPartialHomeomorph.continuousAt (e.mem_source.mpr p.property)).snd.comp
+      continuous_subtype_val.continuousAt⟩
+  have hs : closure {p | w p ≠ 0} ⊆ U := fun p hp ↦
+    hρ (tsupport_comp_subset_preimage (ρ : B → ℝ) hπ hp)
+  have heq : (w.smulExtend hs g : TotalSpace F E → F) = fun p ↦ ρ p.proj • (e p).2 := by
+    funext p
+    by_cases hp : p ∈ U
+    · exact w.smulExtend_apply_of_mem hs g p hp
+    · rw [w.smulExtend_apply_of_notMem hs g p hp]
+      have hw : w p = 0 := by
+        by_contra h
+        exact hp (hs (subset_closure h))
+      change 0 = w p • (e p).2
+      rw [hw, zero_smul]
+  rw [← heq]
+  exact (w.smulExtend hs g).continuous
 
 section ScalarCompatibility
 

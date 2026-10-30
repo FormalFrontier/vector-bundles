@@ -11,6 +11,16 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Constant extension of supported pairings:** for arbitrary topological spaces
+  and a continuous pairing `μ : M × V → W` with `μ(m₀, v) = w₀`, a continuous
+  weight `w : X → M` and map `g : U → V` admit a continuous extension of
+  `μ(w x, g x)` by `w₀` whenever `closure {x | w x ≠ m₀} ⊆ U`.
+  The [pairing API](VectorBundles/Topology/ContinuousMap/PairingExtension.lean)
+  constructs the uniquely characterized map. The subset need not be open or closed;
+  no separation or nonemptiness assumptions are needed. The
+  [scalar-action specialization](VectorBundles/Topology/ContinuousMap/WeightedExtension.lean)
+  extends weighted maps by zero and is used for finite bundle embeddings.
+
 - **Finite partitions of unity on normal spaces:**
   [`ContinuousMap.exists_finite_weights`](VectorBundles/Topology/ContinuousMap/FiniteWeights.lean)
   gives continuous real weights for any normal topological space `X`, arbitrary index type
@@ -284,6 +294,8 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.VectorBundle.ScalarEnd`](VectorBundles/Topology/VectorBundle/ScalarEnd.lean) | Base-preserving product homeomorphism for the endomorphism bundle of a line, with the original fiber topologies |
 | [`Topology.VectorBundle.SemilinearEvaluation`](VectorBundles/Topology/VectorBundle/SemilinearEvaluation.lean) | One- and two-argument evaluation on Mathlib's Hom topology |
 | [`Topology.VectorBundle.WeightedForm`](VectorBundles/Topology/VectorBundle/WeightedForm.lean) | Supported weighted forms in linear charts |
+| [`Topology.ContinuousMap.PairingExtension`](VectorBundles/Topology/ContinuousMap/PairingExtension.lean) | Constant extensions of pairings on arbitrary subsets |
+| [`Topology.ContinuousMap.WeightedExtension`](VectorBundles/Topology/ContinuousMap/WeightedExtension.lean) | Zero extensions of continuously weighted maps |
 | [`Topology.VectorBundle.HermitianMetric`](VectorBundles/Topology/VectorBundle/HermitianMetric.lean) | Hermitian metric data, continuity, Core conversion and real bridges |
 | [`Topology.VectorBundle.HermitianMetric.Operations`](VectorBundles/Topology/VectorBundle/HermitianMetric/Operations.lean) | Addition and positive rescaling with pairing and forgetting equations |
 | [`Topology.VectorBundle.Section`](VectorBundles/Topology/VectorBundle/Section.lean) | Continuous scalar multiplication of sections in the given bundle topology |

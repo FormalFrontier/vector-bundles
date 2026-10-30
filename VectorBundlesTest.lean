@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundlesTest.OpenMap
+public import VectorBundlesTest.WeightedExtension
 public import VectorBundlesTest.Topology.ContinuousMap.Algebra
 public import VectorBundlesTest.Topology.VectorBundle.EqualBase
 public import VectorBundlesTest.Topology.ContinuousMap.PiBasis

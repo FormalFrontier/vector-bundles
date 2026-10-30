@@ -16,6 +16,8 @@ globs = [
   "VectorBundles",
   "VectorBundles.Topology.ContinuousMap.Algebra",
   "VectorBundles.Topology.ContinuousMap.FiniteWeights",
+  "VectorBundles.Topology.ContinuousMap.PairingExtension",
+  "VectorBundles.Topology.ContinuousMap.WeightedExtension",
   "VectorBundles.Topology.Bornology.Bounded",
   "VectorBundles.Topology.VectorBundle.Section",
   "VectorBundles.Topology.VectorBundle.HermitianMetric.Operations",
@@ -104,6 +106,7 @@ name = "VectorBundlesTest"
 globs = [
   "VectorBundlesTest.AntiDualPrecomposition",
   "VectorBundlesTest",
+  "VectorBundlesTest.WeightedExtension",
   "VectorBundlesTest.Topology.VectorBundle.EqualBase",
   "VectorBundlesTest.Topology.ContinuousMap.Algebra",
   "VectorBundlesTest.Topology.ContinuousMap.PiBasis",

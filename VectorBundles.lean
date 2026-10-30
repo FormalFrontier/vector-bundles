@@ -11,6 +11,8 @@ public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
 public import VectorBundles.Topology.Algebra.Module.OpenMap
 public import VectorBundles.Topology.ContinuousMap.Algebra
 public import VectorBundles.Topology.ContinuousMap.FiniteWeights
+public import VectorBundles.Topology.ContinuousMap.PairingExtension
+public import VectorBundles.Topology.ContinuousMap.WeightedExtension
 public import VectorBundles.Topology.Compactness.CountablyCompact
 public import VectorBundles.Topology.Compactness.Lindelof
 public import VectorBundles.Topology.Compactness.Paracompact
