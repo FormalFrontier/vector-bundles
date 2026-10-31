@@ -157,6 +157,42 @@ normed-field product and bundle statements.
   interval, without completeness or dimension assumptions. This is not a
   homotopy-invariance theorem.
 
+<a id="cylinder-foundations"></a>
+
+- **Closed-cylinder gluing and selection from local whole-interval charts.**
+  [The heterogeneous gluer](../VectorBundles/Topology/FiberBundle/ClosedCylinder.lean),
+  `Bundle.Trivialization.glueClosedCylinderHomeomorph`, starts with topological
+  spaces `X`, `Z`, `F`, `G`, a linearly ordered topological time space `T` whose
+  lower and upper rays are closed, a cut `c : T`, and a continuous projection
+  `p : Z → X × T`. Given projection-preserving homeomorphisms from the
+  preimages of the closed lower and upper half-cylinders to those halves
+  times `F` and `G`, respectively, it constructs `Z ≃ₜ (X × T) × F`.
+  The models need not be equal. The result retains the left chart on the
+  entire lower half, and its inverse preserves the projection.
+
+  [Common-neighborhood subdivision](../VectorBundles/Topology/UnitInterval.lean),
+  `exists_open_nhds_prod_Icc_subset_open_cover_unitInterval`, applies to an open
+  cover of `X × unitInterval` for arbitrary topological `X`. At each chosen
+  `x : X` it gives one open neighborhood `U` and a finite monotone sequence
+  of cutpoints from zero to one, with at least one slab, such that every
+  `U × [t_k, t_(k+1)]` lies in a chosen cover member. Compactness of `X` is
+  not assumed; the cutpoints need not be strictly increasing.
+
+  [Finite selection](../VectorBundles/Topology/FiberBundle/FiniteCylinderCover.lean),
+  `Bundle.Trivialization.exists_finiteCylinderCover_of_local`, assumes compact
+  topological `X`, a topological total space `Z`, a map `p : Z → X × unitInterval`,
+  varying topological models `F j`, sets `W j ⊆ X × unitInterval`, and specified
+  homeomorphisms `(p ⁻¹' W j) ≃ₜ (W j) × F j`. The input already gives, near
+  every base point, an open `U` and an index `j` with `U × {0} ⊆ W j`,
+  together with a homeomorphism from the preimage of `U × unitInterval` to
+  `(U × unitInterval) × F j`. This homeomorphism preserves `p` in both
+  directions and agrees with the specified homeomorphism at time zero in both the
+  forward-coordinate and inverse directions. A finite open base cover is
+  selected with these same properties. This is selection **from supplied
+  local whole-interval charts**, not an initial-chart existence theorem from
+  an ordinary atlas, and is distinct from the weighted transport and
+  vector-bundle chart-existence results above.
+
 ## Projections and pullbacks
 
 - **Projection criteria and canonical homeomorphisms.**

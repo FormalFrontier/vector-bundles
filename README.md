@@ -158,6 +158,16 @@ ordinary local atlas over an arbitrary parameter space. Neither compactness of
   `closure {x | w i x ≠ 0} ⊆ U i`. No compactness, nonemptiness, T1 or Hausdorff assumption,
   finiteness of `J`, or openness off `s` is required.
 
+- **Heterogeneous closed-cylinder gluing:** for a continuous projection
+  `p : Z → X × T`, with linearly ordered topological `T` having closed
+  lower and upper rays, supplied projection-preserving charts on its two
+  closed half-cylinders may have different topological models. The
+  [gluer](VectorBundles/Topology/FiberBundle/ClosedCylinder.lean)
+  gives a whole-cylinder homeomorphism into the left model, retaining its
+  entire left chart. See the [foundation guide](docs/Results.md#cylinder-foundations)
+  for this construction, common-neighborhood subdivision and selection from
+  given whole-interval charts.
+
 - **Whole-cylinder charts from local atlases:** an open, base-preserving atlas for
   a continuous projection `p : T → X × unitInterval` gives an open neighborhood `U`
   of each point of `X` and a homeomorphism
