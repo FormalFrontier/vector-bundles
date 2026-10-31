@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.LinearMap
 public import VectorBundles.LinearAlgebra.Pairing.Adjoint
 public import VectorBundles.Topology.MetricSpace.PairwiseDistance
 
@@ -192,3 +193,146 @@ theorem Complex.isAdjointPair_I_smul_id :
   intro x y
   simp
   ring
+
+/-! ## Linear and continuous-linear given adjoint partners -/
+
+namespace Function.IsAdjointPair
+
+universe uK uH uA
+
+section GivenPartner
+
+variable {K : Type uK} [RCLike K]
+  {H : Type uH} [NormedAddCommGroup H] [InnerProductSpace K H]
+  {A : Type uA} [SeminormedAddCommGroup A] [InnerProductSpace K A]
+
+private theorem inner_right_column_injective :
+    Function.Injective (fun y : H => fun x : H => (innerSL K x).toLinearMap y) := by
+  intro y z h
+  exact ext_inner_left K (fun x => congrFun h x)
+
+variable {Γ : H → A} {S : A → H}
+  (h : Function.IsAdjointPair (inner K) (inner K) Γ S)
+
+/-- Bundle a given inner-product adjoint partner as a linear map. Only the target
+of the partner must be normed; the other space may be seminormed. -/
+noncomputable def toLinearMap : A →ₗ[K] H :=
+  h.toLinearMapOfInjective
+    (B₁ := fun x : H => (innerSL K x).toLinearMap)
+    (B₂ := fun x : A => (innerSL K x).toLinearMap)
+    (by exact inner_right_column_injective (K := K))
+
+@[simp]
+theorem coe_toLinearMap : ⇑h.toLinearMap = S := rfl
+
+@[simp]
+theorem toLinearMap_apply (a : A) : h.toLinearMap a = S a := rfl
+
+/-- The linear map represents the same adjoint partner. -/
+theorem isAdjointPair_toLinearMap :
+    Function.IsAdjointPair (inner K) (inner K) Γ h.toLinearMap := h
+
+/-- An adjoint relation determines the bundled linear partner uniquely. -/
+theorem toLinearMap_unique (L : A →ₗ[K] H)
+    (hL : Function.IsAdjointPair (inner K) (inner K) Γ L) : h.toLinearMap = L :=
+  h.toLinearMapOfInjective_unique
+    (B₁ := fun x : H => (innerSL K x).toLinearMap)
+    (B₂ := fun x : A => (innerSL K x).toLinearMap)
+    (inner_right_column_injective (K := K)) L hL
+
+/-- The linear partner does not depend on the proof of the adjoint relation. -/
+theorem toLinearMap_eq (h' : Function.IsAdjointPair (inner K) (inner K) Γ S) :
+    h.toLinearMap = h'.toLinearMap := rfl
+
+/-- A pointwise bound on the first map makes its given adjoint partner
+continuous-linear, without a completeness or linearity hypothesis on the first map. -/
+noncomputable def toContinuousLinearMapOfBound {C : NNReal}
+    (hΓ : ∀ v, ‖Γ v‖ ≤ (C : ℝ) * ‖v‖) : A →L[K] H :=
+  h.toLinearMap.mkContinuous (C : ℝ)
+    (fun a => h.inner_symm.norm_apply_le_of_bound hΓ a)
+
+variable {C : NNReal} (hΓ : ∀ v, ‖Γ v‖ ≤ (C : ℝ) * ‖v‖)
+
+@[simp]
+theorem coe_toContinuousLinearMapOfBound :
+    ⇑(h.toContinuousLinearMapOfBound hΓ) = S := rfl
+
+@[simp]
+theorem toContinuousLinearMapOfBound_apply (a : A) :
+    h.toContinuousLinearMapOfBound hΓ a = S a := rfl
+
+@[simp]
+theorem toContinuousLinearMapOfBound_toLinearMap :
+    (h.toContinuousLinearMapOfBound hΓ).toLinearMap = h.toLinearMap := rfl
+
+/-- The continuous-linear map represents the same adjoint partner. -/
+theorem isAdjointPair_toContinuousLinearMapOfBound :
+    Function.IsAdjointPair (inner K) (inner K) Γ
+      (h.toContinuousLinearMapOfBound hΓ) := h
+
+/-- The bound on the first map is a Lipschitz constant for the bundled partner. -/
+theorem lipschitzWith_toContinuousLinearMapOfBound :
+    LipschitzWith C (h.toContinuousLinearMapOfBound hΓ) := h.lipschitzWith_of_bound hΓ
+
+/-- Any continuous-linear map with the adjoint relation equals the constructed partner. -/
+theorem toContinuousLinearMapOfBound_unique (T : A →L[K] H)
+    (hT : Function.IsAdjointPair (inner K) (inner K) Γ T) :
+    h.toContinuousLinearMapOfBound hΓ = T := by
+  have heq := h.toLinearMap_unique T.toLinearMap hT
+  ext a
+  exact congrArg (fun L : A →ₗ[K] H => L a) heq
+
+/-- Changing the constant, bound proof, or compatibility proof does not change the map. -/
+theorem toContinuousLinearMapOfBound_eq {D : NNReal}
+    (h' : Function.IsAdjointPair (inner K) (inner K) Γ S)
+    (hΓ' : ∀ v, ‖Γ v‖ ≤ (D : ℝ) * ‖v‖) :
+    h.toContinuousLinearMapOfBound hΓ = h'.toContinuousLinearMapOfBound hΓ' := by
+  ext a
+  rfl
+
+end GivenPartner
+
+section ContinuousFirstMap
+
+variable {K : Type uK} [RCLike K]
+  {H : Type uH} [NormedAddCommGroup H] [InnerProductSpace K H]
+  {A : Type uA} [SeminormedAddCommGroup A] [InnerProductSpace K A]
+  {Γ : H →L[K] A} {S : A → H}
+  (h : Function.IsAdjointPair (inner K) (inner K) Γ S)
+
+/-- Bundle the given adjoint partner of a continuous-linear map, using its operator
+norm as a bound. No completeness assumption on either space is needed. -/
+noncomputable def toContinuousLinearMap : A →L[K] H :=
+  h.toContinuousLinearMapOfBound (C := ‖Γ‖₊) (fun v => Γ.le_opNorm v)
+
+@[simp]
+theorem coe_toContinuousLinearMap : ⇑h.toContinuousLinearMap = S := rfl
+
+@[simp]
+theorem toContinuousLinearMap_apply (a : A) : h.toContinuousLinearMap a = S a := rfl
+
+@[simp]
+theorem toContinuousLinearMap_toLinearMap :
+    h.toContinuousLinearMap.toLinearMap = h.toLinearMap := rfl
+
+/-- The operator-norm construction preserves the adjoint relation. -/
+theorem isAdjointPair_toContinuousLinearMap :
+    Function.IsAdjointPair (inner K) (inner K) Γ h.toContinuousLinearMap := h
+
+/-- The bundled partner has Lipschitz constant bounded by the first map's operator norm. -/
+theorem lipschitzWith_toContinuousLinearMap : LipschitzWith ‖Γ‖₊ h.toContinuousLinearMap :=
+  h.lipschitzWith_of_bound (fun v => Γ.le_opNorm v)
+
+/-- The bundled continuous-linear partner is unique among maps with the same relation. -/
+theorem toContinuousLinearMap_unique (T : A →L[K] H)
+    (hT : Function.IsAdjointPair (inner K) (inner K) Γ T) : h.toContinuousLinearMap = T :=
+  h.toContinuousLinearMapOfBound_unique (C := ‖Γ‖₊) (fun v => Γ.le_opNorm v) T hT
+
+/-- The operator-norm construction is independent of the compatibility proof. -/
+theorem toContinuousLinearMap_eq
+    (h' : Function.IsAdjointPair (inner K) (inner K) Γ S) :
+    h.toContinuousLinearMap = h'.toContinuousLinearMap := rfl
+
+end ContinuousFirstMap
+
+end Function.IsAdjointPair

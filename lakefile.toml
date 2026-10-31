@@ -17,6 +17,7 @@ globs = [
   "VectorBundles.LinearAlgebra.Pairing.Adjoint",
   "VectorBundles.Topology.MetricSpace.PairwiseDistance",
   "VectorBundles.Analysis.InnerProductSpace.AdjointPair",
+  "VectorBundles.Analysis.InnerProductSpace.AdjointPairFamily",
   "VectorBundles.Analysis.InnerProductSpace.Adjoint",
   "VectorBundles.Analysis.InnerProductSpace.GramRetraction",
   "VectorBundles.Analysis.Normed.Operator.Composition",
@@ -130,6 +131,7 @@ globs = [
 name = "VectorBundlesTest"
 globs = [
   "VectorBundlesTest.AdjointPair",
+  "VectorBundlesTest.AdjointPartnerLinearity",
   "VectorBundlesTest.CompleteDomainAdjoint",
   "VectorBundlesTest.AdjointComposition",
   "VectorBundlesTest.GramRetraction",

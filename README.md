@@ -21,6 +21,16 @@ parameter space, `continuous_uncurry` gives joint continuity of `(t, a) ↦ S t 
 Neither space needs completeness or separation, and no linearity or uniqueness
 of the partners is assumed.
 
+### Given adjoint partners
+
+Right-linear pairings over a semiring bundle a given adjoint partner as a linear
+map when the first pairing's columns separate points, without linearity of the
+left-hand map. For inner products, `Function.IsAdjointPair.toLinearMap` applies
+to raw maps with a normed target and a seminormed source. A pointwise norm bound
+on the first map gives `toContinuousLinearMapOfBound`; the continuous-linear
+first-map specialization is `toContinuousLinearMap`. All constructions retain
+the given partner exactly, with no completeness assumptions.
+
 ### Complete-domain adjoints and composition
 
 For an `RCLike` field `K`, a complete normed inner-product space `H` and a

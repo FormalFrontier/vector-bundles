@@ -108,3 +108,76 @@ theorem LinearMap.isAdjointPair_iff_function
     (f : E → F) (g : F → E) :
     LinearMap.IsAdjointPair B₁ B₂ f g ↔
       Function.IsAdjointPair (fun x y => B₁ x y) (fun x y => B₂ x y) f g := Iff.rfl
+
+/-! ## Linear maps determined by right-linear pairings -/
+
+namespace Function.IsAdjointPair
+
+universe uScalar uLeftIndex uRightIndex uSource uTarget uValue
+
+section RightLinearRows
+
+variable {R : Type uScalar} [Semiring R]
+  {E : Type uLeftIndex} {F : Type uRightIndex}
+  {G : Type uSource} [AddCommMonoid G] [Module R G]
+  {H : Type uTarget} [AddCommMonoid H] [Module R H]
+  {M : Type uValue} [AddCommMonoid M] [Module R M]
+  {B₁ : E → H →ₗ[R] M} {B₂ : F → G →ₗ[R] M} {f : E → F} {g : G → H}
+
+/-- A given adjoint partner is linear when the rows are right-linear and the columns
+of the first pairing separate points. No linearity of the left-hand map is required. -/
+def toLinearMapOfInjective
+    (h : Function.IsAdjointPair (fun x y => B₁ x y) (fun x y => B₂ x y) f g)
+    (hinj : Function.Injective (fun y : H => fun x : E => B₁ x y)) : G →ₗ[R] H where
+  toFun := g
+  map_add' y z := by
+    apply hinj
+    funext x
+    calc
+      B₁ x (g (y + z)) = B₂ (f x) (y + z) := (h.apply x (y + z)).symm
+      _ = B₂ (f x) y + B₂ (f x) z := map_add (B₂ (f x)) y z
+      _ = B₁ x (g y) + B₁ x (g z) := congrArg₂ (· + ·) (h.apply x y) (h.apply x z)
+      _ = B₁ x (g y + g z) := (map_add (B₁ x) (g y) (g z)).symm
+  map_smul' r y := by
+    apply hinj
+    funext x
+    calc
+      B₁ x (g (r • y)) = B₂ (f x) (r • y) := (h.apply x (r • y)).symm
+      _ = r • B₂ (f x) y := map_smul (B₂ (f x)) r y
+      _ = r • B₁ x (g y) := congrArg (r • ·) (h.apply x y)
+      _ = B₁ x (r • g y) := (map_smul (B₁ x) r (g y)).symm
+
+variable (h : Function.IsAdjointPair (fun x y => B₁ x y) (fun x y => B₂ x y) f g)
+  (hinj : Function.Injective (fun y : H => fun x : E => B₁ x y))
+
+@[simp]
+theorem coe_toLinearMapOfInjective :
+    ⇑(h.toLinearMapOfInjective hinj) = g := rfl
+
+@[simp]
+theorem toLinearMapOfInjective_apply (y : G) :
+    h.toLinearMapOfInjective hinj y = g y := rfl
+
+/-- Bundling a partner preserves its adjoint relation. -/
+theorem isAdjointPair_toLinearMapOfInjective :
+    Function.IsAdjointPair (fun x y => B₁ x y) (fun x y => B₂ x y) f
+      (h.toLinearMapOfInjective hinj) := h
+
+/-- The bundled partner is the unique linear map satisfying the adjoint relation. -/
+theorem toLinearMapOfInjective_unique (L : G →ₗ[R] H)
+    (hL : Function.IsAdjointPair (fun x y => B₁ x y) (fun x y => B₂ x y) f L) :
+    h.toLinearMapOfInjective hinj = L := by
+  ext y
+  apply hinj
+  funext x
+  exact (h.apply x y).symm.trans (hL.apply x y)
+
+/-- The construction is independent of the proofs of compatibility and separation. -/
+theorem toLinearMapOfInjective_eq
+    (h' : Function.IsAdjointPair (fun x y => B₁ x y) (fun x y => B₂ x y) f g)
+    (hinj' : Function.Injective (fun y : H => fun x : E => B₁ x y)) :
+    h.toLinearMapOfInjective hinj = h'.toLinearMapOfInjective hinj' := rfl
+
+end RightLinearRows
+
+end Function.IsAdjointPair
