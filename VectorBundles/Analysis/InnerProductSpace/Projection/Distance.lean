@@ -14,10 +14,11 @@ The residual of an orthogonal retraction is orthogonal to the image of its linea
 map. Its norm is the distance to that image and is a 1-Lipschitz function of the
 ambient vector. The Pythagorean error identity characterizes minimum error by
 zero distance between image points in a seminormed ambient space. Membership in
-the closure of the image is equivalent to zero residual norm. In a normed ambient
-space, the image is closed and minimum error characterizes the retracted
-coefficient. The coefficient module needs no topology or norm, and no
-completeness assumption is required.
+the closure of the image is equivalent to zero residual norm. This closure is
+the orthogonal complement of the kernel for the inner-product sesquilinear form.
+In a normed ambient space, the image itself is the orthogonal complement of the
+kernel, and minimum error characterizes the retracted coefficient. The coefficient
+module needs no topology or norm, and no completeness assumption is required.
 -/
 
 @[expose] public section
@@ -70,6 +71,49 @@ theorem mem_closure_range_iff_norm_sub_image_eq_zero
   rw [h.norm_sub_image_eq_infDist a]
   exact Metric.mem_closure_iff_infDist_zero ⟨β 0, ⟨0, rfl⟩⟩
 
+/-- A vector is orthogonal to the kernel exactly when its residual norm vanishes. -/
+theorem mem_orthogonalBilin_ker_iff_norm_sub_image_eq_zero
+    (h : β.IsOrthogonalRetraction r) (a : A) :
+    a ∈ r.ker.orthogonalBilin (innerₛₗ K) ↔ ‖a - β (r a)‖ = 0 := by
+  constructor
+  · intro ha
+    have hker : a - β (r a) ∈ r.ker := by
+      change r (a - β (r a)) = 0
+      rw [map_sub, h.left_inv, sub_self]
+    have hinner : inner K (a - β (r a)) a = 0 := by
+      simpa only [innerₛₗ_apply_apply] using
+        (Submodule.mem_orthogonalBilin.mp ha) (a - β (r a)) hker
+    have himage : inner K (a - β (r a)) (β (r a)) = 0 := by
+      apply inner_eq_zero_symm.mp
+      simpa only [innerₛₗ_apply_apply] using
+        (Submodule.mem_orthogonalBilin.mp (h.residual_mem_orthogonalBilin a))
+          (β (r a)) ⟨r a, rfl⟩
+    have hself : inner K (a - β (r a)) (a - β (r a)) = 0 := by
+      rw [inner_sub_right, hinner, himage, sub_self]
+    have hsq := congrArg RCLike.re hself
+    rw [inner_self_eq_norm_sq, map_zero] at hsq
+    exact sq_eq_zero_iff.mp hsq
+  · intro hnorm
+    apply Submodule.mem_orthogonalBilin.mpr
+    intro k hk
+    have himage : inner K (β (r a)) k = 0 := by
+      simpa only [innerₛₗ_apply_apply] using
+        (Submodule.mem_orthogonalBilin.mp (h.ker_le_orthogonalBilin hk))
+          (β (r a)) ⟨r a, rfl⟩
+    have hinner : inner K k (β (r a)) = 0 := inner_eq_zero_symm.mp himage
+    have hresidual : inner K k (a - β (r a)) = 0 :=
+      inner_eq_zero_of_right k hnorm
+    change inner K k a = 0
+    simpa only [inner_sub_right, hinner, sub_zero] using hresidual
+
+/-- The closure of the image is the orthogonal complement of the kernel for the
+inner-product sesquilinear form. -/
+theorem closure_range_eq_orthogonalBilin_ker (h : β.IsOrthogonalRetraction r) :
+    closure (Set.range β) = (r.ker.orthogonalBilin (innerₛₗ K) : Set A) := by
+  ext a
+  exact (h.mem_closure_range_iff_norm_sub_image_eq_zero a).trans
+    (h.mem_orthogonalBilin_ker_iff_norm_sub_image_eq_zero a).symm
+
 /-- The residual norm is a 1-Lipschitz function of the ambient vector. -/
 theorem lipschitzWith_norm_sub_image (h : β.IsOrthogonalRetraction r) :
     LipschitzWith (1 : ℝ≥0) (fun a : A => ‖a - β (r a)‖) := by
@@ -110,6 +154,13 @@ theorem isClosed_range (h : β.IsOrthogonalRetraction r) : IsClosed (Set.range �
   intro a ha
   have hzero := (h.mem_closure_range_iff_norm_sub_image_eq_zero a).1 ha
   exact ⟨r a, (sub_eq_zero.mp (norm_eq_zero.mp hzero)).symm⟩
+
+/-- In a normed ambient space, the image is the orthogonal complement of the kernel. -/
+theorem range_eq_orthogonal_ker (h : β.IsOrthogonalRetraction r) :
+    β.range = r.kerᗮ := by
+  apply SetLike.coe_injective
+  simpa only [LinearMap.coe_range, h.isClosed_range.closure_eq,
+    Submodule.orthogonalBilin_innerₛₗ] using h.closure_range_eq_orthogonalBilin_ker
 
 /-- In a normed ambient space, a coefficient attains the minimum error exactly
 when it is the retracted coefficient. -/

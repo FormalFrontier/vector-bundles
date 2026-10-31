@@ -31,6 +31,10 @@ on the first map gives `toContinuousLinearMapOfBound`; the continuous-linear
 first-map specialization is `toContinuousLinearMap`. All constructions retain
 the given partner exactly, with no completeness assumptions.
 
+### Images and orthogonal kernels
+
+For given algebraic maps `β : F →ₗ[K] A` and `r : A →ₗ[K] F` that form an orthogonal retraction, `closure (Set.range β)` is the inner-product orthogonal complement of `r.ker` in the original seminormed inner-product space `A`. If `A` is normed, `β.range = r.kerᗮ`. The scalar field is real or complex; `F` needs only its additive group and module structures, and no completeness is assumed. See the [distance and image API](VectorBundles/Analysis/InnerProductSpace/Projection/Distance.lean).
+
 ### Complete-domain adjoints and composition
 
 For an `RCLike` field `K`, a complete normed inner-product space `H` and a
