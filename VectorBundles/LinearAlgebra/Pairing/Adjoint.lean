@@ -50,6 +50,48 @@ theorem IsAdjointPair.comp {J : Type u₆} {L : Type u₇}
     IsAdjointPair B₁ B₃ (f' ∘ f) (g ∘ g') :=
   fun x y => (h'.apply (f x) y).trans (h.apply x (g' y))
 
+/-- For an adjoint pair with an anisotropic biadditive pairing, the composite
+identifies exactly the same pairs of points as the first function. -/
+theorem IsAdjointPair.comp_apply_eq_iff_of_anisotropic
+    {X : Type u₁} {Y : Type u₂} {A : Type u₃} {R : Type u₄}
+    [AddGroup A] [AddCommGroup R]
+    {qH : X → Y → R} {qA : A →+ A →+ R}
+    {f : X → A} {g : A → Y}
+    (h : IsAdjointPair qH (fun a b => qA a b) f g)
+    (hA : ∀ a, qA a a = 0 → a = 0) (x y : X) :
+    g (f x) = g (f y) ↔ f x = f y := by
+  constructor
+  · intro hxy
+    have hpair (v : X) : qA (f v) (f x) = qA (f v) (f y) := by
+      calc
+        qA (f v) (f x) = qH v (g (f x)) := h v (f x)
+        _ = qH v (g (f y)) := congrArg (qH v) hxy
+        _ = qA (f v) (f y) := (h v (f y)).symm
+    have hx : qA (f x) (f x - f y) = 0 := by
+      rw [map_sub, hpair x, sub_self]
+    have hy : qA (f y) (f x - f y) = 0 := by
+      rw [map_sub, hpair y, sub_self]
+    have hself : qA (f x - f y) (f x - f y) = 0 := by
+      rw [map_sub qA (f x) (f y), AddMonoidHom.sub_apply, hx, hy, sub_self]
+    exact sub_eq_zero.mp (hA _ hself)
+  · exact congrArg g
+
+/-- For an adjoint pair with an anisotropic biadditive pairing, the composite is
+injective if and only if the first function is injective. -/
+theorem IsAdjointPair.injective_comp_iff_of_anisotropic
+    {X : Type u₁} {Y : Type u₂} {A : Type u₃} {R : Type u₄}
+    [AddGroup A] [AddCommGroup R]
+    {qH : X → Y → R} {qA : A →+ A →+ R}
+    {f : X → A} {g : A → Y}
+    (h : IsAdjointPair qH (fun a b => qA a b) f g)
+    (hA : ∀ a, qA a a = 0 → a = 0) :
+    Injective (g ∘ f) ↔ Injective f := by
+  constructor
+  · intro hcomp x y hxy
+    exact hcomp (congrArg g hxy)
+  · intro hf x y hxy
+    exact hf ((h.comp_apply_eq_iff_of_anisotropic hA x y).mp hxy)
+
 /-- Evaluation pairs every function with precomposition on function spaces. -/
 theorem isAdjointPair_eval (f : E → F) :
     IsAdjointPair (fun x (φ : E → R) => φ x) (fun y (ψ : F → R) => ψ y)

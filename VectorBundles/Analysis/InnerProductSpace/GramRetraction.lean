@@ -153,7 +153,56 @@ end AddCommGroup
 
 end ContinuousLinearMap
 
+universe uPairingValue
+
+private theorem isUnit_iff_injective_continuousLinearMap
+    {K : Type uK} {H : Type uH}
+    [Semiring K] [AddCommMonoid H] [Module K H]
+    [TopologicalSpace H] [ContinuousAdd H]
+    [IsArtinianRing ((H →L[K] H)ᵐᵒᵖ)] (U : H →L[K] H) :
+    IsUnit U ↔ Function.Injective U := by
+  constructor
+  · intro hunit
+    obtain ⟨u, hu⟩ := hunit
+    have hinv (v : H) : u.inv (U v) = v := by
+      have hv := congrArg (fun T : H →L[K] H => T v) u.inv_val
+      change u.inv (u.val v) = v at hv
+      rw [hu] at hv
+      exact hv
+    intro x y hxy
+    calc
+      x = u.inv (U x) := (hinv x).symm
+      _ = u.inv (U y) := congrArg (fun v : H => u.inv v) hxy
+      _ = y := hinv y
+  · intro hU
+    apply IsArtinianRing.isUnit_iff_isLeftRegular.mpr
+    intro V W hVW
+    apply ContinuousLinearMap.ext
+    intro v
+    apply hU
+    have hv := congrArg (fun T : H →L[K] H => T v) hVW
+    change U (V v) = U (W v) at hv
+    exact hv
+
 namespace Function.IsAdjointPair
+
+/-- For an adjoint pair with an anisotropic biadditive pairing, the Gram
+endomorphism is a unit exactly when the forward map is injective, provided its
+endomorphism semiring is right Artinian. Only the ambient module needs inverses;
+no continuity of the pairings or of ambient addition is required. -/
+theorem isUnit_comp_iff_of_anisotropic
+    {K : Type uK} {H : Type uH} {A : Type uA} {R : Type uPairingValue}
+    [Semiring K]
+    [AddCommMonoid H] [Module K H] [TopologicalSpace H] [ContinuousAdd H]
+    [AddCommGroup A] [Module K A] [TopologicalSpace A]
+    [AddCommGroup R] [IsArtinianRing ((H →L[K] H)ᵐᵒᵖ)]
+    {qH : H → H → R} {qA : A →+ A →+ R}
+    {Γ : H →L[K] A} {S : A →L[K] H}
+    (h : Function.IsAdjointPair qH (fun a b => qA a b) Γ S)
+    (hA : ∀ a, qA a a = 0 → a = 0) :
+    IsUnit (S.comp Γ) ↔ Function.Injective Γ :=
+  (isUnit_iff_injective_continuousLinearMap (S.comp Γ)).trans
+    (h.injective_comp_iff_of_anisotropic hA)
 
 variable {K : Type uK} {H : Type uH} {A : Type uA}
   [RCLike K]
@@ -166,25 +215,26 @@ assumption on the functions or spaces is needed beyond the given inner products.
 theorem injective_comp_iff {Γ : H → A} {S : A → H}
     (h : Function.IsAdjointPair (inner K) (inner K) Γ S) :
     Function.Injective (S ∘ Γ) ↔ Function.Injective Γ := by
-  constructor
-  · intro hcomp x y hxy
-    apply hcomp
-    change S (Γ x) = S (Γ y)
-    exact congrArg S hxy
-  · intro hΓ x y hxy
-    change S (Γ x) = S (Γ y) at hxy
-    have hinner (v : H) : inner K (Γ v) (Γ x) = inner K (Γ v) (Γ y) := by
-      calc
-        inner K (Γ v) (Γ x) = inner K v (S (Γ x)) := h v (Γ x)
-        _ = inner K v (S (Γ y)) := congrArg (fun w : H => inner K v w) hxy
-        _ = inner K (Γ v) (Γ y) := (h v (Γ y)).symm
-    have hx : inner K (Γ x) (Γ x - Γ y) = 0 := by
-      rw [inner_sub_right, hinner x, sub_self]
-    have hy : inner K (Γ y) (Γ x - Γ y) = 0 := by
-      rw [inner_sub_right, hinner y, sub_self]
-    have hself : inner K (Γ x - Γ y) (Γ x - Γ y) = 0 := by
-      rw [inner_sub_left, hx, hy, sub_self]
-    exact hΓ (sub_eq_zero.mp (inner_self_eq_zero.mp hself))
+  let qA : A →+ A →+ K :=
+    { toFun := fun a =>
+        { toFun := fun b => inner K a b
+          map_zero' := by simp only [inner_zero_right]
+          map_add' := by
+            intro b c
+            simp only [inner_add_right] }
+      map_zero' := by
+        apply AddMonoidHom.ext
+        intro b
+        change inner K (0 : A) b = 0
+        simp only [inner_zero_left]
+      map_add' := by
+        intro a b
+        apply AddMonoidHom.ext
+        intro c
+        change inner K (a + b) c = inner K a c + inner K b c
+        simp only [inner_add_left] }
+  have h' : Function.IsAdjointPair (inner K) (fun a b => qA a b) Γ S := h
+  exact h'.injective_comp_iff_of_anisotropic (fun a ha => inner_self_eq_zero.mp ha)
 
 /-- For an adjoint pair with finite-dimensional domain, the Gram endomorphism
 is a unit exactly when the forward map is injective. This includes subsingleton
@@ -193,34 +243,9 @@ theorem isUnit_comp_iff [FiniteDimensional K H]
     {Γ : H →L[K] A} {S : A →L[K] H}
     (h : Function.IsAdjointPair (inner K) (inner K) Γ S) :
     IsUnit (S.comp Γ) ↔ Function.Injective Γ := by
-  have hcomp : Function.Injective (S.comp Γ) ↔ Function.Injective Γ :=
-    h.injective_comp_iff
-  constructor
-  · intro hunit
-    obtain ⟨u, hu⟩ := hunit
-    apply hcomp.mp
-    have hinv (v : H) : u.inv ((S.comp Γ) v) = v := by
-      have hv := congrArg (fun T : H →L[K] H => T v) u.inv_val
-      change u.inv (u.val v) = v at hv
-      rw [hu] at hv
-      exact hv
-    intro x y hxy
-    calc
-      x = u.inv ((S.comp Γ) x) := (hinv x).symm
-      _ = u.inv ((S.comp Γ) y) := congrArg (fun v : H => u.inv v) hxy
-      _ = y := hinv y
-  · intro hΓ
-    let : IsArtinianRing ((H →L[K] H)ᵐᵒᵖ) :=
-      IsArtinianRing.of_finite K ((H →L[K] H)ᵐᵒᵖ)
-    have hG : Function.Injective (S.comp Γ) := hcomp.mpr hΓ
-    apply IsArtinianRing.isUnit_iff_isLeftRegular.mpr
-    intro U V hUV
-    apply ContinuousLinearMap.ext
-    intro v
-    apply hG
-    have hUVv := congrArg (fun T : H →L[K] H => T v) hUV
-    change (S.comp Γ) (U v) = (S.comp Γ) (V v) at hUVv
-    exact hUVv
+  let : IsArtinianRing ((H →L[K] H)ᵐᵒᵖ) :=
+    IsArtinianRing.of_finite K ((H →L[K] H)ᵐᵒᵖ)
+  exact (isUnit_iff_injective_continuousLinearMap (S.comp Γ)).trans h.injective_comp_iff
 
 end Function.IsAdjointPair
 
