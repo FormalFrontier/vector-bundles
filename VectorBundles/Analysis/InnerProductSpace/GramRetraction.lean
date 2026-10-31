@@ -26,20 +26,34 @@ of `S`. These identities hold for modules over a semiring with arbitrary
 topologies. If the ambient module has subtraction, `S` annihilates the full
 ambient residual; no additive inverses on the domain are needed.
 
+For given pairings that make `Γ` and `S` an adjoint pair, the normalized range
+projection preserves pairings with image vectors. Its residual pairs like zero
+when the ambient module has subtraction; this need not be a zero-valued identity
+for arbitrary pairings. Explicit star symmetry of the ambient pairing makes the
+projection adjoint to itself, without symmetry of the domain pairing or an
+involutive star operation on all values.
+
+For the given inner products on seminormed inner-product spaces, a supplied Gram
+unit gives self-adjointness and orthogonality of the residual to the image, with
+the image vector in the conjugate-linear slot. These conclusions require neither
+finite dimension nor completeness.
+
 For an adjoint pair, injectivity of the Gram endomorphism is equivalent to
 injectivity of `Γ`, without a completeness or dimension assumption. In finite
-dimension this is also the unit criterion. The inverse Gram composite then gives
-an orthogonal retraction for the given inner products.
+dimension this is also the unit criterion. As a special case, the inverse Gram
+composite then gives an orthogonal retraction for the given inner products.
 
 ## Implementation notes
 
-The inner products and norms in the orthogonal specialization are the given
-ones. The domain `H` may be an auxiliary space, including a subsingleton space;
-it does not supply a new norm on `A`. Orthogonality requires the stated adjoint
-pair, injectivity, and finite-dimensionality hypotheses, unlike the unit-only
-normalization identities. The residual identity is pointwise and requires no
-continuity of subtraction. These constructions make no assertion about
-parameter dependence.
+The inner products and norms in the inner-product specializations are the given
+ones. The domain `H` may be an auxiliary space, including a zero module singleton;
+it does not supply a new norm on `A`. The given-inner-product conclusions use
+the adjoint-pair hypothesis. More generally, self-adjointness also uses the
+explicit star symmetry of the ambient pairing; unit-only normalization does not
+imply orthogonality. The residual identity is pointwise and requires no
+continuity of subtraction. These identities make no assertion about parameter
+dependence.
+
 For a continuously varying injective adjoint pair, continuity of `Γ` alone
 implies operator-norm continuity of the inverse Gram composite and joint
 continuity of its evaluation. No completeness of `A` is required.
@@ -47,7 +61,7 @@ continuity of its evaluation. No completeness of `A` is required.
 
 @[expose] public section
 
-universe uK uH uA uB
+universe uK uH uA uB uR
 
 namespace ContinuousLinearMap
 
@@ -150,6 +164,101 @@ theorem apply_comp_inverseGramComp_residual_of_isUnit (hG : IsUnit (S.comp Γ)) 
     _ = 0 := by rw [hP, map_zero]
 
 end AddCommGroup
+
+section Module
+
+variable {K : Type uK} {H : Type uH} {A : Type uA} {R : Type uR}
+  [Semiring K]
+  [AddCommMonoid H] [Module K H] [TopologicalSpace H]
+  [AddCommMonoid A] [Module K A] [TopologicalSpace A]
+  {Γ : H →L[K] A} {S : A →L[K] H}
+  {qH : H → H → R} {qA : A → A → R}
+
+/-- The normalized range projection preserves pairings with vectors in the image
+of an adjoint pair. No algebraic laws on the pairings are required. -/
+theorem pairing_comp_inverseGramComp_of_isUnit (hG : IsUnit (S.comp Γ))
+    (hAdj : Function.IsAdjointPair qH qA Γ S) (v : H) (a : A) :
+    qA (Γ v) ((Γ.comp (inverseGramComp Γ S)) a) = qA (Γ v) a := by
+  have hSP : S ((Γ.comp (inverseGramComp Γ S)) a) = S a :=
+    congrArg (fun f : A →L[K] H => f a) (gram_comp_inverseGramComp_of_isUnit hG)
+  calc
+    qA (Γ v) ((Γ.comp (inverseGramComp Γ S)) a) =
+        qH v (S ((Γ.comp (inverseGramComp Γ S)) a)) := hAdj.apply v _
+    _ = qH v (S a) := congrArg (qH v) hSP
+    _ = qA (Γ v) a := (hAdj.apply v a).symm
+
+/-- Star symmetry of the ambient pairing makes the normalized range projection
+adjoint to itself. The star operation need not be involutive on all values. -/
+theorem isAdjointPair_comp_inverseGramComp_of_isUnit [Star R]
+    (hG : IsUnit (S.comp Γ)) (hAdj : Function.IsAdjointPair qH qA Γ S)
+    (hQ : ∀ a b : A, star (qA a b) = qA b a) :
+    Function.IsAdjointPair qA qA
+      (Γ.comp (inverseGramComp Γ S)) (Γ.comp (inverseGramComp Γ S)) := by
+  intro a b
+  let P : A →L[K] A := Γ.comp (inverseGramComp Γ S)
+  calc
+    qA (P a) b = qA (P a) (P b) :=
+      (pairing_comp_inverseGramComp_of_isUnit hG hAdj (inverseGramComp Γ S a) b).symm
+    _ = star (qA (P b) (P a)) := (hQ (P b) (P a)).symm
+    _ = star (qA (P b) a) :=
+      congrArg star
+        (pairing_comp_inverseGramComp_of_isUnit hG hAdj (inverseGramComp Γ S b) a)
+    _ = qA a (P b) := hQ (P b) a
+
+end Module
+
+section AddCommGroup
+
+variable {K : Type uK} {H : Type uH} {A : Type uA} {R : Type uR}
+  [Semiring K]
+  [AddCommMonoid H] [Module K H] [TopologicalSpace H]
+  [AddCommGroup A] [Module K A] [TopologicalSpace A]
+  {Γ : H →L[K] A} {S : A →L[K] H}
+  {qH : H → H → R} {qA : A → A → R}
+
+/-- The residual of the normalized range projection pairs like zero with image
+vectors. For arbitrary pairings this need not be a zero-valued identity. -/
+theorem pairing_comp_inverseGramComp_residual_of_isUnit (hG : IsUnit (S.comp Γ))
+    (hAdj : Function.IsAdjointPair qH qA Γ S) (v : H) (a : A) :
+    qA (Γ v) (a - (Γ.comp (inverseGramComp Γ S)) a) = qA (Γ v) 0 := by
+  calc
+    qA (Γ v) (a - (Γ.comp (inverseGramComp Γ S)) a) =
+        qH v (S (a - (Γ.comp (inverseGramComp Γ S)) a)) := hAdj.apply v _
+    _ = qH v 0 :=
+      congrArg (qH v) (apply_comp_inverseGramComp_residual_of_isUnit hG a)
+    _ = qH v (S 0) := by rw [map_zero]
+    _ = qA (Γ v) 0 := (hAdj.apply v 0).symm
+
+end AddCommGroup
+
+section InnerProductSpace
+
+variable {K : Type uK} {H : Type uH} {A : Type uA}
+  [RCLike K]
+  [SeminormedAddCommGroup H] [InnerProductSpace K H]
+  [SeminormedAddCommGroup A] [InnerProductSpace K A]
+  {Γ : H →L[K] A} {S : A →L[K] H}
+
+/-- For an adjoint pair of seminormed inner-product spaces, a supplied unit Gram
+endomorphism makes the normalized range projection self-adjoint for the given
+inner product. -/
+theorem isAdjointPair_inner_comp_inverseGramComp_of_isUnit (hG : IsUnit (S.comp Γ))
+    (hAdj : Function.IsAdjointPair (inner K) (inner K) Γ S) :
+    Function.IsAdjointPair (inner K) (inner K)
+      (Γ.comp (inverseGramComp Γ S)) (Γ.comp (inverseGramComp Γ S)) := by
+  apply isAdjointPair_comp_inverseGramComp_of_isUnit hG hAdj
+  intro a b
+  simp
+
+/-- The residual of the normalized range projection is orthogonal to the image
+for the given inner products, with the image vector in the conjugate-linear slot. -/
+theorem inner_comp_inverseGramComp_residual_of_isUnit (hG : IsUnit (S.comp Γ))
+    (hAdj : Function.IsAdjointPair (inner K) (inner K) Γ S) (v : H) (a : A) :
+    inner K (Γ v) (a - (Γ.comp (inverseGramComp Γ S)) a) = 0 := by
+  simpa only [inner_zero_right] using
+    (pairing_comp_inverseGramComp_residual_of_isUnit hG hAdj v a)
+
+end InnerProductSpace
 
 end ContinuousLinearMap
 
