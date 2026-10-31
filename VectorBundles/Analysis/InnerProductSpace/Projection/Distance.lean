@@ -11,8 +11,9 @@ public import VectorBundles.Analysis.InnerProductSpace.Projection.LinearMap
 # Distance to the image of an orthogonal retraction
 
 The residual of an orthogonal retraction is orthogonal to the image of its linear
-map. Its norm is the distance to that image and is a 1-Lipschitz function of the
-ambient vector. The Pythagorean error identity characterizes minimum error by
+map. Taking the retracted image does not increase norms or distances. The residual
+norm is the distance to that image and is a 1-Lipschitz function of the ambient
+vector. The Pythagorean error identity characterizes minimum error by
 zero distance between image points in a seminormed ambient space. Membership in
 the closure of the image is equivalent to zero residual norm. This closure is
 the orthogonal complement of the kernel for the inner-product sesquilinear form.
@@ -46,6 +47,19 @@ theorem norm_sub_image_sq (h : β.IsOrthogonalRetraction r) (a : A) (v : F) :
   simpa only [hsum, pow_two] using
     norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero
       (a - β (r a)) (β (r a - v)) (h.residual_inner a (r a - v))
+
+/-- The retracted image has norm at most the norm of the ambient vector. -/
+theorem norm_image_le (h : β.IsOrthogonalRetraction r) (a : A) :
+    ‖β (r a)‖ ≤ ‖a‖ := by
+  have hs : ‖a‖ ^ 2 = ‖a - β (r a)‖ ^ 2 + ‖β (r a)‖ ^ 2 := by
+    simpa using h.norm_sub_image_sq a (0 : F)
+  nlinarith only [hs, norm_nonneg a, norm_nonneg (β (r a)),
+    sq_nonneg ‖a - β (r a)‖]
+
+/-- The distance between retracted images is at most the distance between ambient vectors. -/
+theorem dist_image_image_le (h : β.IsOrthogonalRetraction r) (a b : A) :
+    dist (β (r a)) (β (r b)) ≤ dist a b := by
+  simpa only [dist_eq_norm, map_sub] using h.norm_image_le (a - b)
 
 /-- The retracted image minimizes the distance to the image of the linear map. -/
 theorem norm_sub_image_le (h : β.IsOrthogonalRetraction r) (a : A) (v : F) :
