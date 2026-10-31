@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Topology.UnitInterval
 public import VectorBundles.Order.Interval.Fin
+public import VectorBundles.Topology.Compactness.Product
 
 /-!
 # Finite subdivisions subordinate to open covers
@@ -17,10 +18,20 @@ There is at least one slab, including when the interval is a singleton.
 An open cover of `X × I` admits such a subdivision near each point of `X`.
 The neighbourhood in `X` is common to all the finitely many slabs.
 
+An ambient open cover of the product of a compact subset of `X` and a closed real
+interval admits one finite subdivision and one finite ambient open base cover common
+to all slabs. Each full rectangle lies in a member of the original cover. This follows
+from `IsCompact.exists_fin_open_cover_prod_subset` and the finite interval subdivision:
+the ambient open base family is retained while the interval cover is subdivided.
+
 ## References
 
-- The Mathlib contributors, `exists_monotone_Icc_subset_open_cover_Icc`
-  and `generalized_tube_lemma`.
+- Mathlib's `Topology.UnitInterval` (Patrick Massot and Kim Morrison),
+  `exists_monotone_Icc_subset_open_cover_Icc`.
+- Mathlib's `Topology.Compactness.Compact` (Johannes Hölzl, Mario Carneiro and
+  Yury Kudryashov), `generalized_tube_lemma` and `IsCompact.elim_finite_subcover`.
+- Mathlib's `Topology.Compactness.Paracompact` (Reid Barton and Yury Kudryashov),
+  the finite slice-neighbourhood construction in the compact-product argument.
 -/
 
 @[expose] public section
@@ -119,3 +130,49 @@ theorem exists_open_nhds_prod_Icc_subset_open_cover_unitInterval
   · exact mem_iInter.mpr hxU
   · intro k b hb
     exact hUW k ⟨mem_iInter.mp hb.1 k, hb.2⟩
+
+/-- An open cover of `S ×ˢ Icc a b`, with `S` compact in an arbitrary topological
+space, admits one finite monotone grid from `a` to `b` and one finite family of
+ambient open sets covering `S`, common to every slab. Each full rectangle lies
+in a selected member of the original ambient cover, and the real closed slabs
+cover `Icc a b` exactly.
+
+There is at least one slab, even when `a = b`; repeated cuts are allowed. The
+finite base family may be empty, so an empty compact set requires no cover index.
+No separation assumption on the ambient space is needed.
+
+The proof applies `IsCompact.exists_fin_open_cover_prod_subset` to the compact
+factors, then applies `exists_fin_monotone_Icc_subset_open_cover_Icc` to the
+induced interval cover. The ambient open base family is unchanged. -/
+theorem IsCompact.exists_fin_open_cover_prod_Icc_subset
+    {X : Type uX} [TopologicalSpace X] {S : Set X} (hS : IsCompact S)
+    {ι : Sort uJ} {a b : ℝ} (hab : a ≤ b) (U : ι → Set (X × ℝ))
+    (hU : ∀ i, IsOpen (U i)) (hcover : S ×ˢ Icc a b ⊆ ⋃ i, U i) :
+    ∃ n : ℕ, 1 ≤ n ∧ ∃ g : Fin (n + 1) → Icc a b,
+      (g 0 : ℝ) = a ∧ Monotone g ∧ (g (Fin.last n) : ℝ) = b ∧
+      (⋃ k : Fin n, Icc (g k.castSucc : ℝ) (g k.succ : ℝ)) = Icc a b ∧
+      ∃ m : ℕ, ∃ V : Fin m → Set X,
+        (∀ j, IsOpen (V j)) ∧ S ⊆ ⋃ j, V j ∧
+        ∃ c : Fin m → Fin n → ι, ∀ j k,
+          V j ×ˢ Icc (g k.castSucc : ℝ) (g k.succ : ℝ) ⊆ U (c j k) := by
+  obtain ⟨m, V, hV, hSV, r, W, hW, hTW, c, hVW⟩ :=
+    hS.exists_fin_open_cover_prod_subset isCompact_Icc U hU hcover
+  let C : Fin r → Set (Icc a b) := fun k ↦ Subtype.val ⁻¹' W k
+  have hC : ∀ k, IsOpen (C k) := fun k ↦ (hW k).preimage continuous_subtype_val
+  have hcoverC : univ ⊆ ⋃ k, C k := by
+    intro t _
+    obtain ⟨k, hk⟩ := mem_iUnion.mp (hTW t.property)
+    exact mem_iUnion.mpr ⟨k, hk⟩
+  obtain ⟨n, hn, g, hg0, hg, hgn, ⟨d, hd⟩, _⟩ :=
+    exists_fin_monotone_Icc_subset_open_cover_Icc hab hC hcoverC
+  have hslab : ∀ k : Fin n,
+      Icc (g k.castSucc : ℝ) (g k.succ : ℝ) ⊆ W (d k) := by
+    intro k s hs
+    have hsab : s ∈ Icc a b :=
+      ⟨(g k.castSucc).property.1.trans hs.1, hs.2.trans (g k.succ).property.2⟩
+    exact hd k (show (⟨s, hsab⟩ : Icc a b) ∈ Icc (g k.castSucc) (g k.succ) from hs)
+  refine ⟨n, hn, g, hg0, hg, hgn, ?_, m, V, hV, hSV, (fun j k ↦ c j (d k)), ?_⟩
+  · have hgReal : Monotone (fun k ↦ (g k : ℝ)) := fun _ _ h ↦ hg h
+    simpa only [hg0, hgn] using hgReal.iUnion_Icc_castSucc_succ hn
+  · intro j k z hz
+    exact hVW j (d k) ⟨hz.1, hslab k hz.2⟩

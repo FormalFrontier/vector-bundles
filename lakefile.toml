@@ -12,9 +12,13 @@ weak.linter.style.header = false
 [[lean_lib]]
 name = "VectorBundles"
 globs = [
+  "VectorBundles.Analysis.Normed.Operator.KernelChart",
+  "VectorBundles.Analysis.Normed.Operator.ComplexShear",
   "VectorBundles.LinearAlgebra.Pairing.Adjoint",
   "VectorBundles.Topology.MetricSpace.PairwiseDistance",
   "VectorBundles.Analysis.InnerProductSpace.AdjointPair",
+  "VectorBundles.Analysis.InnerProductSpace.Adjoint",
+  "VectorBundles.Analysis.InnerProductSpace.GramRetraction",
   "VectorBundles.Analysis.Normed.Operator.Composition",
   "VectorBundles",
   "VectorBundles.Topology.ContinuousMap.Algebra",
@@ -27,7 +31,9 @@ globs = [
   "VectorBundles.Analysis.InnerProductSpace.PositiveForm",
   "VectorBundles.Analysis.InnerProductSpace.Projection.LinearMap",
   "VectorBundles.Analysis.InnerProductSpace.Projection.Fiberwise",
+  "VectorBundles.Analysis.InnerProductSpace.Projection.Distance",
   "VectorBundles.Analysis.Normed.Ring.Units",
+  "VectorBundles.Analysis.Normed.Ring.Idempotent",
   "VectorBundles.Topology.Algebra.GroupWithZero",
   "VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator",
   "VectorBundles.Topology.Algebra.Module.OpenMap",
@@ -60,6 +66,7 @@ globs = [
   "VectorBundles.Topology.FiberBundle.Lindelof.Reflection",
   "VectorBundles.Topology.FiberBundle.Paracompact",
   "VectorBundles.Topology.FiberBundle.CoordChange",
+  "VectorBundles.Topology.Maps.FiberCoordinates",
   "VectorBundles.Topology.Maps.Proper",
   "VectorBundles.Topology.VectorBundle.CoordinateMap",
   "VectorBundles.Topology.VectorBundle.FiniteSum",
@@ -123,9 +130,13 @@ globs = [
 name = "VectorBundlesTest"
 globs = [
   "VectorBundlesTest.AdjointPair",
+  "VectorBundlesTest.CompleteDomainAdjoint",
+  "VectorBundlesTest.GramRetraction",
   "VectorBundlesTest.AntiDualPrecomposition",
   "VectorBundlesTest.OrthogonalRetraction",
+  "VectorBundlesTest.OrthogonalRetractionDistance",
   "VectorBundlesTest",
+  "VectorBundlesTest.Analysis.Normed.Ring.Idempotent",
   "VectorBundlesTest.WeightedExtension",
   "VectorBundlesTest.Topology.VectorBundle.EqualBase",
   "VectorBundlesTest.Topology.ContinuousMap.Algebra",

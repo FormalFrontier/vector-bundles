@@ -11,6 +11,22 @@ topological fiber bundles.
 
 ## Headline results
 
+### Norms of idempotents
+
+[`IsIdempotentElem.one_le_norm`](VectorBundles/Analysis/Normed/Ring/Idempotent.lean)
+shows that a nonzero idempotent in a non-unital normed ring has norm at least one.
+If its norm is at most one, `IsIdempotentElem.norm_eq_one` gives norm exactly one.
+
+### Finite ambient open grids for compact products
+
+[`IsCompact.exists_fin_open_cover_prod_subset`](VectorBundles/Topology/Compactness/Product.lean)
+refines an ambient open cover of `S × T`, where `S` and `T` are compact subsets
+of arbitrary topological spaces, into finite ambient open covers `V` of `S`
+and `W` of `T`. Every full product `V j × W k` lies in a selected member of the
+original cover. The spaces may have independent universes, with no separation
+assumptions. The original labels may belong to any sort, and either finite
+family may be empty.
+
 ### Finite subdivisions of closed real intervals
 
 [`exists_fin_monotone_Icc_subset_open_cover_Icc`](VectorBundles/Topology/UnitInterval.lean)
@@ -21,6 +37,16 @@ by any sort; repeated cuts and at least one slab also cover singleton intervals.
 The product-neighbourhood theorem
 `exists_open_nhds_prod_Icc_subset_open_cover_unitInterval` provides a common open
 neighbourhood for all slabs without separation assumptions on the base space.
+
+[`IsCompact.exists_fin_open_cover_prod_Icc_subset`](VectorBundles/Topology/UnitInterval.lean)
+combines the compact-product open grid with the finite interval subdivision to
+give a rectangular refinement over any compact subset of an arbitrary topological
+space: one finite monotone grid and one finite ambient open base cover, common to
+all slabs. The base cover is the same one supplied by the compact-product theorem.
+Every full base-set × closed-slab rectangle lies in a selected member of the
+original ambient open cover. The cuts include both endpoints, and the slabs
+cover the real interval exactly. No separation assumption is needed; the base
+family may be empty, and singleton intervals still have at least one slab.
 
 ### Finite product-chart selection
 
@@ -63,6 +89,18 @@ ordinary local atlas over an arbitrary parameter space. Neither compactness of
   [real-axis example](VectorBundlesTest/OrthogonalRetraction.lean) uses the
   finite-dimensional construction on the original fibres of `Bool × ℝ → Bool`.
   These APIs do not assert continuity or a general residual-orthogonality theorem.
+
+- **Distance and closure for a given orthogonal retraction:** for
+  `h : β.IsOrthogonalRetraction r`, the
+  [distance API](VectorBundles/Analysis/InnerProductSpace/Projection/Distance.lean)
+  decomposes squared error and identifies `‖a - β (r a)‖` with the metric
+  distance from `a` to the range of `β`. The point `β (r a)` attains this
+  distance, and the scalar residual norm is 1-Lipschitz. In a seminormed ambient
+  inner product space, membership in the closure of the range is equivalent to
+  `‖a - β (r a)‖ = 0`, and `β v` has the same error exactly when its distance
+  from `β (r a)` is zero. In a normed ambient space, the range is closed and
+  minimum error is equivalent to `v = r a`. No topology or norm on the
+  coefficient module or completeness assumption is needed.
 
 - **Constant extension of supported pairings:** for arbitrary topological spaces
   and a continuous pairing `μ : M × V → W` with `μ(m₀, v) = w₀`, a continuous
@@ -390,6 +428,8 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Topology.Compactness.Lindelof`](VectorBundles/Topology/Compactness/Lindelof.lean) | Lindelöf inverse images under proper maps and products with compact or σ-compact sets, without separation assumptions |
 | [`Topology.Compactness.SigmaCompact`](VectorBundles/Topology/Compactness/SigmaCompact.lean) | Sigma-compact inverse images under proper maps exactly when the target subset intersected with the range is sigma-compact |
 | [`Topology.Compactness.Paracompact`](VectorBundles/Topology/Compactness/Paracompact.lean) | Paracompactness of continuous retracts and domains of proper maps; open-surjective-proper codomain theorem |
+| [`Topology.Compactness.Product`](VectorBundles/Topology/Compactness/Product.lean) | Finite ambient open covers of two compact subsets with every full pairwise product contained in an original open-cover member, without separation assumptions |
+| [`Topology.UnitInterval`](VectorBundles/Topology/UnitInterval.lean) | Positive finite monotone subdivisions subordinate to open interval covers; common-neighbourhood subdivisions and compact-base closed-slab refinements |
 | [`Topology.LocallyFinite`](VectorBundles/Topology/LocallyFinite.lean) | Locally finite images under closed maps with compact point fibers; [infinite-index example](VectorBundlesTest/Topology/LocallyFinite.lean) |
 | [`Topology.CompactOpen`](VectorBundles/Topology/CompactOpen.lean) | Locally constant compact-open images for jointly continuous homeomorphism families and their inverses |
 | [`Topology.FiberBundle.CoordChange`](VectorBundles/Topology/FiberBundle/CoordChange.lean) | Jointly continuous coordinate-change homeomorphisms and inverses on the original chart overlap |
@@ -511,6 +551,13 @@ the additional contributor credits in the module documentation are preserved.
 Pullback bundle constructions follow Nicolò Cavalleri, Sébastien Gouëzel, Heather
 Macbeth and Floris van Doorn; quotient-complement equivalences and projections
 follow Yury Kudryashov's Mathlib formalization.
+Compact rectangular refinements use Mathlib's tube lemma and finite-subcover API
+in `Topology.Compactness.Compact` (Johannes Hölzl, Mario Carneiro and Yury Kudryashov)
+and follow the finite slice-neighbourhood argument in
+`Topology.Compactness.Paracompact` (Reid Barton and Yury Kudryashov).
+The real closed-slab refinement combines the compact-product grid with the finite
+interval subdivision API, using Patrick Massot and Kim Morrison's Mathlib
+unit-interval formalization.
 The Hermitian and semilinear APIs extend those prior formalizations; the other
 modules document their own mathematical and formalization sources. Finite cylinder
 transport reuses Mathlib's bundle, pullback-topology and trivialization APIs through

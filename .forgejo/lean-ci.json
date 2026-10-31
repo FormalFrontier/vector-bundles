@@ -13,6 +13,7 @@
         "VectorBundles.Topology.VectorBundle.HermitianMetric.Operations",
         "VectorBundlesTest.Topology.VectorBundle.HermitianMetric.Operations",
         "VectorBundles.Analysis.InnerProductSpace.PositiveForm",
+        "VectorBundles.Analysis.Normed.Ring.Idempotent",
         "VectorBundles.Analysis.Normed.Ring.Units",
         "VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator",
         "VectorBundles.Topology.Algebra.Module.OpenMap",
@@ -125,7 +126,15 @@
         "VectorBundlesTest.Topology.VectorBundle.FiniteEmbedding",
         "VectorBundlesTest.Topology.VectorBundle.Frame",
         "VectorBundlesTest.Topology.VectorBundle.Range",
-        "VectorBundlesTest.Topology.VectorBundle.TrivialMetric"
+        "VectorBundlesTest.Topology.VectorBundle.TrivialMetric",
+        "VectorBundles.Analysis.InnerProductSpace.AdjointPair",
+        "VectorBundles.Analysis.InnerProductSpace.Adjoint",
+        "VectorBundlesTest.Analysis.Normed.Ring.Idempotent",
+        "VectorBundlesTest.CompleteDomainAdjoint",
+        "VectorBundles.Analysis.InnerProductSpace.GramRetraction",
+        "VectorBundlesTest.GramRetraction",
+        "VectorBundles.Analysis.InnerProductSpace.Projection.Distance",
+        "VectorBundlesTest.OrthogonalRetractionDistance"
       ],
       "source_dir": ".",
       "exclude": {}

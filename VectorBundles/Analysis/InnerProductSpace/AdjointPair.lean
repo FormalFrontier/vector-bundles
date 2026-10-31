@@ -10,13 +10,19 @@ public import VectorBundles.Topology.MetricSpace.PairwiseDistance
 /-!
 # Norms and continuity of given adjoint partners
 
-The pairings are the given conjugate-first inner products. Given adjoint partners have
-equal operator norms, and distances between two given pairs agree. Consequently, families
-of given partners are continuous simultaneously on any topological parameter space.
+The pairings are the given conjugate-first inner products. A pointwise norm bound on a
+function makes any given adjoint partner Lipschitz with the same constant. In particular,
+a given adjoint partner of a continuous linear map is Lipschitz with its operator norm,
+and hence continuous, without any linearity or continuity assumption on the partner.
+
+Bundled adjoint partners have equal operator norms, and distances between two given pairs
+agree. Consequently, families of bundled partners are continuous simultaneously on any
+topological parameter space.
 
 The spaces need only be seminormed, and partners are not asserted to be unique. The norm
-proof uses Mathlib's isometric inner-product functional `innerSL` and the operator-norm
-bound for composition.
+bound uses Mathlib's isometric inner-product functional `innerSL` and Cauchy–Schwarz.
+A zero Lipschitz constant gives zero pairwise pseudometric distances, not necessarily
+equality of values.
 -/
 
 @[expose] public section
@@ -45,18 +51,63 @@ theorem inner_sub {f₁ f₂ : E → F} {g₁ g₂ : F → E}
   change inner K (f₁ x - f₂ x) y = inner K x (g₁ y - g₂ y)
   rw [inner_sub_left, inner_sub_right, h₁.apply, h₂.apply]
 
+/-- A function value is bounded in norm by a pointwise norm bound
+on a given adjoint partner. -/
+theorem norm_apply_le_of_bound {f : E → F} {g : F → E} {C : NNReal}
+    (h : Function.IsAdjointPair (inner K) (inner K) f g)
+    (hg : ∀ y, ‖g y‖ ≤ (C : ℝ) * ‖y‖) (x : E) :
+    ‖f x‖ ≤ (C : ℝ) * ‖x‖ := by
+  calc
+    ‖f x‖ = ‖innerSL K (f x)‖ := by rw [innerSL_apply_norm]
+    _ ≤ (C : ℝ) * ‖x‖ := by
+      apply (innerSL K (f x)).opNorm_le_bound
+        (mul_nonneg C.coe_nonneg (norm_nonneg x))
+      intro y
+      calc
+        ‖(innerSL K (f x)) y‖ = ‖inner K x (g y)‖ := congrArg norm (h.apply x y)
+        _ ≤ ‖x‖ * ‖g y‖ := norm_inner_le_norm x (g y)
+        _ ≤ ‖x‖ * ((C : ℝ) * ‖y‖) :=
+          mul_le_mul_of_nonneg_left (hg y) (norm_nonneg x)
+        _ = ((C : ℝ) * ‖x‖) * ‖y‖ := by
+          rw [← mul_assoc, mul_comm ‖x‖ (C : ℝ)]
+
 /-- A function value is bounded in norm by a given continuous linear adjoint partner. -/
 theorem norm_apply_le {f : E → F} {S : F →L[K] E}
     (h : Function.IsAdjointPair (inner K) (inner K) f S) (x : E) :
     ‖f x‖ ≤ ‖S‖ * ‖x‖ := by
-  have heq : innerSL K (f x) = (innerSL K x).comp S := by
-    ext y
-    exact h.apply x y
-  calc
-    ‖f x‖ = ‖innerSL K (f x)‖ := by rw [innerSL_apply_norm]
-    _ = ‖(innerSL K x).comp S‖ := congrArg norm heq
-    _ ≤ ‖innerSL K x‖ * ‖S‖ := (innerSL K x).opNorm_comp_le S
-    _ = ‖S‖ * ‖x‖ := by rw [innerSL_apply_norm, mul_comm]
+  simpa only [coe_nnnorm] using
+    h.norm_apply_le_of_bound (C := ‖S‖₊)
+      (fun y => by simpa only [coe_nnnorm] using S.le_opNorm y) x
+
+/-- A given adjoint partner of a pointwise norm-bounded function
+is Lipschitz with the same bound. -/
+theorem lipschitzWith_of_bound {Γ : E → F} {S : F → E} {C : NNReal}
+    (h : Function.IsAdjointPair (inner K) (inner K) Γ S)
+    (hΓ : ∀ v, ‖Γ v‖ ≤ (C : ℝ) * ‖v‖) :
+    LipschitzWith C S := by
+  apply LipschitzWith.of_dist_le_mul
+  intro a b
+  -- Translation and subtraction use only the full pairing identity, not linearity of S.
+  have hab : Function.IsAdjointPair (inner K) (inner K) Γ
+      (fun y => S (y + b) - S b) := by
+    intro v y
+    rw [inner_sub_right, ← h.apply v (y + b), ← h.apply v b,
+      ← inner_sub_right, add_sub_cancel_right]
+  simpa only [dist_eq_norm, sub_add_cancel] using
+    hab.inner_symm.norm_apply_le_of_bound hΓ (a - b)
+
+/-- A given adjoint partner of a continuous linear map is Lipschitz
+with the operator-norm constant. -/
+theorem lipschitzWith {Γ : E →L[K] F} {S : F → E}
+    (h : Function.IsAdjointPair (inner K) (inner K) Γ S) :
+    LipschitzWith ‖Γ‖₊ S :=
+  h.lipschitzWith_of_bound (fun v => by simpa only [coe_nnnorm] using Γ.le_opNorm v)
+
+/-- A given adjoint partner of a continuous linear map is continuous. -/
+theorem continuous {Γ : E →L[K] F} {S : F → E}
+    (h : Function.IsAdjointPair (inner K) (inner K) Γ S) :
+    Continuous S :=
+  h.lipschitzWith.continuous
 
 /-- An operator is bounded in norm by any given adjoint partner. -/
 theorem norm_le {T : E →L[K] F} {S : F →L[K] E}
