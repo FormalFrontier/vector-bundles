@@ -11,6 +11,33 @@ topological fiber bundles.
 
 ## Headline results
 
+### Complete-domain adjoints and composition
+
+For an `RCLike` field `K`, a complete normed inner-product space `H` and a
+seminormed inner-product space `A`,
+[`ContinuousLinearMap.adjointMap`](VectorBundles/Analysis/InnerProductSpace/Adjoint.lean)
+constructs the adjoint of `H →L[K] A`, without completeness or separation of `A`.
+It preserves the identity. For `Γ₁ : H →L[K] M`, `Γ₂ : M →L[K] A` and a raw
+adjoint partner `S₂ : A → M`, `adjointMap_comp_apply_of_isAdjointPair` gives
+`adjointMap (Γ₂.comp Γ₁) a = adjointMap Γ₁ (S₂ a)`, with no linearity or
+continuity assumption on `S₂` and no completeness of the seminormed spaces `M`
+and `A`. There is also a bundled-partner equality. When `M` is itself normed
+and complete, `adjointMap_comp` expresses this entirely using `adjointMap`.
+These laws generalize Mathlib's `ContinuousLinearMap.adjoint_comp`; the existing
+`adjointMap_eq_adjoint` bridge identifies the normed complete specialization.
+
+### Continuous inverse Gram families
+
+Over an `RCLike` field `K`, for finite-dimensional normed inner-product `H`,
+normed inner-product `A` and
+families `Γ b : H →L[K] A`, `S b : A →L[K] H` of adjoint pairs,
+[`ContinuousLinearMap.continuous_inverseGramComp`](VectorBundles/Analysis/InnerProductSpace/GramRetraction.lean)
+shows that injectivity of each `Γ b` and continuity of `Γ` alone imply
+continuity of `b ↦ inverseGramComp (Γ b) (S b)`.
+`continuous_inverseGramComp_apply` gives joint continuity in the parameter and
+the ambient vector. Neither theorem requires completeness of `A` or a separate
+continuity hypothesis on `S`; the inversion takes place in the endomorphisms of `H`.
+
 ### Norms of idempotents
 
 [`IsIdempotentElem.one_le_norm`](VectorBundles/Analysis/Normed/Ring/Idempotent.lean)

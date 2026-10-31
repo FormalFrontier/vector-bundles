@@ -5,6 +5,7 @@ Authors: Formal Frontier contributors
 module
 
 public import VectorBundles.Analysis.InnerProductSpace.Adjoint
+public import VectorBundles.Analysis.InnerProductSpace.GramRetraction
 public import Mathlib.Analysis.Complex.Basic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
@@ -66,5 +67,27 @@ theorem adjointMap_complexLine_one_add_I :
     ContinuousLinearMap.adjointMap (complexLine 1) (1 + Complex.I) = 2 := by
   rw [adjointMap_complexLine_apply]
   norm_num
+
+
+/-- Each line map is injective because its real coordinate is unchanged. -/
+theorem complexLine_injective (t : ℝ) : Function.Injective (complexLine t) := by
+  intro x y h
+  simpa [complexLine_apply, Complex.mul_re] using congrArg Complex.re h
+
+private theorem continuous_complexLine : Continuous complexLine := by
+  change Continuous (fun t : ℝ =>
+    (1 + (t : ℂ) * Complex.I) • Complex.ofRealCLM)
+  exact (continuous_const.add
+    (Complex.ofRealCLM.continuous.mul continuous_const)).smul continuous_const
+
+example :
+    Continuous (fun t : ℝ =>
+      ContinuousLinearMap.inverseGramComp (complexLine t) (complexLinePartner t)) ∧
+    Continuous (fun x : ℝ × ℂ =>
+      ContinuousLinearMap.inverseGramComp (complexLine x.1) (complexLinePartner x.1) x.2) := by
+  exact ⟨ContinuousLinearMap.continuous_inverseGramComp
+      complexLine_isAdjointPair complexLine_injective continuous_complexLine,
+    ContinuousLinearMap.continuous_inverseGramComp_apply
+      complexLine_isAdjointPair complexLine_injective continuous_complexLine⟩
 
 end CompleteDomainAdjoint

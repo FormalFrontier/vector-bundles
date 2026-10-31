@@ -131,6 +131,7 @@
         "VectorBundles.Analysis.InnerProductSpace.Adjoint",
         "VectorBundlesTest.Analysis.Normed.Ring.Idempotent",
         "VectorBundlesTest.CompleteDomainAdjoint",
+        "VectorBundlesTest.AdjointComposition",
         "VectorBundles.Analysis.InnerProductSpace.GramRetraction",
         "VectorBundlesTest.GramRetraction",
         "VectorBundles.Analysis.InnerProductSpace.Projection.Distance",

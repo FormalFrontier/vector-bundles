@@ -131,6 +131,7 @@ name = "VectorBundlesTest"
 globs = [
   "VectorBundlesTest.AdjointPair",
   "VectorBundlesTest.CompleteDomainAdjoint",
+  "VectorBundlesTest.AdjointComposition",
   "VectorBundlesTest.GramRetraction",
   "VectorBundlesTest.AntiDualPrecomposition",
   "VectorBundlesTest.OrthogonalRetraction",

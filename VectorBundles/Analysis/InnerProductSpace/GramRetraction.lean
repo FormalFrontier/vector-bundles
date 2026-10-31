@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.Normed.Ring.Units
 public import VectorBundles.Analysis.InnerProductSpace.AdjointPair
 public import VectorBundles.Analysis.InnerProductSpace.Projection.LinearMap
 import Mathlib.RingTheory.Artinian.Module
@@ -39,11 +40,14 @@ pair, injectivity, and finite-dimensionality hypotheses, unlike the unit-only
 normalization identities. The residual identity is pointwise and requires no
 continuity of subtraction. These constructions make no assertion about
 parameter dependence.
+For a continuously varying injective adjoint pair, continuity of `Γ` alone
+implies operator-norm continuity of the inverse Gram composite and joint
+continuity of its evaluation. No completeness of `A` is required.
 -/
 
 @[expose] public section
 
-universe uK uH uA
+universe uK uH uA uB
 
 namespace ContinuousLinearMap
 
@@ -293,5 +297,68 @@ theorem inverseGramComp_isOrthogonalRetraction
     exact inner_eq_zero_symm.mp (inner_comp_inverseGramComp_residual h hΓ _ _)
 
 end FiniteDimensional
+
+end ContinuousLinearMap
+
+namespace ContinuousLinearMap
+
+section Continuity
+
+variable {K : Type uK} {H : Type uH} {A : Type uA} {B : Type uB}
+  [NontriviallyNormedField K]
+  [NormedAddCommGroup H] [NormedSpace K H] [CompleteSpace H]
+  [SeminormedAddCommGroup A] [NormedSpace K A] [TopologicalSpace B]
+
+/-- The inverse Gram composite is continuous at a parameter where the Gram
+endomorphism is a unit. Only the auxiliary space needs to be complete. -/
+theorem continuousAt_inverseGramComp
+    {Γ : B → (H →L[K] A)} {S : B → (A →L[K] H)} {b : B}
+    (hΓ : ContinuousAt Γ b) (hS : ContinuousAt S b)
+    (hu : IsUnit ((S b).comp (Γ b))) :
+    ContinuousAt (fun b => inverseGramComp (Γ b) (S b)) b := by
+  have hG : ContinuousAt (fun b => (S b).comp (Γ b)) b :=
+    ((compL K H A H).continuous.continuousAt.comp hS).clm_apply hΓ
+  have hi : ContinuousAt Ring.inverse ((S b).comp (Γ b)) := by
+    obtain ⟨u, hu⟩ := hu
+    simpa only [hu] using NormedRing.inverse_continuousAt u
+  have hInv : ContinuousAt (fun b => Ring.inverse ((S b).comp (Γ b))) b :=
+    hi.comp (f := fun b => (S b).comp (Γ b)) hG
+  simpa only [inverseGramComp, Function.comp_apply, compL_apply] using
+    ((compL K A H H).continuous.continuousAt.comp hInv).clm_apply hS
+
+end Continuity
+
+section Families
+
+variable {K : Type uK} {H : Type uH} {A : Type uA} {B : Type uB}
+  [RCLike K]
+  [NormedAddCommGroup H] [InnerProductSpace K H]
+  [NormedAddCommGroup A] [InnerProductSpace K A]
+  [TopologicalSpace B] [FiniteDimensional K H]
+
+/-- For an injective family of adjoint pairs, continuity of the original maps
+implies operator-norm continuity of their inverse Gram composites. -/
+theorem continuous_inverseGramComp
+    {Γ : B → (H →L[K] A)} {S : B → (A →L[K] H)}
+    (h : ∀ b, Function.IsAdjointPair (inner K) (inner K) (Γ b) (S b))
+    (hΓ_injective : ∀ b, Function.Injective (Γ b)) (hΓ : Continuous Γ) :
+    Continuous (fun b => inverseGramComp (Γ b) (S b)) := by
+  let : CompleteSpace H := FiniteDimensional.complete K H
+  have hS : Continuous S := (Function.IsAdjointPair.continuous_iff h).mp hΓ
+  exact continuous_iff_continuousAt.mpr fun b =>
+    continuousAt_inverseGramComp hΓ.continuousAt hS.continuousAt
+      ((h b).isUnit_comp_iff.mpr (hΓ_injective b))
+
+/-- Evaluation of an inverse Gram family is jointly continuous in the parameter
+and ambient vector, assuming continuity only of the original map family. -/
+theorem continuous_inverseGramComp_apply
+    {Γ : B → (H →L[K] A)} {S : B → (A →L[K] H)}
+    (h : ∀ b, Function.IsAdjointPair (inner K) (inner K) (Γ b) (S b))
+    (hΓ_injective : ∀ b, Function.Injective (Γ b)) (hΓ : Continuous Γ) :
+    Continuous (fun x : B × A => inverseGramComp (Γ x.1) (S x.1) x.2) := by
+  exact ((continuous_inverseGramComp h hΓ_injective hΓ).comp continuous_fst).clm_apply
+    continuous_snd
+
+end Families
 
 end ContinuousLinearMap

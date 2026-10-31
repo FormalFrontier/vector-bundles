@@ -16,13 +16,17 @@ public import VectorBundles.Analysis.InnerProductSpace.AdjointPair
 The adjoint of a continuous linear map from a Hilbert space is defined by
 precomposition on continuous duals and the Fréchet–Riesz equivalence.
 The target need not be complete or separated.
+
+The composition laws generalize Mathlib's `ContinuousLinearMap.adjoint_comp`.
+For normed complete source and target, `ContinuousLinearMap.adjointMap_eq_adjoint`
+identifies this construction with Mathlib's adjoint.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-universe u v w
+universe u v w x
 
 namespace ContinuousLinearMap
 
@@ -82,6 +86,49 @@ theorem isAdjointPair_iff_eq_adjointMap (Γ : H →L[K] A) (S : A → H) :
     exact (hS h a).symm.trans (adjointMap_inner_right Γ h a).symm
   · rintro rfl
     exact isAdjointPair_adjointMap Γ
+
+/-- The adjoint of the identity on a complete inner product space is the identity. -/
+@[simp]
+theorem adjointMap_id : adjointMap (ContinuousLinearMap.id K H) = ContinuousLinearMap.id K H := by
+  ext h
+  exact (congrFun ((isAdjointPair_iff_eq_adjointMap
+    (ContinuousLinearMap.id K H) id).mp (Function.isAdjointPair_id (inner K))) h).symm
+
+section Composition
+
+variable {M : Type x} [SeminormedAddCommGroup M] [InnerProductSpace K M]
+
+/-- A supplied raw adjoint partner composes with the adjoint on its left.
+No linearity or continuity of the partner, or completeness of the intermediate
+or target space, is assumed. -/
+theorem adjointMap_comp_apply_of_isAdjointPair (Γ₂ : M →L[K] A) (Γ₁ : H →L[K] M)
+    {S₂ : A → M} (h₂ : Function.IsAdjointPair (inner K) (inner K) Γ₂ S₂) (a : A) :
+    adjointMap (Γ₂.comp Γ₁) a = adjointMap Γ₁ (S₂ a) := by
+  exact (congrFun ((isAdjointPair_iff_eq_adjointMap
+    (Γ₂.comp Γ₁) (adjointMap Γ₁ ∘ S₂)).mp
+      ((isAdjointPair_adjointMap Γ₁).comp h₂)) a).symm
+
+/-- For a bundled adjoint partner, composition is an equality of continuous
+linear maps. Neither the intermediate nor the target space need be complete. -/
+theorem adjointMap_comp_of_isAdjointPair (Γ₂ : M →L[K] A) (Γ₁ : H →L[K] M)
+    (S₂ : A →L[K] M) (h₂ : Function.IsAdjointPair (inner K) (inner K) Γ₂ S₂) :
+    adjointMap (Γ₂.comp Γ₁) = (adjointMap Γ₁).comp S₂ := by
+  ext a
+  exact adjointMap_comp_apply_of_isAdjointPair Γ₂ Γ₁ h₂ a
+
+end Composition
+
+section CompleteIntermediate
+
+variable {M : Type x} [NormedAddCommGroup M] [InnerProductSpace K M] [CompleteSpace M]
+
+/-- Adjoint formation reverses composition when the intermediate space is
+normed and complete. The target may still be seminormed and incomplete. -/
+theorem adjointMap_comp (Γ₂ : M →L[K] A) (Γ₁ : H →L[K] M) :
+    adjointMap (Γ₂.comp Γ₁) = (adjointMap Γ₁).comp (adjointMap Γ₂) :=
+  adjointMap_comp_of_isAdjointPair Γ₂ Γ₁ (adjointMap Γ₂) (isAdjointPair_adjointMap Γ₂)
+
+end CompleteIntermediate
 
 /-- An operator and its adjoint have the same operator norm. -/
 @[simp]
