@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import VectorBundles.Analysis.InnerProductSpace.AdjointPairFamily
 public import VectorBundles.Analysis.InnerProductSpace.PositiveForm
 public import VectorBundles.Analysis.InnerProductSpace.Projection.Fiberwise
 public import VectorBundles.Analysis.Normed.Ring.Units

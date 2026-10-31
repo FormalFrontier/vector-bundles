@@ -11,6 +11,16 @@ topological fiber bundles.
 
 ## Headline results
 
+### Joint continuity of given adjoint partners
+
+For given raw adjoint partners `S t` of continuous linear maps `Γ t` between
+seminormed inner-product spaces over real or complex scalars,
+`norm_sub_apply_le` controls simultaneous variation in the input and forward
+operator. If `Γ` varies continuously in operator norm over any topological
+parameter space, `continuous_uncurry` gives joint continuity of `(t, a) ↦ S t a`.
+Neither space needs completeness or separation, and no linearity or uniqueness
+of the partners is assumed.
+
 ### Complete-domain adjoints and composition
 
 For an `RCLike` field `K`, a complete normed inner-product space `H` and a

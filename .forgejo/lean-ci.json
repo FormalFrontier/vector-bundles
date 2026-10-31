@@ -128,6 +128,7 @@
         "VectorBundlesTest.Topology.VectorBundle.Range",
         "VectorBundlesTest.Topology.VectorBundle.TrivialMetric",
         "VectorBundles.Analysis.InnerProductSpace.AdjointPair",
+        "VectorBundles.Analysis.InnerProductSpace.AdjointPairFamily",
         "VectorBundles.Analysis.InnerProductSpace.Adjoint",
         "VectorBundlesTest.Analysis.Normed.Ring.Idempotent",
         "VectorBundlesTest.CompleteDomainAdjoint",
