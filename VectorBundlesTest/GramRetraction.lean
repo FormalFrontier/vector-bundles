@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundles.Analysis.InnerProductSpace.GramRetraction
+public import VectorBundles.Analysis.Normed.Operator.UnitGramContinuity
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.Real.Sqrt
@@ -187,5 +188,100 @@ theorem inner_residual_re_one :
         -1 := by
   rw [residual_re_one, gamma_apply]
   norm_num [Complex.inner, Complex.mul_re, Complex.mul_im]
+
+end RealComplexGram
+
+
+namespace RealComplexGram
+
+/-- Positive rescaling of the given synthesis map preserves invertibility of its Gram. -/
+theorem rescaled_gram_isUnit (t : ℝ) :
+    IsUnit (sumReIm.comp ((1 + t ^ 2) • gamma)) := by
+  have ha : (2 * (1 + t ^ 2) : ℝ) ≠ 0 := by positivity
+  have hG : sumReIm.comp ((1 + t ^ 2) • gamma) =
+      (2 * (1 + t ^ 2)) • (1 : ℝ →L[ℝ] ℝ) := by
+    apply ContinuousLinearMap.ext
+    intro v
+    change sumReIm ((1 + t ^ 2) • gamma v) = (2 * (1 + t ^ 2)) * v
+    rw [map_smul, gram_apply]
+    change (1 + t ^ 2) * (2 * v) = (2 * (1 + t ^ 2)) * v
+    ring
+  rw [hG]
+  refine isUnit_iff_exists.mpr ?_
+  refine ⟨(2 * (1 + t ^ 2))⁻¹ • (1 : ℝ →L[ℝ] ℝ), ?_, ?_⟩
+  · apply ContinuousLinearMap.ext
+    intro v
+    change (2 * (1 + t ^ 2)) * ((2 * (1 + t ^ 2))⁻¹ * v) = v
+    rw [← mul_assoc, mul_inv_cancel₀ ha, one_mul]
+  · apply ContinuousLinearMap.ext
+    intro v
+    change (2 * (1 + t ^ 2))⁻¹ * ((2 * (1 + t ^ 2)) * v) = v
+    rw [← mul_assoc, inv_mul_cancel₀ ha, one_mul]
+
+/-- The rescaled normalizer varies nontrivially with the scalar parameter. -/
+theorem rescaled_inverseGramComp_apply (t : ℝ) (z : ℂ) :
+    ContinuousLinearMap.inverseGramComp ((1 + t ^ 2) • gamma) sumReIm z =
+      (z.re + z.im) / (2 * (1 + t ^ 2)) := by
+  have h := congrArg (fun T : ℂ →L[ℝ] ℝ => T z)
+    (ContinuousLinearMap.gram_comp_inverseGramComp_of_isUnit (rescaled_gram_isUnit t))
+  simp only [ContinuousLinearMap.comp_apply, smul_apply,
+    map_smul, gram_apply, smul_eq_mul] at h
+  apply (eq_div_iff (by positivity : (2 * (1 + t ^ 2) : ℝ) ≠ 0)).mpr
+  calc
+    _ = (1 + t ^ 2) * (2 *
+        ContinuousLinearMap.inverseGramComp ((1 + t ^ 2) • gamma) sumReIm z) := by ring
+    _ = sumReIm z := h
+    _ = z.re + z.im := sumReIm_apply z
+
+/-- Rescaling changes the normalizer but leaves its ambient projection unchanged. -/
+theorem rescaled_projection_eq (t : ℝ) :
+    ((1 + t ^ 2) • gamma).comp
+        (ContinuousLinearMap.inverseGramComp ((1 + t ^ 2) • gamma) sumReIm) =
+      gamma.comp (ContinuousLinearMap.inverseGramComp gamma sumReIm) := by
+  apply ContinuousLinearMap.ext
+  intro z
+  simp only [ContinuousLinearMap.comp_apply, smul_apply]
+  rw [← map_smul, rescaled_inverseGramComp_apply, inverseGramComp_apply]
+  congr 1
+  change (1 + t ^ 2) * ((z.re + z.im) / (2 * (1 + t ^ 2))) = (z.re + z.im) / 2
+  have ht : (1 + t ^ 2 : ℝ) ≠ 0 := by positivity
+  field_simp [ht]
+
+-- The given real-to-complex pair has a nonconstant normalizer
+-- and a fixed nonzero proper projection.
+example :
+    Continuous (fun t : ℝ =>
+      ContinuousLinearMap.inverseGramComp ((1 + t ^ 2) • gamma) sumReIm) ∧
+    Continuous (fun t : ℝ => ((1 + t ^ 2) • gamma).comp
+      (ContinuousLinearMap.inverseGramComp ((1 + t ^ 2) • gamma) sumReIm)) ∧
+    ContinuousLinearMap.inverseGramComp ((1 + (0 : ℝ) ^ 2) • gamma) sumReIm 1 = 1 / 2 ∧
+    ContinuousLinearMap.inverseGramComp ((1 + (1 : ℝ) ^ 2) • gamma) sumReIm 1 = 1 / 4 ∧
+    (∀ t : ℝ, ((1 + t ^ 2) • gamma).comp
+      (ContinuousLinearMap.inverseGramComp ((1 + t ^ 2) • gamma) sumReIm) =
+      gamma.comp (ContinuousLinearMap.inverseGramComp gamma sumReIm)) ∧
+    (∀ t : ℝ, ((1 + t ^ 2) • gamma)
+      (ContinuousLinearMap.inverseGramComp ((1 + t ^ 2) • gamma) sumReIm 1) ≠ 0 ∧
+      ((1 + t ^ 2) • gamma)
+        (ContinuousLinearMap.inverseGramComp ((1 + t ^ 2) • gamma) sumReIm 1) ≠ 1) := by
+  refine ⟨?_, ?_, ?_, ?_, rescaled_projection_eq, ?_⟩
+  · exact ContinuousLinearMap.continuous_inverseGramComp_of_isUnit
+      (by fun_prop) continuous_const rescaled_gram_isUnit
+  · exact ContinuousLinearMap.continuous_gramProjection_of_isUnit
+      (by fun_prop) continuous_const rescaled_gram_isUnit
+  · rw [rescaled_inverseGramComp_apply]
+    norm_num
+  · rw [rescaled_inverseGramComp_apply]
+    norm_num
+  · intro t
+    have hp := congrArg (fun T : ℂ →L[ℝ] ℂ => T 1) (rescaled_projection_eq t)
+    simp only [ContinuousLinearMap.comp_apply] at hp
+    refine ⟨?_, ?_⟩
+    · rw [hp, projected_apply]
+      intro hz
+      have hre := congrArg Complex.re hz
+      norm_num at hre
+    · intro hP
+      apply residual_one.2
+      rw [← hp, hP, sub_self]
 
 end RealComplexGram
