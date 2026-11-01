@@ -11,7 +11,7 @@ public import Mathlib.Topology.ContinuousMap.Defs
 public import Mathlib.Topology.PartitionOfUnity
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.ShrinkingLemma
-public import Mathlib.Topology.UrysohnsLemma
+public import VectorBundles.Topology.ContinuousMap.Cutoff
 
 /-!
 # Finite real weights on normal spaces
@@ -82,18 +82,9 @@ theorem IsClosed.exists_continuous_one_tsupport_subset [NormalSpace X]
     {C U : Set X} (hC : IsClosed C) (hU : IsOpen U) (hCU : C ⊆ U) :
     ∃ g : X → ℝ, Continuous g ∧ (∀ x, g x ∈ Icc (0 : ℝ) 1) ∧
       EqOn g 1 C ∧ tsupport g ⊆ U := by
-  classical
-  obtain ⟨O, hO, hCO, hOU⟩ := normal_exists_closure_subset hC hU hCU
-  have hdisj : Disjoint Oᶜ C :=
-    Set.disjoint_left.2 fun _ hxO hxC => hxO (hCO hxC)
-  obtain ⟨g, hzero, hone, hrange⟩ :=
-    exists_continuous_zero_one_of_isClosed hO.isClosed_compl hC hdisj
-  have hcozero : {x | g x ≠ 0} ⊆ O := by
-    intro x hx
-    by_contra hxO
-    exact hx (hzero hxO)
-  have hsupp : tsupport (g : X → ℝ) ⊆ closure O := closure_mono hcozero
-  exact ⟨g, g.continuous, hrange, hone, hsupp.trans hOU⟩
+  obtain ⟨g, hgone, hgbounds, hgsupport⟩ :=
+    ContinuousMap.exists_one_on_closed_with_closure_subset hC hU hCU
+  exact ⟨g, g.continuous, hgbounds, hgone, hgsupport⟩
 
 /-- A finite open cover of a closed subset of a normal space admits nonnegative
 continuous real weights with closed supports in the corresponding open sets.

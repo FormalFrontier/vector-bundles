@@ -40,6 +40,7 @@ globs = [
   "VectorBundles.Analysis.Normed.Operator.Composition",
   "VectorBundles",
   "VectorBundles.Topology.ContinuousMap.Algebra",
+  "VectorBundles.Topology.ContinuousMap.Cutoff",
   "VectorBundles.Topology.ContinuousMap.FiniteWeights",
   "VectorBundles.Topology.ContinuousMap.PairingExtension",
   "VectorBundles.Topology.ContinuousMap.WeightedExtension",

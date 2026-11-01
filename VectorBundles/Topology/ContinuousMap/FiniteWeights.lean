@@ -7,7 +7,7 @@ module
 import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Topology.Algebra.GroupWithZero
-public import Mathlib.Topology.UrysohnsLemma
+public import VectorBundles.Topology.ContinuousMap.Cutoff
 public import VectorBundles.Topology.ShrinkingLemma
 
 /-!
@@ -42,23 +42,6 @@ universe u v
 namespace ContinuousMap
 
 variable {X : Type u} [TopologicalSpace X] [NormalSpace X]
-
-/-- A continuous bump equal to one on a closed set, with its closed cozero set in a given
-open neighborhood. -/
-private theorem exists_one_on_closed_with_closure_subset {K U : Set X}
-    (hK : IsClosed K) (hU : IsOpen U) (hKU : K ⊆ U) :
-    ∃ g : C(X, ℝ), EqOn g 1 K ∧ (∀ x, 0 ≤ g x ∧ g x ≤ 1) ∧
-      closure {x | g x ≠ 0} ⊆ U := by
-  classical
-  obtain ⟨W, hW, hKW, hWU⟩ := normal_exists_closure_subset hK hU hKU
-  have hdisj : Disjoint (Wᶜ) K :=
-    Set.disjoint_left.mpr fun x hxW hxK => hxW (hKW hxK)
-  obtain ⟨g, hgzero, hgone, hgbounds⟩ :=
-    exists_continuous_zero_one_of_isClosed hW.isClosed_compl hK hdisj
-  refine ⟨g, hgone, hgbounds, (closure_mono ?_).trans hWU⟩
-  intro x hx
-  by_contra hxW
-  exact hx (hgzero hxW)
 
 /-- A prescribed finite closed cover inside an open family gives continuous weights with
 subordinate closed cozero sets, extended by zero at all inactive indices. -/
