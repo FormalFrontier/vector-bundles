@@ -11,6 +11,12 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Continuity from local finite frames.** A given family of self-adjoint idempotents is
+  operator-norm continuous when its images have local injective finite-dimensional
+  algebraic frames with fixed-vector parameter continuity. The frame domains may vary
+  and need no norm or topology; the given normed inner-product ambient space need not
+  be complete. See [ProjectionContinuity](VectorBundles/Analysis/InnerProductSpace/ProjectionContinuity.lean).
+
 ### Joint continuity of given adjoint partners
 
 For given raw adjoint partners `S t` of continuous linear maps `Γ t` between

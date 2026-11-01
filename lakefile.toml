@@ -25,6 +25,7 @@ globs = [
   "VectorBundles.Analysis.InnerProductSpace.Adjoint",
   "VectorBundles.Analysis.InnerProductSpace.GramRetraction",
   "VectorBundles.Analysis.InnerProductSpace.GramFamily",
+  "VectorBundles.Analysis.InnerProductSpace.ProjectionContinuity",
   "VectorBundles.Analysis.Normed.Operator.Composition",
   "VectorBundles",
   "VectorBundles.Topology.ContinuousMap.Algebra",
