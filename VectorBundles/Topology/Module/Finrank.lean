@@ -9,20 +9,20 @@ public import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Tactic
 
 /-!
-# Fibre dimension from local linear models
+# Fibre rank from local linear models
 
-A family of algebraic modules has locally constant cardinal rank if it is pointwise linearly
-equivalent to fixed models on a neighbourhood cover. Its natural-number-valued finrank is then
+A family of modules over a semiring has locally constant cardinal rank if it is pointwise linearly
+equivalent to fixed models on a neighbourhood cover. Over a division ring, its numerical finrank is
 locally constant as well. The covering family can be infinite, and no common finite dimension bound
 is required. No finite-dimensionality or topology on the modules is needed.
 
-Cardinal rank retains infinite dimensions, whereas `Module.finrank` is zero on infinite-dimensional
-fibres. These results express the algebraic local-constancy argument for fibre dimension, not the
-full vector-bundle theorem.
+Over a division ring, cardinal rank retains infinite vector-space dimensions, whereas
+`Module.finrank` is zero on infinite-dimensional fibres. These results isolate the algebraic
+local-model argument; they do not construct a vector bundle.
 
 ## References
 
-* Allen Hatcher, *Vector Bundles & K-Theory*, §1.1, for local constancy of fibre dimension.
+* Allen Hatcher, *Vector Bundles & K-Theory*, §1.1, for the fixed-dimensional vector-bundle setting.
 -/
 
 @[expose] public section
@@ -32,13 +32,14 @@ universe uK uX uI uF uG
 namespace Module
 
 /-- Pointwise linear equivalences to fixed models on a neighbourhood cover make the cardinal-valued
-fibre rank locally constant.
+fibre rank over a semiring locally constant.
 
-The index set and models may vary arbitrarily. In contrast to the finite-dimensional setting of
-Hatcher's *Vector Bundles & K-Theory*, §1.1, no finite-dimensionality or module topology is assumed.
-The conclusion retains the cardinal dimension of infinite-dimensional fibres. -/
+The index set and models may vary arbitrarily. In contrast to the finite-dimensional real or complex
+setting of Hatcher's *Vector Bundles & K-Theory*, §1.1, the scalars need not be a division ring.
+No finite-dimensionality or module topology is assumed. Over a division ring, the conclusion retains
+the cardinal dimension of infinite-dimensional fibres. -/
 theorem isLocallyConstant_rank_of_linearEquiv_cover
-    {K : Type uK} [DivisionRing K]
+    {K : Type uK} [Semiring K]
     {X : Type uX} [TopologicalSpace X]
     {I : Type uI}
     (F : X → Type uF) (G : I → Type uG)
