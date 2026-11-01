@@ -13,6 +13,8 @@ weak.linter.style.header = false
 name = "VectorBundles"
 globs = [
   "VectorBundles.Algebra.Ring.Idempotent",
+  "VectorBundles.Algebra.Ring.CommutingIdempotent",
+  "VectorBundles.Analysis.Normed.Ring.CommutingIdempotent",
   "VectorBundles.Algebra.Ring.OrthogonalIdempotents",
   "VectorBundles.Analysis.Normed.Operator.Idempotent",
   "VectorBundles.Analysis.Normed.Ring.UnitContinuity",
