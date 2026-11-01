@@ -110,6 +110,22 @@ normed-field product and bundle statements.
 
 ## Continuous linear and bundle calculus
 
+- **Canonical Gram families on a fixed domain.**
+  [`ContinuousLinearMap.gramFamily_properties`](../VectorBundles/Analysis/InnerProductSpace/GramFamily.lean)
+  starts with joint continuity of `(x, v) ↦ f x v` and pointwise injectivity of
+  `f x : E →L[K] F`. The scalar field is `RCLike`, the domain is complete and
+  finite-dimensional, and both spaces have their given normed inner-product
+  structures. It proves operator-norm continuity of the characteristic adjoint,
+  inverse Gram composite and ambient projection, with the canonical formulas
+  `r = (g f)⁻¹ g` and `P = f r`. The conclusions include the left-inverse law,
+  idempotence, range equality, self-adjointness, the orthogonal-kernel equality,
+  and orthogonality of the full ambient residual. Only the domain is used for
+  Riesz representation and finite-dimensional inversion. Neither completeness
+  nor finite dimension of the ambient target is assumed, and no norm or topology
+  is replaced. Empty parameter spaces and the zero domain are included. This
+  independent analytic result is not a variable-bundle complement theorem or the
+  full statement of Hatcher's Proposition 1.7.
+
 - **Scalar endomorphisms of a line bundle.**
   [`VectorBundle.scalarEndHomeomorph`](../VectorBundles/Topology/VectorBundle/ScalarEnd.lean)
   identifies `B × κ` with the endomorphism bundle of a line bundle modeled on a

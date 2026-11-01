@@ -62,6 +62,21 @@ continuity of `b ↦ inverseGramComp (Γ b) (S b)`.
 the ambient vector. Neither theorem requires completeness of `A` or a separate
 continuity hypothesis on `S`; the inversion takes place in the endomorphisms of `H`.
 
+### Canonical Gram families on a fixed domain
+
+For a jointly continuous, pointwise injective family `f x : E →L[K] F`, with
+`E` complete and finite-dimensional and both spaces carrying their given normed
+inner products over an `RCLike` field,
+[`ContinuousLinearMap.gramFamily_properties`](VectorBundles/Analysis/InnerProductSpace/GramFamily.lean)
+gives operator-norm continuity of the characteristic adjoint `g`, the canonical
+left inverse `r = (g f)⁻¹ g`, and the ambient projection `P = f r`. Pointwise,
+`r f = 1`; `P` is idempotent and self-adjoint, has the same range as `f`, and
+has kernel `range(f)ᗮ`. The full residual `w - P w` is orthogonal to the image.
+No completeness or finite dimension of `F`, nonempty base, isometry assumption,
+or global bound on the inverses is required. This is an independent fixed-domain
+analytic result, not a variable-bundle complement theorem or the full statement
+of Hatcher's Proposition 1.7.
+
 ### Norms of idempotents
 
 [`IsIdempotentElem.one_le_norm`](VectorBundles/Analysis/Normed/Ring/Idempotent.lean)

@@ -135,7 +135,9 @@
         "VectorBundlesTest.CompleteDomainAdjoint",
         "VectorBundlesTest.AdjointComposition",
         "VectorBundles.Analysis.InnerProductSpace.GramRetraction",
+        "VectorBundles.Analysis.InnerProductSpace.GramFamily",
         "VectorBundlesTest.GramRetraction",
+        "VectorBundlesTest.GramFamily",
         "VectorBundles.Analysis.InnerProductSpace.Projection.Distance",
         "VectorBundlesTest.OrthogonalRetractionDistance",
         "VectorBundles.Analysis.Normed.Operator.KernelFamilyCoordinates"
