@@ -25,6 +25,28 @@ topological fiber bundles.
   of each weight's cozero set lies in its domain. No openness, finite-index,
   finite-dimensionality, norm or continuity of fibre operations is required.
 
+- **Joint evaluation of algebraic linear families.** For a finite basis over a
+  semiring with a given topology and continuous scalar coordinate functions, joint continuity
+  is equivalent to continuity at each basis vector. Only the target module needs
+  continuous addition and scalar multiplication; the given source topology need not
+  make its operations continuous. Over a complete nontrivially normed field, a
+  finite-dimensional Hausdorff topological source module needs no explicit basis
+  data: joint continuity is equivalent to continuity at every fixed vector. For
+  continuous linear maps between normed spaces this also agrees with continuity
+  into the operator space. See
+  [JointEvaluation](VectorBundles/Analysis/Normed/Module/JointEvaluation.lean).
+
+- **Total-space continuity from inverse local coordinates.**
+  Over a complete nontrivially normed field `K`, let `p : T → X` be continuous
+  and give its equality-subtype fibres their subspace topologies and module
+  structures. Finite-dimensional Hausdorff topological coordinate models may vary
+  over an arbitrary open cover. Algebraic fibre maps into a topological `K`-module
+  with continuous addition and scalar multiplication are continuous on `T` if their
+  values at each fixed local coordinate vector are parameter-continuous and the
+  exact inverse vector coordinates are continuous. No injectivity, forward realization
+  continuity, fibre or target norm, target separation or base separation is required. See
+  [`LinearMap.continuous_total_of_local_coordinates`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean).
+
 - **Closed embeddings from normed local coordinates.**
   For a continuous map `p : T → X`, give each equality-subtype fibre its
   subspace topology and a module structure over `ℝ` or `ℂ`. An arbitrary open
@@ -36,6 +58,22 @@ topological fiber bundles.
   jointly continuous fibrewise linear retraction on `X × A`. Neither
   completeness of `A` nor separation of `X` is required. See
   [`exists_retraction_isClosedEmbedding_of_local_coordinates`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean).
+
+- **Finite Euclidean embeddings from weighted local coordinates.**
+  For a continuous map `p : T → X` over `K = ℝ` or `ℂ`, finitely many normed
+  finite-dimensional local models for the original equality-subtype fibre
+  modules give a closed embedding `T → X × E` into a finite Euclidean product.
+  The supplied domains need not be open: their forward realizations and exact
+  inverse coordinates are continuous on the given subspaces, and the continuous
+  scalar weights have no common zero and closed cozero supports contained in
+  their specified domains. The nonzero-weight sets provide an open cover. The second
+  coordinate is the weighted coordinate map followed by the inverse of a linear
+  equivalence from `E` to the full product of models. That product keeps its
+  supremum norm; no isometry is asserted. The inverse on the image extends to a
+  jointly continuous fibrewise linear retraction on all of `X × E`, preserving
+  the given fibre operations and inherited topologies. No positivity,
+  normalization, or separation of `X` is required. See
+  [`exists_retraction_isClosedEmbedding_of_weighted_local_coordinates`](VectorBundles/Analysis/InnerProductSpace/WeightedFiberEmbedding.lean).
 
 - **Retractions from inducing realizations and local finite frames.**
   Over `ℝ` or `ℂ`, injective algebraic linear maps `βₓ : Fₓ →ₗ[K] A` admit
@@ -561,6 +599,8 @@ examples are collected by `VectorBundlesTest.lean`.
 | [`Analysis.InnerProductSpace.PositiveForm`](VectorBundles/Analysis/InnerProductSpace/PositiveForm.lean) | Bounded positive-form unit sublevels in the original topology |
 | [`Analysis.InnerProductSpace.Projection.LinearMap`](VectorBundles/Analysis/InnerProductSpace/Projection/LinearMap.lean) | Projection/preimage retractions onto injective images of plain modules, with a finite-dimensional specialization |
 | [`Analysis.InnerProductSpace.Projection.Fiberwise`](VectorBundles/Analysis/InnerProductSpace/Projection/Fiberwise.lean) | Algebraic total-space retractions on given projection fibres, with projection and left-inverse laws |
+| [`Analysis.Normed.Module.JointEvaluation`](VectorBundles/Analysis/Normed/Module/JointEvaluation.lean) | Joint evaluation from continuous finite-basis coordinates over semirings; finite-dimensional topological-module criterion and operator-space comparison |
+| [`Analysis.InnerProductSpace.FiberEmbedding`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean) | Total-space continuity from inverse local coordinates; closed fibre embeddings and extending retractions under normed inner-product hypotheses |
 | [`Analysis.Normed.Ring.Units`](VectorBundles/Analysis/Normed/Ring/Units.lean) | Value embedding for units of a seminormed ring |
 | [`Topology.Algebra.GroupWithZero`](VectorBundles/Topology/Algebra/GroupWithZero.lean) | Continuity of reciprocal selected finite sums of real squares under pointwise nonzero coverage |
 | [`Topology.ContinuousMap.FiniteWeights`](VectorBundles/Topology/ContinuousMap/FiniteWeights.lean) | Finite partitions of unity on normal spaces, with all-index closed-cozero subordination and no further separation assumptions |
