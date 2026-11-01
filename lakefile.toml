@@ -17,6 +17,7 @@ globs = [
   "VectorBundles.Analysis.Normed.Ring.CommutingIdempotent",
   "VectorBundles.Analysis.Normed.Ring.CommutingIdempotent.Topology",
   "VectorBundles.Topology.FiniteNormalWeights",
+  "VectorBundles.Topology.FiniteScalarWeights",
   "VectorBundles.Algebra.Ring.OrthogonalIdempotents",
   "VectorBundles.Analysis.Normed.Operator.Idempotent",
   "VectorBundles.Analysis.Normed.Ring.UnitContinuity",
