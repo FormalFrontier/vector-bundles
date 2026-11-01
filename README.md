@@ -11,6 +11,18 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Closed embeddings from normed local coordinates.**
+  For a continuous map `p : T → X`, give each equality-subtype fibre its
+  subspace topology and a module structure over `ℝ` or `ℂ`. An arbitrary open
+  cover may have normed finite-dimensional coordinate models of varying,
+  unbounded, or zero rank. If the coordinate realizations and their exact
+  inverses are continuous, injective algebraic fibre maps into a normed
+  inner-product space `A`, parameter-continuous at each fixed coordinate
+  vector, give a closed embedding `T → X × A`. Its inverse extends to a
+  jointly continuous fibrewise linear retraction on `X × A`. Neither
+  completeness of `A` nor separation of `X` is required. See
+  [`exists_retraction_isClosedEmbedding_of_local_coordinates`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean).
+
 - **Retractions from inducing realizations and local finite frames.**
   Over `ℝ` or `ℂ`, injective algebraic linear maps `βₓ : Fₓ →ₗ[K] A` admit
   continuous linear retractions `ρₓ : A →L[K] Fₓ` when the original normless

@@ -5,6 +5,7 @@
     {
       "path": ".",
       "targets": [
+        "+VectorBundles.Analysis.InnerProductSpace.FiberEmbedding",
         "VectorBundles",
         "VectorBundlesTest",
         "VectorBundles.Algebra.Ring.Idempotent",
