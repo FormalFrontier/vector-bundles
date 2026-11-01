@@ -83,6 +83,17 @@ of Hatcher's Proposition 1.7.
 shows that a nonzero idempotent in a non-unital normed ring has norm at least one.
 If its norm is at most one, `IsIdempotentElem.norm_eq_one` gives norm exactly one.
 
+### Close idempotent operators
+
+[Close idempotent endomorphisms](VectorBundles/Analysis/Normed/Operator/Idempotent.lean)
+with `‖p - q‖ < 1` have continuously linearly equivalent ranges and kernels, using
+the same normalized unit `q * p + (1 - q) * (1 - p)` and its inverse. Hence both
+cardinal module ranks are equal. For a continuous idempotent family over any
+topological parameter space, both rank functions are locally constant. The
+unit/equivalence assertion assumes `HasSummableGeomSeries (E →L[K] E)`, supplied
+when `E` is complete. Rank equality and local constancy need no geometric-summability
+or completeness hypothesis. The given norms are retained and the zero space is allowed.
+
 ### Finite ambient open grids for compact products
 
 [`IsCompact.exists_fin_open_cover_prod_subset`](VectorBundles/Topology/Compactness/Product.lean)

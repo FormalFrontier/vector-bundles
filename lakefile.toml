@@ -12,6 +12,7 @@ weak.linter.style.header = false
 [[lean_lib]]
 name = "VectorBundles"
 globs = [
+  "VectorBundles.Analysis.Normed.Operator.Idempotent",
   "VectorBundles.Analysis.Normed.Ring.UnitContinuity",
   "VectorBundles.Analysis.Normed.Operator.UnitGramContinuity",
   "VectorBundles.Analysis.Normed.Operator.KernelChart",
