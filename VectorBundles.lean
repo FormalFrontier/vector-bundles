@@ -4,6 +4,9 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import VectorBundles.LinearAlgebra.WeightedCoordinates
+public import VectorBundles.Topology.Maps.WeightedCoordinates
+
 public import VectorBundles.Analysis.InnerProductSpace.AdjointPairFamily
 public import VectorBundles.Analysis.InnerProductSpace.GramFamily
 public import VectorBundles.Analysis.InnerProductSpace.PositiveForm

@@ -11,6 +11,20 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Supported weighted coordinates.** Given module families over a commutative semiring
+  and linear chart equivalences on arbitrary subsets, the
+  [weighted coordinate map](VectorBundles/LinearAlgebra/WeightedCoordinates.lean)
+  takes values in the full dependent product of model modules. Its membership,
+  nonmembership, zero-weight and chart-evaluation rules are explicit. At each point,
+  one valid coordinate with a unit weight suffices for fibrewise injectivity.
+  On the original equality fibres of a topological projection, with given module
+  operations and inherited topology, the
+  [total coordinate map](VectorBundles/Topology/Maps/WeightedCoordinates.lean)
+  is continuous when the projection, weights and exact inverse coordinates are
+  continuous, scalar multiplication on each model is continuous, and the closure
+  of each weight's cozero set lies in its domain. No openness, finite-index,
+  finite-dimensionality, norm or continuity of fibre operations is required.
+
 - **Closed embeddings from normed local coordinates.**
   For a continuous map `p : T → X`, give each equality-subtype fibre its
   subspace topology and a module structure over `ℝ` or `ℂ`. An arbitrary open
