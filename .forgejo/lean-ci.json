@@ -5,6 +5,7 @@
     {
       "path": ".",
       "targets": [
+    "+VectorBundles.Topology.Module.Finrank",
         "+VectorBundles.LinearAlgebra.WeightedCoordinates",
         "+VectorBundles.Topology.Maps.WeightedCoordinates",
         "+VectorBundles.Analysis.InnerProductSpace.FiberEmbedding",
