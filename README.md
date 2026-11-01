@@ -11,6 +11,19 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Retractions from inducing realizations and local finite frames.**
+  Over `ℝ` or `ℂ`, injective algebraic linear maps `βₓ : Fₓ →ₗ[K] A` admit
+  continuous linear retractions `ρₓ : A →L[K] Fₓ` when the original normless
+  fibres retain their given topologies induced by realization maps `jₓ`, the
+  local realizations are jointly continuous, and the raw ambient frames are
+  parameter-continuous at each fixed vector. The finite-dimensional seminormed
+  local models `Gᵢ` may vary over an arbitrary open cover; the ambient
+  inner-product space `A` is normed and need not be complete. The realizations
+  `(x, a) ↦ jₓ (ρₓ a)` are jointly continuous, and
+  the self-adjoint idempotents `Pₓ a = βₓ (ρₓ a)` vary continuously in operator
+  norm. See
+  [`exists_retraction_of_inducing_local_finite_frames`](VectorBundles/Analysis/InnerProductSpace/InducingRetraction.lean).
+
 - **Continuity from local finite frames.** A given family of self-adjoint idempotents is
   operator-norm continuous when its images have local injective finite-dimensional
   algebraic frames with fixed-vector parameter continuity. The frame domains may vary

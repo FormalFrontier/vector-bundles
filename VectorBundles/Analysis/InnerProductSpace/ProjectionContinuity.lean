@@ -151,7 +151,8 @@ private theorem continuous_of_algebraic_local_frames
         _ = b i z m := congrArg (b i z) ((e i).apply_symm_apply m)
         _ = a := hm
 
-private theorem nonempty_euclidean_model
+/-- A finite-dimensional module admits an algebraic Euclidean model of its dimension. -/
+theorem _root_.FiniteDimensional.nonempty_euclideanSpace_linearEquiv
     {M : Type uM} [AddCommGroup M] [Module K M] [FiniteDimensional K M] :
     Nonempty (EuclideanSpace K (Fin (Module.finrank K M)) ≃ₗ[K] M) := by
   classical
@@ -186,7 +187,8 @@ theorem continuous_of_local_finite_frames
   classical
   let n (i : I) : ℕ := Module.finrank K (M i)
   let e (i : I) : EuclideanSpace K (Fin (n i)) ≃ₗ[K] M i :=
-    Classical.choice (nonempty_euclidean_model (K := K) (M := M i))
+    Classical.choice
+      (FiniteDimensional.nonempty_euclideanSpace_linearEquiv (K := K) (M := M i))
   let Γ (i : I) (z : {x : X // x ∈ U i}) :
       EuclideanSpace K (Fin (n i)) →L[K] A :=
     ⟨(b i z).comp (e i).toLinearMap,
