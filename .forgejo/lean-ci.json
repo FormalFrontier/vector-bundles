@@ -8,6 +8,7 @@
         "VectorBundles",
         "VectorBundlesTest",
         "VectorBundles.Algebra.Ring.Idempotent",
+        "VectorBundles.Algebra.Ring.OrthogonalIdempotents",
         "VectorBundlesTest.AdjointPartnerLinearity",
         "VectorBundlesTest.Topology.ContinuousMap.PiBasis",
         "VectorBundles.Topology.Bornology.Bounded",

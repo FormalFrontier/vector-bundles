@@ -89,6 +89,16 @@ of Hatcher's Proposition 1.7.
 shows that a nonzero idempotent in a non-unital normed ring has norm at least one.
 If its norm is at most one, `IsIdempotentElem.norm_eq_one` gives norm exactly one.
 
+### Finite orthogonal idempotent families
+
+[Orthogonal idempotent families](VectorBundles/Algebra/Ring/OrthogonalIdempotents.lean)
+`p q : I → R` over any semiring and finite index type satisfy
+`u * p j = q j * p j = q j * u`, where `u = ∑ i, q i * p i`.
+If `u` is a unit, that prescribed unit simultaneously conjugates `p` to `q`,
+and both families sum to one. Completeness is an output, not a hypothesis.
+No commutativity, nontriviality, or nonempty-index assumption is needed.
+The diagonal matched-product sum is `∑ i, p i`, not necessarily one.
+
 ### Close idempotent operators
 
 [Close idempotent endomorphisms](VectorBundles/Analysis/Normed/Operator/Idempotent.lean)

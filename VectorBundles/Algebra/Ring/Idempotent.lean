@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Tactic.NoncommRing
+import VectorBundles.Algebra.Ring.OrthogonalIdempotents
 
 /-!
 # Idempotents and prescribed conjugacy in rings
@@ -26,18 +27,11 @@ theorem _root_.IsIdempotentElem.mul_add_mul_one_sub_intertwines
     {A : Type*} [Ring A] {p q : A}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     (q * p + (1 - q) * (1 - p)) * p = q * (q * p + (1 - q) * (1 - p)) := by
-  have hpEq := isIdempotentElem_iff.mp hp
-  have hqEq := isIdempotentElem_iff.mp hq
-  calc
-    (q * p + (1 - q) * (1 - p)) * p =
-        q * (p * p) + (1 - q) * (p - p * p) := by noncomm_ring
-    _ = q * p := by rw [hpEq]; simp
-    _ = q * (q * p + (1 - q) * (1 - p)) := by
-      symm
-      calc
-        q * (q * p + (1 - q) * (1 - p)) =
-            (q * q) * p + (q - q * q) * (1 - p) := by noncomm_ring
-        _ = q * p := by rw [hqEq]; simp
+  have h := (CompleteOrthogonalIdempotents.of_isIdempotentElem hp).toOrthogonalIdempotents
+    |>.sum_mul_intertwines
+      (CompleteOrthogonalIdempotents.of_isIdempotentElem hq).toOrthogonalIdempotents
+      (0 : Fin 2)
+  simpa [Fin.sum_univ_two] using h.1.trans h.2
 
 /-- The normalized intertwiner equals one on the diagonal. -/
 theorem _root_.IsIdempotentElem.mul_add_mul_one_sub_self
