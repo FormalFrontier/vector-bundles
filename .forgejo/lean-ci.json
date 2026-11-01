@@ -10,6 +10,7 @@
         "VectorBundles.Algebra.Ring.Idempotent",
         "VectorBundles.Algebra.Ring.CommutingIdempotent",
         "VectorBundles.Analysis.Normed.Ring.CommutingIdempotent",
+        "VectorBundles.Analysis.Normed.Ring.CommutingIdempotent.Topology",
         "VectorBundles.Algebra.Ring.OrthogonalIdempotents",
         "VectorBundlesTest.AdjointPartnerLinearity",
         "VectorBundlesTest.Topology.ContinuousMap.PiBasis",
