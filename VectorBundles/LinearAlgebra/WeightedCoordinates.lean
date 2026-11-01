@@ -7,6 +7,8 @@ module
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Supported weighted coordinates
@@ -92,6 +94,23 @@ theorem weightedCoordinates_apply_chart_self {x : X} {i : I}
     weightedCoordinates U w c x (c i x hx v) i = w i x • v := by
   rw [weightedCoordinates_apply_of_mem U w c hx, (c i x hx).symm_apply_apply]
 
+/-- If the weights of the valid charts generate the unit ideal, the weighted coordinate
+map is injective. No individual weight needs to be a unit. -/
+theorem weightedCoordinates_injective_of_span_eq_top {x : X}
+    (hspan : Ideal.span ((fun i : I => w i x) '' {i : I | x ∈ U i}) = ⊤) :
+    Function.Injective (weightedCoordinates U w c x) := by
+  intro v v' h
+  have heq : LinearMap.toSpanSingleton K (F x) v =
+      LinearMap.toSpanSingleton K (F x) v' := by
+    apply LinearMap.ext_on hspan
+    rintro _ ⟨i, hi, rfl⟩
+    have hiw : w i x • (c i x hi).symm v =
+        w i x • (c i x hi).symm v' := by
+      simpa only [weightedCoordinates_apply_of_mem U w c hi] using
+        congrArg (fun f : ∀ j, G j ↦ f i) h
+    simpa using congrArg (c i x hi) hiw
+  simpa using congrArg (fun f : K →ₗ[K] F x ↦ f 1) heq
+
 /-- One chart coordinate with a unit weight suffices for injectivity.
 
 No nontriviality or field assumption is needed: unit scalar cancellation works for the
@@ -100,10 +119,11 @@ same given module action, followed by injectivity of the exact inverse chart.
 theorem weightedCoordinates_injective_of_isUnit {x : X} {i : I}
     (hx : x ∈ U i) (hw : IsUnit (w i x)) :
     Function.Injective (weightedCoordinates U w c x) := by
-  intro v v' h
-  apply (c i x hx).symm.injective
-  apply hw.smul_left_cancel.mp
-  simpa only [weightedCoordinates_apply_of_mem U w c hx] using
-    congrArg (fun f : ∀ j, G j ↦ f i) h
+  apply weightedCoordinates_injective_of_span_eq_top U w c
+  apply top_unique
+  calc
+    ⊤ = Ideal.span {w i x} := (Ideal.span_singleton_eq_top.mpr hw).symm
+    _ ≤ Ideal.span ((fun j : I => w j x) '' {j : I | x ∈ U j}) :=
+      Ideal.span_mono (Set.singleton_subset_iff.mpr ⟨i, hx, rfl⟩)
 
 end LinearMap
