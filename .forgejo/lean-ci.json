@@ -137,7 +137,8 @@
         "VectorBundles.Analysis.InnerProductSpace.GramRetraction",
         "VectorBundlesTest.GramRetraction",
         "VectorBundles.Analysis.InnerProductSpace.Projection.Distance",
-        "VectorBundlesTest.OrthogonalRetractionDistance"
+        "VectorBundlesTest.OrthogonalRetractionDistance",
+        "VectorBundles.Analysis.Normed.Operator.KernelFamilyCoordinates"
       ],
       "source_dir": ".",
       "exclude": {}

@@ -632,3 +632,39 @@ The scalar-endomorphism construction uses ProjectiveModules' invertible-module
 topology and continuous scalar-endomorphism equivalence, and Prism's formalization
 of the algebraic scalar-endomorphism equivalence.
 Licensed under Apache-2.0; see [LICENSE](LICENSE).
+
+
+## Fixed-kernel coordinates on unit domains
+
+Let `K` be a nontrivially normed field. Both `H` and `A` retain their given
+seminormed additive commutative group and `NormedSpace K` structures; neither
+norm definiteness nor completeness is required for either space. Let `D` be a
+topological parameter space, with `Γ d : H →L[K] A` and supplied linear
+retractions `r d : A →ₗ[K] H` satisfying `r d (Γ d h) = h`.
+
+Fix `q0 : A →L[K] H` such that `q0.comp (Γ d)` is a unit in the
+continuous-linear endomorphism ring for every `d`. The map `q0` need not
+itself retract every `Γ d`: the canonical
+`q_d = ContinuousLinearMap.inverseGramComp (Γ d) q0` supplies the normalized
+retractions. If the joint difference
+`(d, a) ↦ Γ d (r d a) - Γ d (q_d a)` is continuous, then
+`ContinuousLinearMap.kerFamilyHomeomorphOfIsUnit` gives
+
+```lean
+{p : D × A // r p.1 p.2 = 0} ≃ₜ D × LinearMap.ker q0.toLinearMap
+```
+
+with the original product and subtype topologies. No individual continuity
+of the supplied `r d` is assumed. The parameter space may be empty. On the
+subtype where `q0.comp (Γ b)` is a unit, retraction data are needed only on
+that subtype, with no openness assumption or extension outside it.
+
+The public equations
+`ContinuousLinearMap.kerFamilyHomeomorphOfIsUnit_apply_snd` and
+`ContinuousLinearMap.kerFamilyHomeomorphOfIsUnit_symm_apply_snd` give ambient
+coordinates `a - Γ d (q_d a)` and `b - Γ d (r d b)`; both maps preserve the
+base point. Equality of the supplied retraction with `q0.toLinearMap` gives
+identity on that fibre, whereas an anchor `q0.comp (Γ d) = id` alone does not.
+`ContinuousLinearMap.kerFamilyHomeomorphOfContinuous` gives the same
+coordinates from operator-seminorm continuity of `Γ` and joint continuity of
+the original projection `(d, a) ↦ Γ d (r d a)`.

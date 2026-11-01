@@ -67,6 +67,7 @@ public import VectorBundles.Topology.VectorBundle.SemilinearEvaluation
 public import VectorBundles.Topology.VectorBundle.WeightedForm
 
 public import VectorBundles.Analysis.Normed.Operator.Factorization
+public import VectorBundles.Analysis.Normed.Operator.KernelFamilyCoordinates
 public import VectorBundles.Analysis.Normed.Operator.LowerBound
 public import VectorBundles.Data.Bundle
 public import VectorBundles.Topology.FiberBundle.ClosedCylinder

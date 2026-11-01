@@ -106,10 +106,10 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "8e4495425bb19187fbeb7271d40a111b8ddf36de",
+   "rev": "8c99408e99ada67e0de63bb9a58cde4f25c99d07",
    "name": "«projective-modules»",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "8e4495425bb19187fbeb7271d40a111b8ddf36de",
+   "inputRev": "8c99408e99ada67e0de63bb9a58cde4f25c99d07",
    "inherited": false,
    "configFile": "lakefile.toml"
 },
@@ -134,6 +134,30 @@
    "name": "«general-linear-groups»",
    "manifestFile": "lake-manifest.json",
    "inputRev": "c9705889a85f85cc89d92d21372bb9bc360162c8",
+   "inherited": true,
+   "configFile": "lakefile.toml"
+},
+  {
+   "url": "https://github.com/FormalFrontier/homological-algebra.git",
+   "type": "git",
+   "subDir": null,
+   "scope": "",
+   "rev": "1ecd25213926138278dbd661bd516de9135d944a",
+   "name": "homological_algebra",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": "1ecd25213926138278dbd661bd516de9135d944a",
+   "inherited": true,
+   "configFile": "lakefile.toml"
+},
+  {
+   "url": "https://github.com/FormalFrontier/group-theory.git",
+   "type": "git",
+   "subDir": null,
+   "scope": "",
+   "rev": "1ac70ea29b47262c6d365a89007bb5b1d5a1651a",
+   "name": "groupTheory",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": "1ac70ea29b47262c6d365a89007bb5b1d5a1651a",
    "inherited": true,
    "configFile": "lakefile.toml"
 }],
