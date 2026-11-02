@@ -20,6 +20,9 @@ The atlas data only require a topology on the scalar field. This does not by its
 assert that field operations or fibre operations are continuous. Results concerning
 continuous vector space operations require the corresponding scalar continuity hypotheses.
 
+An atlas can be reindexed by any family of its charts whose base sets still cover the
+original base. Reindexing retains each selected chart and rank, and all given bundle data.
+
 ## Implementation notes
 
 `Trivialization.IsFiberwiseLinear` expresses linearity for trivializations with an
@@ -35,7 +38,7 @@ arbitrary total-space parameter. It only requires linearity over the chart's bas
 
 open Bundle Topology
 
-universe uK uB uE uP uF uI
+universe uK uB uE uP uF uI uJ uL
 
 namespace Bundle.Trivialization
 
@@ -316,6 +319,55 @@ def patchTotalSpaceHomeomorph (i : A.Index) :
     (b : (A.chart i).baseSet) (v : E b.1) :
     A.patchTotalSpaceHomeomorph i (TotalSpace.mk b v) =
       ⟨TotalSpace.mk b.1 v, b.2⟩ := rfl
+
+section Reindex
+
+variable {J : Type uJ} {L : Type uL}
+
+/-- Reindex an atlas by a family of its charts whose base sets cover the base.
+No surjectivity or injectivity of the index map is required. The original fibres,
+module structures, topologies and chart models are unchanged. -/
+def reindex (f : J → A.Index)
+    (hcover : ∀ b : B, ∃ j : J, b ∈ (A.chart (f j)).baseSet) :
+    FiniteRankAtlas.{_, _, _, _, uJ} K P E where
+  Index := J
+  rank j := A.rank (f j)
+  chart j := A.chart (f j)
+  linear j := A.linear (f j)
+  cover := hcover
+  inducing := A.inducing
+
+variable (f : J → A.Index)
+  (hcover : ∀ b : B, ∃ j : J, b ∈ (A.chart (f j)).baseSet)
+
+/-- The reindexed atlas uses the specified index type. -/
+@[simp] theorem reindex_index : (A.reindex f hcover).Index = J := rfl
+
+/-- Reindexing retains the rank of each selected chart. -/
+@[simp] theorem reindex_rank (j : J) :
+    (A.reindex f hcover).rank j = A.rank (f j) := rfl
+
+/-- A chart of the reindexed atlas is exactly the selected original chart. -/
+@[simp] theorem reindex_chart (j : J) :
+    (A.reindex f hcover).chart j = A.chart (f j) := rfl
+
+/-- A reindexed chart evaluates by the selected original chart. -/
+theorem reindex_chart_apply (j : J) (p : TotalSpace P E) :
+    (A.reindex f hcover).chart j p = A.chart (f j) p := rfl
+
+/-- Reindexing retains the original coordinates of every fibre vector. -/
+theorem reindex_coord (j : J) (b : B) (v : E b) :
+    (A.reindex f hcover).coord j b v = A.coord (f j) b v := rfl
+
+/-- Reindexing by the identity leaves an atlas unchanged. -/
+@[simp] theorem reindex_id : A.reindex id A.cover = A := rfl
+
+/-- Successive reindexings agree with reindexing by the composite index map. -/
+@[simp] theorem reindex_comp (g : L → J)
+    (hcover' : ∀ b : B, ∃ l : L, b ∈ (A.chart (f (g l))).baseSet) :
+    (A.reindex f hcover).reindex g hcover' = A.reindex (f ∘ g) hcover' := rfl
+
+end Reindex
 
 end FiniteRankAtlas
 end Bundle
