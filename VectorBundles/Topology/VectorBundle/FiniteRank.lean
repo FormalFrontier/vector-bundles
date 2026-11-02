@@ -28,6 +28,8 @@ original base. Reindexing retains each selected chart and rank, and all given bu
 
 `Trivialization.IsFiberwiseLinear` expresses linearity for trivializations with an
 arbitrary total-space parameter. It only requires linearity over the chart's base set.
+Over that base set, its coordinate linear map is a linear equivalence whose inverse
+recovers the chart inverse in the original total space.
 
 ## References
 
@@ -75,6 +77,75 @@ def IsFiberwiseLinear.linearMap
     {e : Trivialization F (TotalSpace.proj : TotalSpace P E → B)}
     (h : e.IsFiberwiseLinear (K := K)) {b : B} (hb : b ∈ e.baseSet) (v : E b) :
     h.linearMap hb v = (e (TotalSpace.mk b v)).2 := rfl
+
+/-- The fibrewise coordinate linear map is bijective over the chart base set. -/
+theorem IsFiberwiseLinear.linearMap_bijective
+    {e : Trivialization F (TotalSpace.proj : TotalSpace P E → B)}
+    (h : e.IsFiberwiseLinear (K := K)) {b : B} (hb : b ∈ e.baseSet) :
+    Function.Bijective (h.linearMap hb) := by
+  let φ : e.source ≃ₜ e.baseSet × F := e.sourceHomeomorphBaseSetProd
+  have hfst (p : e.source) : ((φ p).1 : B) = p.1.proj :=
+    e.proj_toFun p.1 p.2
+  have hsnd (p : e.source) : (φ p).2 = (e p.1).2 := rfl
+  constructor
+  · intro v w hvw
+    let pv : e.source := ⟨TotalSpace.mk b v, by rw [e.source_eq]; exact hb⟩
+    let pw : e.source := ⟨TotalSpace.mk b w, by rw [e.source_eq]; exact hb⟩
+    have hsource : φ pv = φ pw := by
+      apply Prod.ext
+      · apply Subtype.ext
+        exact (hfst pv).trans (hfst pw).symm
+      · exact (hsnd pv).trans (hvw.trans (hsnd pw).symm)
+    have htotal : (TotalSpace.mk b v : TotalSpace P E) = TotalSpace.mk b w :=
+      congrArg (fun p : e.source => p.1) (φ.injective hsource)
+    injection htotal
+  · intro w
+    let p : e.source := φ.symm (⟨b, hb⟩, w)
+    have hp : p.1.proj = b := by
+      have hp := congrArg (fun q : e.baseSet × F => (q.1 : B))
+        (φ.apply_symm_apply (⟨b, hb⟩, w))
+      exact (hfst p).symm.trans hp
+    rcases heq : p.1 with ⟨c, v⟩
+    have hc : c = b := by
+      simpa only [heq] using hp
+    subst c
+    refine ⟨v, ?_⟩
+    have hw : (e p.1).2 = w :=
+      (hsnd p).symm.trans (congrArg Prod.snd (φ.apply_symm_apply (⟨b, hb⟩, w)))
+    simpa only [IsFiberwiseLinear.linearMap_apply, heq] using hw
+
+/-- A fibrewise-linear chart identifies each fibre over its base set with its model. -/
+noncomputable def IsFiberwiseLinear.linearEquiv
+    {e : Trivialization F (TotalSpace.proj : TotalSpace P E → B)}
+    (h : e.IsFiberwiseLinear (K := K)) {b : B} (hb : b ∈ e.baseSet) : E b ≃ₗ[K] F :=
+  LinearEquiv.ofBijective (h.linearMap hb) (h.linearMap_bijective hb)
+
+/-- The coordinate equivalence has the given fibrewise linear map as its forward map. -/
+@[simp] theorem IsFiberwiseLinear.linearEquiv_toLinearMap
+    {e : Trivialization F (TotalSpace.proj : TotalSpace P E → B)}
+    (h : e.IsFiberwiseLinear (K := K)) {b : B} (hb : b ∈ e.baseSet) :
+    (h.linearEquiv hb).toLinearMap = h.linearMap hb := rfl
+
+/-- The coordinate equivalence evaluates to the second coordinate of the chart. -/
+@[simp] theorem IsFiberwiseLinear.linearEquiv_apply
+    {e : Trivialization F (TotalSpace.proj : TotalSpace P E → B)}
+    (h : e.IsFiberwiseLinear (K := K)) {b : B} (hb : b ∈ e.baseSet) (v : E b) :
+    h.linearEquiv hb v = (e (TotalSpace.mk b v)).2 := rfl
+
+/-- The inverse coordinate equivalence recovers the chart inverse as a point of the
+original total space. -/
+theorem IsFiberwiseLinear.mk_linearEquiv_symm
+    {e : Trivialization F (TotalSpace.proj : TotalSpace P E → B)}
+    (h : e.IsFiberwiseLinear (K := K)) {b : B} (hb : b ∈ e.baseSet) (w : F) :
+    TotalSpace.mk b ((h.linearEquiv hb).symm w) = e.invFun (b, w) := by
+  have hsource : TotalSpace.mk b ((h.linearEquiv hb).symm w) ∈ e.source := by
+    rw [e.source_eq]
+    exact hb
+  have hchart : e (TotalSpace.mk b ((h.linearEquiv hb).symm w)) = (b, w) := by
+    apply Prod.ext
+    · exact e.proj_toFun _ hsource
+    · exact (h.linearEquiv hb).apply_symm_apply w
+  exact (e.left_inv hsource).symm.trans (congrArg e.invFun hchart)
 
 /-- On a fixed-model total space, fibrewise linearity agrees exactly with the
 linearity condition for a fixed-model trivialization. -/

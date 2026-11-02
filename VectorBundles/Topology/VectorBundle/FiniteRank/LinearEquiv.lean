@@ -38,46 +38,24 @@ variable (A : FiniteRankAtlas K P E)
 
 /-- Chart coordinates distinguish vectors in every fibre over the chart base set. -/
 theorem coord_injective (i : A.Index) {b : B} (hb : b ∈ (A.chart i).baseSet) :
-    Function.Injective (A.coord i b) := by
-  intro v w hvw
-  let pv : (A.chart i).source :=
-    ⟨TotalSpace.mk b v, (A.mk_mem_source_iff i b v).mpr hb⟩
-  let pw : (A.chart i).source :=
-    ⟨TotalSpace.mk b w, (A.mk_mem_source_iff i b w).mpr hb⟩
-  have hsource : A.sourceHomeomorph i pv = A.sourceHomeomorph i pw := by
-    apply Prod.ext
-    · apply Subtype.ext
-      exact (A.sourceHomeomorph_fst_coe i pv).trans
-        (A.sourceHomeomorph_fst_coe i pw).symm
-    · exact (A.sourceHomeomorph_snd i pv).trans
-        (hvw.trans (A.sourceHomeomorph_snd i pw).symm)
-  have htotal : (TotalSpace.mk b v : TotalSpace P E) = TotalSpace.mk b w :=
-    congrArg (fun p : (A.chart i).source => p.1)
-      ((A.sourceHomeomorph i).injective hsource)
-  injection htotal
+    Function.Injective (A.coord i b) :=
+  ((A.linear i).linearMap_bijective hb).1
 
 /-- Every standard coordinate vector is realized by a vector in the original fibre. -/
 theorem coord_surjective (i : A.Index) {b : B} (hb : b ∈ (A.chart i).baseSet) :
-    Function.Surjective (A.coord i b) := by
-  intro w
-  rcases h : A.invCoord i ⟨b, hb⟩ w with ⟨c, v⟩
-  have hp : c = b := by
-    simpa only [h] using A.invCoord_proj i ⟨b, hb⟩ w
-  subst c
-  refine ⟨v, ?_⟩
-  change (A.chart i (TotalSpace.mk b v)).2 = w
-  simpa only [h] using A.chart_invCoord_snd i ⟨b, hb⟩ w
+    Function.Surjective (A.coord i b) :=
+  ((A.linear i).linearMap_bijective hb).2
 
 /-- The coordinate linear map is bijective on every fibre in its chart domain. -/
 theorem coordLinearMap_bijective (i : A.Index) {b : B}
     (hb : b ∈ (A.chart i).baseSet) : Function.Bijective (A.coordLinearMap i hb) :=
-  ⟨A.coord_injective i hb, A.coord_surjective i hb⟩
+  (A.linear i).linearMap_bijective hb
 
 /-- A chart identifies each original fibre over its base set linearly with its own
 standard finite-dimensional coordinate space. -/
 noncomputable def coordLinearEquiv (i : A.Index) {b : B}
     (hb : b ∈ (A.chart i).baseSet) : E b ≃ₗ[K] (Fin (A.rank i) → K) :=
-  LinearEquiv.ofBijective (A.coordLinearMap i hb) (A.coordLinearMap_bijective i hb)
+  (A.linear i).linearEquiv hb
 
 /-- The coordinate equivalence has the original coordinate linear map as its forward map. -/
 @[simp] theorem coordLinearEquiv_toLinearMap (i : A.Index) {b : B}
@@ -102,23 +80,21 @@ theorem chart_mk_eq_coordLinearEquiv (i : A.Index) {b : B}
 recovers the original fibre vector. -/
 @[simp] theorem coordLinearEquiv_symm_coord (i : A.Index) {b : B}
     (hb : b ∈ (A.chart i).baseSet) (v : E b) :
-    (A.coordLinearEquiv i hb).symm (A.coord i b v) = v :=
+    (A.coordLinearEquiv i hb).symm (A.chart i (TotalSpace.mk b v)).2 = v :=
   (A.coordLinearEquiv i hb).symm_apply_apply v
 
 /-- Original chart coordinates recover the input of the inverse coordinate equivalence. -/
 @[simp] theorem coord_coordLinearEquiv_symm (i : A.Index) {b : B}
     (hb : b ∈ (A.chart i).baseSet) (w : Fin (A.rank i) → K) :
-    A.coord i b ((A.coordLinearEquiv i hb).symm w) = w :=
+    (A.chart i (TotalSpace.mk b ((A.coordLinearEquiv i hb).symm w))).2 = w :=
   (A.coordLinearEquiv i hb).apply_symm_apply w
 
 /-- The inverse linear equivalence is exactly inverse coordinates in the original
 total space, not merely an abstract inverse between the fibre and its model. -/
 @[simp] theorem invCoord_eq_mk_coordLinearEquiv_symm (i : A.Index) {b : B}
     (hb : b ∈ (A.chart i).baseSet) (w : Fin (A.rank i) → K) :
-    A.invCoord i ⟨b, hb⟩ w = TotalSpace.mk b ((A.coordLinearEquiv i hb).symm w) := by
-  have h := A.invCoord_coord i hb ((A.coordLinearEquiv i hb).symm w)
-  rw [A.coord_coordLinearEquiv_symm i hb w] at h
-  exact h
+    A.invCoord i ⟨b, hb⟩ w = TotalSpace.mk b ((A.coordLinearEquiv i hb).symm w) :=
+  ((A.linear i).mk_linearEquiv_symm hb w).symm
 
 universe uI
 
