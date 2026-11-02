@@ -11,12 +11,18 @@ topological fiber bundles.
 
 ## Headline results
 
+These families are proved here, with the original fiber and total-space topologies.
+The [catalogue](docs/HeadlineResults.md) gives the individual statements and variants;
+the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib constructions.
+
 - **Supported weighted coordinates.** Given module families over a commutative semiring
   and linear chart equivalences on arbitrary subsets, the
   [weighted coordinate map](VectorBundles/LinearAlgebra/WeightedCoordinates.lean)
   takes values in the full dependent product of model modules. Its membership,
   nonmembership, zero-weight and chart-evaluation rules are explicit. At each point,
-  one valid coordinate with a unit weight suffices for fibrewise injectivity.
+  generating the unit ideal by the valid chart weights suffices for fibrewise
+  injectivity. In particular, one valid unit weight suffices; no individual
+  weight need be a unit in the general criterion.
   On the original equality fibres of a topological projection, with given module
   operations and inherited topology, the
   [total coordinate map](VectorBundles/Topology/Maps/WeightedCoordinates.lean)
@@ -47,17 +53,20 @@ topological fiber bundles.
   continuity, fibre or target norm, target separation or base separation is required. See
   [`LinearMap.continuous_total_of_local_coordinates`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean).
 
-- **Closed embeddings from normed local coordinates.**
-  For a continuous map `p : T → X`, give each equality-subtype fibre its
-  subspace topology and a module structure over `ℝ` or `ℂ`. An arbitrary open
-  cover may have normed finite-dimensional coordinate models of varying,
-  unbounded, or zero rank. If the coordinate realizations and their exact
-  inverses are continuous, injective algebraic fibre maps into a normed
-  inner-product space `A`, parameter-continuous at each fixed coordinate
-  vector, give a closed embedding `T → X × A`. Its inverse extends to a
-  jointly continuous fibrewise linear retraction on `X × A`. Neither
-  completeness of `A` nor separation of `X` is required. See
-  [`exists_retraction_isClosedEmbedding_of_local_coordinates`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean).
+- **Local constancy of fibre finrank.** Over a division ring, given pointwise
+  [linear equivalences to fixed models](VectorBundles/Topology/Module/Finrank.lean)
+  on sets whose interiors cover the base make natural-number fibre finrank locally
+  constant. Neither finite-dimensionality nor topology on the modules is assumed.
+  Infinite-dimensional modules have finrank zero; this is not a claim about their
+  cardinal dimension.
+
+- **Closed fiber embeddings.** For continuous `p : T → X`, give its equality-subtype fibers
+  their subspace topologies and `RCLike` module structures. An arbitrary open cover with
+  finite-dimensional normed linear coordinates, jointly continuous realizations and continuous
+  exact inverse-coordinate maps on the total-space restrictions gives a [closed embedding into `X × A`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean)
+  from supplied injective algebraic fiber maps whose local frames are parameter-continuous at
+  each fixed vector. The normed inner-product target need not be complete; local ranks may vary.
+  The inverse extends to a jointly continuous fiberwise linear retraction on the product.
 
 - **Finite Euclidean embeddings from weighted local coordinates.**
   For a continuous map `p : T → X` over `K = ℝ` or `ℂ`, finitely many normed
@@ -75,482 +84,148 @@ topological fiber bundles.
   normalization, or separation of `X` is required. See
   [`exists_retraction_isClosedEmbedding_of_weighted_local_coordinates`](VectorBundles/Analysis/InnerProductSpace/WeightedFiberEmbedding.lean).
 
-- **Retractions from inducing realizations and local finite frames.**
-  Over `ℝ` or `ℂ`, injective algebraic linear maps `βₓ : Fₓ →ₗ[K] A` admit
-  continuous linear retractions `ρₓ : A →L[K] Fₓ` when the original normless
-  fibres retain their given topologies induced by realization maps `jₓ`, the
-  local realizations are jointly continuous, and the raw ambient frames are
-  parameter-continuous at each fixed vector. The finite-dimensional seminormed
-  local models `Gᵢ` may vary over an arbitrary open cover; the ambient
-  inner-product space `A` is normed and need not be complete. The realizations
-  `(x, a) ↦ jₓ (ρₓ a)` are jointly continuous, and
-  the self-adjoint idempotents `Pₓ a = βₓ (ρₓ a)` vary continuously in operator
-  norm. See
-  [`exists_retraction_of_inducing_local_finite_frames`](VectorBundles/Analysis/InnerProductSpace/InducingRetraction.lean).
+- **Retractions and projection continuity.** Over real or complex scalars, original fibers
+  with [inducing realizations](VectorBundles/Analysis/InnerProductSpace/InducingRetraction.lean),
+  jointly continuous local realizations on an open cover, finite-dimensional seminormed coordinate models
+  and injective algebraic fiber maps into a normed inner-product space with fixed-vector-continuous local frames admit continuous-linear
+  retractions, jointly continuous realizations and operator-norm-continuous orthogonal projections.
+  No fiber norms or ambient completeness are needed. Separately, a given self-adjoint idempotent
+  family is [continuous](VectorBundles/Analysis/InnerProductSpace/ProjectionContinuity.lean) if its
+  images have local injective finite-dimensional algebraic frames with fixed-vector continuity;
+  those frame domains need no topology.
 
-- **Continuity from local finite frames.** A given family of self-adjoint idempotents is
-  operator-norm continuous when its images have local injective finite-dimensional
-  algebraic frames with fixed-vector parameter continuity. The frame domains may vary
-  and need no norm or topology; the given normed inner-product ambient space need not
-  be complete. See [ProjectionContinuity](VectorBundles/Analysis/InnerProductSpace/ProjectionContinuity.lean).
+- **Metrics and finite complements.** A finite-dimensional real or complex bundle over a
+  paracompact Hausdorff base admits a continuous positive-definite [Hermitian metric](VectorBundles/Topology/VectorBundle/MetricExistence.lean)
+  inducing its original fiber topologies. Over a compact normal base, a finite-dimensional
+  `RCLike` bundle has a [finite-dimensional complement](VectorBundles/Topology/VectorBundle/FiniteComplement.lean)
+  whose product is linearly trivial, not necessarily a complement to a prescribed embedding.
 
-### Joint continuity of given adjoint partners
+- **Orthogonal splitting.** For a supplied continuous Hermitian metric, an intrinsic submodule
+  bundle with embedded total-space inclusion and a finite-dimensional `RCLike` ambient model,
+  [orthogonal addition](VectorBundles/Topology/VectorBundle/OrthogonalAddition.lean) is a homeomorphism
+  with continuous projections, over any base. [Comparison](VectorBundles/Topology/VectorBundle/OrthogonalComparison.lean)
+  identifies complements for two supplied metrics with their induced topologies; no metric is constructed.
 
-For given raw adjoint partners `S t` of continuous linear maps `Γ t` between
-seminormed inner-product spaces over real or complex scalars,
-`norm_sub_apply_le` controls simultaneous variation in the input and forward
-operator. If `Γ` varies continuously in operator norm over any topological
-parameter space, `continuous_uncurry` gives joint continuity of `(t, a) ↦ S t a`.
-Neither space needs completeness or separation, and no linearity or uniqueness
-of the partners is assumed.
+<a id="given-adjoint-partners"></a>
 
-### Given adjoint partners
+- **Given adjoint partners.** For `RCLike` inner products, a supplied partner `S : A → H`
+  [bundles linearly](VectorBundles/Analysis/InnerProductSpace/AdjointPair.lean) when `H` is normed and
+  `A` seminormed; a pointwise norm bound on the first map makes it continuous-linear. A continuous-linear
+  first map supplies the bound, without completeness. The catalogue also gives the algebraic
+  semiring-valued pairing result; the partner is supplied, not constructed.
 
-Right-linear pairings over a semiring bundle a given adjoint partner as a linear
-map when the first pairing's columns separate points, without linearity of the
-left-hand map. For inner products, `Function.IsAdjointPair.toLinearMap` applies
-to raw maps with a normed target and a seminormed source. A pointwise norm bound
-on the first map gives `toContinuousLinearMapOfBound`; the continuous-linear
-first-map specialization is `toContinuousLinearMap`. All constructions retain
-the given partner exactly, with no completeness assumptions.
+<a id="joint-continuity-of-given-adjoint-partners"></a>
+<a id="complete-domain-adjoints-and-composition"></a>
+<a id="continuous-inverse-gram-families"></a>
 
-### Images and orthogonal kernels
+- **Adjoints and Gram families.** A continuous linear map from a complete normed `RCLike`
+  inner-product space to a seminormed one has an [adjoint](VectorBundles/Analysis/InnerProductSpace/Adjoint.lean).
+  For given raw adjoint partners between seminormed spaces, operator-norm continuity of the forward
+  family gives [joint continuity](VectorBundles/Analysis/InnerProductSpace/AdjointPairFamily.lean) of the partners.
+  On a finite-dimensional normed domain with normed ambient space, injective forward operators and
+  given continuous-linear adjoint partners have [continuous inverse Gram composites](VectorBundles/Analysis/InnerProductSpace/GramRetraction.lean)
+  when the forward family is operator-norm continuous. On a complete finite-dimensional normed
+  inner-product domain, a jointly continuous injective family instead [constructs canonical adjoints,
+  left inverses and projections](VectorBundles/Analysis/InnerProductSpace/GramFamily.lean) continuously.
+  None of these results requires completeness of the ambient space.
 
-For given algebraic maps `β : F →ₗ[K] A` and `r : A →ₗ[K] F` that form an orthogonal retraction, `closure (Set.range β)` is the inner-product orthogonal complement of `r.ker` in the original seminormed inner-product space `A`. If `A` is normed, `β.range = r.kerᗮ`. The scalar field is real or complex; `F` needs only its additive group and module structures, and no completeness is assumed. See the [distance and image API](VectorBundles/Analysis/InnerProductSpace/Projection/Distance.lean).
+<a id="norms-of-idempotents"></a>
+<a id="images-and-orthogonal-kernels"></a>
 
-### Complete-domain adjoints and composition
+- **Algebraic orthogonal retractions and distance.** An injective linear map from a plain module into
+  a normed `RCLike` inner-product space has an [algebraic retraction](VectorBundles/Analysis/InnerProductSpace/Projection/LinearMap.lean)
+  when its range has orthogonal projection; finite dimension of the module suffices. Given the
+  orthogonal-retraction laws, [best-approximation and squared-error formulas](VectorBundles/Analysis/InnerProductSpace/Projection/Distance.lean)
+  hold without completeness or a topology on the coefficient module. In a seminormed ambient space,
+  zero residual norm detects range closure; in a normed one, `β.range = r.kerᗮ` and minimizers are unique.
+  The catalogue also gives the [nonzero-idempotent norm bound](VectorBundles/Analysis/Normed/Ring/Idempotent.lean).
 
-For an `RCLike` field `K`, a complete normed inner-product space `H` and a
-seminormed inner-product space `A`,
-[`ContinuousLinearMap.adjointMap`](VectorBundles/Analysis/InnerProductSpace/Adjoint.lean)
-constructs the adjoint of `H →L[K] A`, without completeness or separation of `A`.
-It preserves the identity. For `Γ₁ : H →L[K] M`, `Γ₂ : M →L[K] A` and a raw
-adjoint partner `S₂ : A → M`, `adjointMap_comp_apply_of_isAdjointPair` gives
-`adjointMap (Γ₂.comp Γ₁) a = adjointMap Γ₁ (S₂ a)`, with no linearity or
-continuity assumption on `S₂` and no completeness of the seminormed spaces `M`
-and `A`. There is also a bundled-partner equality. When `M` is itself normed
-and complete, `adjointMap_comp` expresses this entirely using `adjointMap`.
-These laws generalize Mathlib's `ContinuousLinearMap.adjoint_comp`; the existing
-`adjointMap_eq_adjoint` bridge identifies the normed complete specialization.
+- **Finite orthogonal idempotent families.** Over any semiring and finite index type, the
+  [matched-product sum](VectorBundles/Algebra/Ring/OrthogonalIdempotents.lean) intertwines two orthogonal
+  idempotent families. If it is a unit, that same unit simultaneously conjugates them and forces both
+  families to sum to one; completeness of the families is a conclusion, not a hypothesis.
 
-### Continuous inverse Gram families
+- **Close idempotents and rank stability.** On a normed space over a nontrivially normed field,
+  [idempotents at operator-norm distance less than one](VectorBundles/Analysis/Normed/Operator/Idempotent.lean)
+  have equal cardinal ranks of ranges and kernels; these ranks are locally constant in continuous
+  families, without completeness. When geometric series are summable in the endomorphism ring
+  (in particular for a complete space), one normalized unit gives continuous-linear equivalences of both.
 
-Over an `RCLike` field `K`, for finite-dimensional normed inner-product `H`,
-normed inner-product `A` and
-families `Γ b : H →L[K] A`, `S b : A →L[K] H` of adjoint pairs,
-[`ContinuousLinearMap.continuous_inverseGramComp`](VectorBundles/Analysis/InnerProductSpace/GramRetraction.lean)
-shows that injectivity of each `Γ b` and continuity of `Γ` alone imply
-continuity of `b ↦ inverseGramComp (Γ b) (S b)`.
-`continuous_inverseGramComp_apply` gives joint continuity in the parameter and
-the ambient vector. Neither theorem requires completeness of `A` or a separate
-continuity hypothesis on `S`; the inversion takes place in the endomorphisms of `H`.
+- **Fixed-kernel coordinates.** For seminormed spaces over a nontrivially normed field, a family
+  `Γ d : H →L[K] A` with supplied algebraic retractions `r d` has [product coordinates for its total kernel](VectorBundles/Analysis/Normed/Operator/KernelFamilyCoordinates.lean)
+  on any topological parameter domain where `q₀ ∘ Γ d` is a unit. Here `q₀` is fixed and continuous-linear;
+  joint continuity of the difference between the original and normalized ambient projections suffices.
+  No separate continuity of `r` or completeness is needed. The [catalogue](docs/HeadlineResults.md#fixed-kernel-coordinates-on-unit-domains)
+  gives the formulas, unit-subtype version and distinction between a unit comparison and a retraction.
 
-### Canonical Gram families on a fixed domain
+- **Linear families and bundle inverses.** Over a field with a T₁ topology making it a topological
+  ring, pointwise-continuous algebraic linear families have an [open surjectivity locus](VectorBundles/Topology/Algebra/Module/OpenMap.lean)
+  for a finite-dimensional target with its module topology; the source needs no topology. Over a
+  nontrivially normed field, continuous-forward fiberwise linear equivalences give [bundle homeomorphisms](VectorBundles/Topology/VectorBundle/Isomorphism.lean)
+  when the source normed model is finite-dimensional and the target normed model has its module topology.
 
-For a jointly continuous, pointwise injective family `f x : E →L[K] F`, with
-`E` complete and finite-dimensional and both spaces carrying their given normed
-inner products over an `RCLike` field,
-[`ContinuousLinearMap.gramFamily_properties`](VectorBundles/Analysis/InnerProductSpace/GramFamily.lean)
-gives operator-norm continuity of the characteristic adjoint `g`, the canonical
-left inverse `r = (g f)⁻¹ g`, and the ambient projection `P = f r`. Pointwise,
-`r f = 1`; `P` is idempotent and self-adjoint, has the same range as `f`, and
-has kernel `range(f)ᗮ`. The full residual `w - P w` is orthogonal to the image.
-No completeness or finite dimension of `F`, nonempty base, isometry assumption,
-or global bound on the inverses is required. This is an independent fixed-domain
-analytic result, not a variable-bundle complement theorem or the full statement
-of Hatcher's Proposition 1.7.
+<a id="finite-ambient-open-grids-for-compact-products"></a>
+<a id="finite-subdivisions-of-closed-real-intervals"></a>
 
-### Norms of idempotents
+- **Compact refinements and partitions of unity.** An ambient open cover of two compact subsets'
+  product admits [finite ambient open grids](VectorBundles/Topology/Compactness/Product.lean) with each
+  full rectangle in a chosen cover member, without separation assumptions. [Closed-interval subdivisions](VectorBundles/Topology/UnitInterval.lean)
+  allow repeated cuts and singleton intervals. A finite open cover of a normal space admits [continuous
+  weights](VectorBundles/Topology/ContinuousMap/FiniteWeights.lean) in `[0,1]` summing to one, with closed
+  cozero supports subordinate to the cover; no T₁ hypothesis is needed.
+  On a [closed subset of a normal space](VectorBundles/Topology/FiniteNormalWeights.lean),
+  a finite open cover similarly admits nonnegative continuous weights with closed
+  supports in its members, sum at most one everywhere and exactly one on that subset.
 
-[`IsIdempotentElem.one_le_norm`](VectorBundles/Analysis/Normed/Ring/Idempotent.lean)
-shows that a nonzero idempotent in a non-unital normed ring has norm at least one.
-If its norm is at most one, `IsIdempotentElem.norm_eq_one` gives norm exactly one.
+<a id="finite-product-chart-selection"></a>
 
-### Finite orthogonal idempotent families
+- **Finite selection from supplied product charts.** For compact `X`, arbitrary topological `Y`
+  and chosen `y₀`, supplied whole-product charts with both base laws and agreement in both directions
+  with specified original charts at `y₀` admit a [finite ordered open cover](VectorBundles/Topology/FiberBundle/FiniteCylinderCover.lean).
+  This retains varying models and, when provided, matching linear coordinates over any semiring. It selects supplied
+  charts, not charts from an arbitrary atlas over `Y`, and needs neither compactness of `Y` nor projection continuity.
 
-[Orthogonal idempotent families](VectorBundles/Algebra/Ring/OrthogonalIdempotents.lean)
-`p q : I → R` over any semiring and finite index type satisfy
-`u * p j = q j * p j = q j * u`, where `u = ∑ i, q i * p i`.
-If `u` is a unit, that prescribed unit simultaneously conjugates `p` to `q`,
-and both families sum to one. Completeness is an output, not a hypothesis.
-No commutativity, nontriviality, or nonempty-index assumption is needed.
-The diagonal matched-product sum is `∑ i, p i`, not necessarily one.
+- **Heterogeneous cylinder gluing.** For a continuous projection over `X × T`, with `T` linearly
+  ordered and topological with closed upper and lower rays, supplied base-preserving charts on the
+  closed half-cylinders may have different models. The [gluer](VectorBundles/Topology/FiberBundle/ClosedCylinder.lean)
+  gives a whole-cylinder homeomorphism into the left model, retaining its entire left chart.
 
-### Close idempotent operators
+- **Whole-cylinder charts and transport.** An open base-preserving atlas for a continuous projection
+  over `X × unitInterval` gives [local whole-interval charts](VectorBundles/Topology/FiberBundle/ClosedCylinderSubdivisionData.lean),
+  with linear coordinates when the input coordinates are linear, over any semiring. Separately, finite ordered whole-cylinder charts with continuous
+  weights in `[0,1]` summing to one and closed cozero supports inside the chart base sets give [base-preserving,
+  bottom-fixing transport](VectorBundles/Topology/FiberBundle/FiniteTransport/Projection.lean) from the standard pullback
+  of the entire zero slice. A [finite open cylinder cover on a normal base](VectorBundles/Topology/FiberBundle/FiniteTransport/Existence.lean)
+  supplies the weights. Models may vary; full homotopy invariance is not asserted.
 
-[Close idempotent endomorphisms](VectorBundles/Analysis/Normed/Operator/Idempotent.lean)
-with `‖p - q‖ < 1` have continuously linearly equivalent ranges and kernels, using
-the same normalized unit `q * p + (1 - q) * (1 - p)` and its inverse. Hence both
-cardinal module ranks are equal. For a continuous idempotent family over any
-topological parameter space, both rank functions are locally constant. The
-unit/equivalence assertion assumes `HasSummableGeomSeries (E →L[K] E)`, supplied
-when `E` is complete. Rank equality and local constancy need no geometric-summability
-or completeness hypothesis. The given norms are retained and the zero space is allowed.
+- **Varying-rank atlases.** Over a field with a given topology, a supplied [finite-rank linear atlas](VectorBundles/Topology/VectorBundle/FiniteRank.lean)
+  allows unbounded, locally varying ranks, including zero, on the original fibers and total space. Its
+  [projection is continuous, open and quotient](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean),
+  and its zero section is an embedding. Further separation and countability results use the corresponding
+  base and exact chart-coordinate hypotheses, not continuous scalar operations or a global fixed model.
 
-### Finite ambient open grids for compact products
-
-[`IsCompact.exists_fin_open_cover_prod_subset`](VectorBundles/Topology/Compactness/Product.lean)
-refines an ambient open cover of `S × T`, where `S` and `T` are compact subsets
-of arbitrary topological spaces, into finite ambient open covers `V` of `S`
-and `W` of `T`. Every full product `V j × W k` lies in a selected member of the
-original cover. The spaces may have independent universes, with no separation
-assumptions. The original labels may belong to any sort, and either finite
-family may be empty.
-
-### Finite subdivisions of closed real intervals
-
-[`exists_fin_monotone_Icc_subset_open_cover_Icc`](VectorBundles/Topology/UnitInterval.lean)
-subdivides any nonempty closed real interval into finitely many monotone closed slabs,
-each contained in a selected member of the given open cover. The cuts include
-both endpoints and the slabs cover the interval exactly. Covers may be indexed
-by any sort; repeated cuts and at least one slab also cover singleton intervals.
-The product-neighbourhood theorem
-`exists_open_nhds_prod_Icc_subset_open_cover_unitInterval` provides a common open
-neighbourhood for all slabs without separation assumptions on the base space.
-
-[`IsCompact.exists_fin_open_cover_prod_Icc_subset`](VectorBundles/Topology/UnitInterval.lean)
-combines the compact-product open grid with the finite interval subdivision to
-give a rectangular refinement over any compact subset of an arbitrary topological
-space: one finite monotone grid and one finite ambient open base cover, common to
-all slabs. The base cover is the same one supplied by the compact-product theorem.
-Every full base-set × closed-slab rectangle lies in a selected member of the
-original ambient open cover. The cuts include both endpoints, and the slabs
-cover the real interval exactly. No separation assumption is needed; the base
-family may be empty, and singleton intervals still have at least one slab.
-
-### Finite product-chart selection
-
-For a compact base `X` and an arbitrary topological parameter space `Y` with a
-chosen point `y₀`, local whole-product charts near every point of `X` admit a
-finite ordered open cover. The selected charts retain their original varying
-models, their homeomorphisms on the original projection preimages, both base
-laws, and agreement with the original coordinates in both directions on the
-slice at `y₀`.
-
-With the given module structures on the original projection fibers over an
-arbitrary semiring, the linear version retains linear coordinates at every
-parameter, their forward and inverse formulas for the same homeomorphism, and
-their identification with the original linear coordinates at `y₀`. The base may
-be empty; the semiring need not be commutative or carry a topology.
-
-The results are
-[`exists_finiteProductCover_of_local`](VectorBundles/Topology/FiberBundle/FiniteCylinderCover.lean)
-and
-[`exists_finiteLinearProductCover_of_local`](VectorBundles/Topology/FiberBundle/FiniteCylinderCover.lean).
-The cylinder-cover APIs are their exact specializations to `Y = I`, `y₀ = 0`.
-The whole-product charts are hypotheses: this does not construct them from an
-ordinary local atlas over an arbitrary parameter space. Neither compactness of
-`Y` nor continuity of the projection is assumed.
-
-- **Algebraic projection/preimage retractions:** for an injective linear map
-  `β : F →ₗ[K] A` from a given plain module over an `RCLike` field into a given
-  inner product space, `[β.range.HasOrthogonalProjection]` gives
-  [`LinearMap.orthogonalRetraction`](VectorBundles/Analysis/InnerProductSpace/Projection/LinearMap.lean).
-  Its embedded value is Mathlib's orthogonal projection, and it retracts `β`.
-  Finite-dimensional `F` supplies this capability through inherited range
-  completeness, without choosing a norm or topology on `F` or requiring `A` to be
-  complete. The [family API](VectorBundles/Analysis/InnerProductSpace/Projection/Fiberwise.lean)
-  gives `R : X × A → E` for any given `p : E → X`, module structures on its
-  fibres `{t : E // p t = x}`, and injective fibre embeddings with this projection
-  capability; finite-dimensional fibres suffice. It proves `p (R (x, a)) = x`
-  and `R (p t, β (p t) ⟨t, rfl⟩) = t`, including a left-inverse law for any
-  specified map with that image formula. No topology on the base or total space,
-  nonemptiness, or positive-rank hypothesis is needed. The
-  [real-axis example](VectorBundlesTest/OrthogonalRetraction.lean) uses the
-  finite-dimensional construction on the original fibres of `Bool × ℝ → Bool`.
-  These APIs do not assert continuity or a general residual-orthogonality theorem.
-
-- **Distance and closure for a given orthogonal retraction:** for
-  `h : β.IsOrthogonalRetraction r`, the
-  [distance API](VectorBundles/Analysis/InnerProductSpace/Projection/Distance.lean)
-  decomposes squared error and identifies `‖a - β (r a)‖` with the metric
-  distance from `a` to the range of `β`. The point `β (r a)` attains this
-  distance, and the scalar residual norm is 1-Lipschitz. In a seminormed ambient
-  inner product space, membership in the closure of the range is equivalent to
-  `‖a - β (r a)‖ = 0`, and `β v` has the same error exactly when its distance
-  from `β (r a)` is zero. In a normed ambient space, the range is closed and
-  minimum error is equivalent to `v = r a`. No topology or norm on the
-  coefficient module or completeness assumption is needed.
-
-- **Constant extension of supported pairings:** for arbitrary topological spaces
-  and a continuous pairing `μ : M × V → W` with `μ(m₀, v) = w₀`, a continuous
-  weight `w : X → M` and map `g : U → V` admit a continuous extension of
-  `μ(w x, g x)` by `w₀` whenever `closure {x | w x ≠ m₀} ⊆ U`.
-  The [pairing API](VectorBundles/Topology/ContinuousMap/PairingExtension.lean)
-  constructs the uniquely characterized map. The subset need not be open or closed;
-  no separation or nonemptiness assumptions are needed. The
-  [scalar-action specialization](VectorBundles/Topology/ContinuousMap/WeightedExtension.lean)
-  extends weighted maps by zero and is used for finite bundle embeddings.
-
-- **Finite partitions of unity on normal spaces:**
-  [`ContinuousMap.exists_finite_weights`](VectorBundles/Topology/ContinuousMap/FiniteWeights.lean)
-  gives continuous real weights for any normal topological space `X`, arbitrary index type
-  `J`, finite index set `s : Finset J` and family `U : J → Set X` whose members on `s` are
-  open and cover `X`. The weights are defined at every index, lie in `[0, 1]`, vanish as
-  continuous maps off `s`, and sum to one over `s` at each point. For every index `i`,
-  `closure {x | w i x ≠ 0} ⊆ U i`. No compactness, nonemptiness, T1 or Hausdorff assumption,
-  finiteness of `J`, or openness off `s` is required.
-
-- **Heterogeneous closed-cylinder gluing:** for a continuous projection
-  `p : Z → X × T`, with linearly ordered topological `T` having closed
-  lower and upper rays, supplied projection-preserving charts on its two
-  closed half-cylinders may have different topological models. The
-  [gluer](VectorBundles/Topology/FiberBundle/ClosedCylinder.lean)
-  gives a whole-cylinder homeomorphism into the left model, retaining its
-  entire left chart. See the [foundation guide](docs/Results.md#cylinder-foundations)
-  for this construction, common-neighborhood subdivision and selection from
-  given whole-interval charts.
-
-- **Whole-cylinder charts from local atlases:** an open, base-preserving atlas for
-  a continuous projection `p : T → X × unitInterval` gives an open neighborhood `U`
-  of each point of `X` and a homeomorphism
-  `{z : T // (p z).1 ∈ U} ≃ₜ (U × unitInterval) × F j₀`.
-  Both directions preserve the cylinder base point and agree at time zero with
-  one input chart. If `X` is compact, finitely many such neighborhoods cover `X`,
-  without any normality assumption. The
-  [subdivision API](VectorBundles/Topology/FiberBundle/ClosedCylinderSubdivisionData.lean)
-  records the recursively glued charts and their successor and endpoint laws.
-  When the input coordinates on each original projection fiber are linear, the
-  [linear refinement](VectorBundles/Topology/FiberBundle/ClosedCylinderSubdivisionDataLinear.lean)
-  gives linear coordinates for the same homeomorphism at every time. The scalar
-  semiring may be noncommutative, chart models may vary, and the original total
-  space, fiber operations and topologies are unchanged. No fiber norm, finite-rank
-  or scalar-topology assumption is imposed.
-
-- **Finite ordered cylinder transport with given weights:**
-  [`Bundle.Trivialization.finiteCylinderTransport`](VectorBundles/Topology/FiberBundle/FiniteTransport.lean)
-  gives a homeomorphism from the iterated standard pullback of the entire original
-  zero-time restriction to the same given total space over `X × unitInterval`.
-  The input is an ordered family of charts indexed by `Fin n`, with possibly
-  varying topological models `F j` independent of the unstructured total-space
-  parameter `P`, covering cylinders `U j × unitInterval` whose sets `U j` cover `X`.
-  Continuous real weights lie in `[0, 1]`, sum to one, and satisfy
-  `closure {x | w j x ≠ 0} ⊆ U j`. No normality of `X` or openness of `U j` is needed.
-  Both directions preserve the entire cylinder base point and fix every bottom
-  point. The [prefix API](VectorBundles/Topology/FiberBundle/FiniteTransport.lean)
-  gives zero, ordered successor and last-stage laws, including unchanged original
-  points off each closed support. The top restriction agrees with the independently
-  ordered `finiteCylinderEndpointTransport` between the standard endpoint pullbacks.
-
-- **Cylinder transport for a given projection:**
-  [`Bundle.Trivialization.finiteCylinderTransportOfProjection`](VectorBundles/Topology/FiberBundle/FiniteTransport/Projection.lean)
-  applies the same weighted construction to any map `p : T → X × unitInterval`
-  with the given topology on `T` and the cylinder charts above. Its source is the
-  standard product-subspace pullback of the entire original zero restriction;
-  its target is the same `T`. Continuity of `p` follows from the covering charts.
-  Both directions preserve the whole base point and fix every original bottom
-  point, including points in the closed supports.
-  `finiteCylinderTransportOfProjection_apply_eq_last` characterizes its value at
-  every time by an ordered sequence of the original chart lifts in `T`.
-  The independently constructed `finiteCylinderEndpointTransportOfProjection`
-  compares the entire original zero and one slices, with their inherited topologies,
-  and agrees with cylinder transport on the top slice.
-  Given modules on the original fibers and the models `F j` over any possibly
-  noncommutative semiring `R`, and linear coordinate equivalences agreeing with
-  the charts, the [family](VectorBundles/Topology/FiberBundle/FiniteTransport.lean)
-  and [projection](VectorBundles/Topology/FiberBundle/FiniteTransport/Projection.lean)
-  linearity theorems make this same transport fiberwise `R`-linear. Real numbers
-  parametrize time only: no topology on `R` or continuity of module operations
-  is required, nor a common model, rank, finite-dimensionality, field, further
-  separation or nonempty-fiber hypothesis.
-
-- **Finite open cylinder-chart covers, without given weights:**
-  For a normal topological space `X`, a finite ordered family of given charts
-  covering whole cylinders `U j × unitInterval`, where the `U j` are open and
-  cover `X`, gives the
-  [family transport](VectorBundles/Topology/FiberBundle/FiniteTransport/Existence.lean)
-  `Bundle.Trivialization.exists_finiteCylinderTransport` without input weights.
-  With the original-fiber modules and matching linear chart coordinates above,
-  [`Bundle.Trivialization.exists_finiteCylinderTransportOfProjection`](VectorBundles/Topology/FiberBundle/FiniteTransport/Existence.lean)
-  returns subordinate weights and their bounds, sum and closed-cozero certificates,
-  together with a homeomorphism equal to `finiteCylinderTransportOfProjection`
-  for those same weights. Its conclusions include both base and bottom laws,
-  linearity on the given original fibers over `R`, and top-slice equality with
-  the independently constructed full-slice endpoint transport using those same
-  weights. No separation assumption beyond `NormalSpace X` is added.
-
-- **Locally varying finite-rank atlas data:** covering fibrewise-linear charts on
-  given module fibres and their given total-space topology, with linear coordinate
-  equivalences, pointwise finite generation of the original fibres, and fixed-model
-  bundle data on each chart domain. The models include arbitrary-base product bundles
-  in every finite rank and discrete families with varying ranks, including zero.
-  See the [atlas API](VectorBundles/Topology/VectorBundle/FiniteRank.lean),
-  [`Bundle.FiniteRankAtlas.moduleFinite_fiber`](VectorBundles/Topology/VectorBundle/FiniteRank/LinearEquiv.lean),
-  [patch data](VectorBundles/Topology/VectorBundle/FiniteRank/Patch.lean),
-  [product models](VectorBundles/Topology/VectorBundle/FiniteRank/Trivial.lean) and
-  [discrete models](VectorBundles/Topology/VectorBundle/FiniteRank/Discrete.lean).
-- **Projections, zero sections and descent for finite-rank atlases:**
-  [`Bundle.FiniteRankAtlas.continuous_proj`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  and [`Bundle.FiniteRankAtlas.isOpenMap_proj`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  prove that the original projection is continuous and open.
-  [`Bundle.FiniteRankAtlas.isQuotientMap_proj`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  makes it a quotient map.
-  [`Bundle.FiniteRankAtlas.isOpen_iff_preimage_proj`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  and [`Bundle.FiniteRankAtlas.isClosed_iff_preimage_proj`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  characterize open and closed base subsets by their projection preimages.
-  [`Bundle.FiniteRankAtlas.continuous_iff_comp_proj`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  characterizes continuity of maps from the base to any topological space by continuity
-  after composition with this projection. The canonical zero section is continuous by
-  [`Bundle.FiniteRankAtlas.continuous_zeroSection`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean).
-  It is a topological embedding by
-  [`Bundle.FiniteRankAtlas.isEmbedding_zeroSection`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean).
-  [`Bundle.FiniteRankAtlas.continuous_iff_zeroSection_comp`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  characterizes continuity of maps from any topological domain into the base by
-  continuity after composition with the zero section, using the given total-space
-  topology and no additional continuity hypotheses.
-  These results hold for any supplied finite-rank atlas. Chart ranks may vary and may
-  be zero, with no common model, scalar-operation continuity or base separation hypothesis.
-
-- **Hausdorff total spaces for finite-rank atlases:**
-  [`Bundle.FiniteRankAtlas.t2Space_totalSpace`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  proves that the original total space is Hausdorff when the given base and every
-  chart-coordinate space `Fin (A.rank i) → K` are Hausdorff. These coordinate spaces
-  use the Pi topology from the given scalar topology. Ranks may vary and may be zero;
-  no Hausdorff scalar-field hypothesis is required.
-
-- **Locally compact total spaces for finite-rank atlases:**
-  [`Bundle.FiniteRankAtlas.locallyCompactSpace_totalSpace`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  proves local compactness of the original total space when the given base and every
-  chart-coordinate space `Fin (A.rank i) → K` are locally compact. These coordinate
-  spaces use the Pi topology from the given scalar topology. Ranks may vary and may
-  be zero; neither local compactness of the scalar field nor Hausdorffness is required.
-
-- **First-countable total spaces for finite-rank atlases:**
-  [`Bundle.FiniteRankAtlas.firstCountableTopology_totalSpace`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  proves first countability of the original total space when the given base and every
-  exact chart-coordinate space `Fin (A.rank i) → K` are first countable. These coordinate
-  spaces carry the Pi topology from the given scalar topology. Ranks may vary without
-  a global bound, including zero with its singleton zero fibre. No scalar-field
-  first-countability, second-countability or countable-atlas hypothesis is required.
-
-- **T0 total spaces for finite-rank atlases:**
-  [`Bundle.FiniteRankAtlas.t0Space_totalSpace`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  proves that the original total space is T0 when the given base and every exact
-  chart-coordinate space `Fin (A.rank i) → K` are T0. These coordinate spaces carry
-  the Pi topology from the given scalar topology. Ranks may vary without a global
-  bound, including zero with its singleton zero fibre; the scalar field need not be
-  T0. No T1, Hausdorffness or countability hypothesis is required.
-
-- **T1 total spaces for finite-rank atlases:**
-  [`Bundle.FiniteRankAtlas.t1Space_totalSpace`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  proves that the original total space is T1 when the given base and every exact
-  chart-coordinate space `Fin (A.rank i) → K` are T1. These coordinate spaces carry
-  the Pi topology from the given scalar topology. Ranks may vary without a global
-  bound, including zero with its singleton zero fibre; the scalar field need not be
-  T1. No Hausdorffness or countability hypothesis is required.
-
-- **Regular total spaces for finite-rank atlases:**
-  [`Bundle.FiniteRankAtlas.regularSpace_totalSpace_iff`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean)
-  proves that the original total space is regular exactly when the given base is
-  regular, assuming every exact chart-coordinate space `Fin (A.rank i) → K` is regular.
-  These coordinate spaces carry the Pi topology from the given scalar topology.
-  The base-to-total implication is also available as
-  [`Bundle.FiniteRankAtlas.regularSpace_totalSpace`](VectorBundles/Topology/VectorBundle/FiniteRank/Projection.lean).
-  Ranks may vary without a global bound, including zero with its singleton zero fibre.
-  No scalar-field regularity, Hausdorffness, local compactness or countability
-  hypothesis is required.
-
-- **Finite-support shrinking in normal spaces:**
-  [`Set.Finite.exists_open_cover_shrinking`](VectorBundles/Topology/ShrinkingLemma.lean)
-  shrinks a cover indexed by a finite subset `s` of an arbitrary index type to an
-  all-open cover, empty off `s`, with closure containment at every index. Only the
-  original sets indexed by `s` must be open and cover the space. No T1 assumption
-  or finiteness of the whole index type is required.
-  [`Set.Finite.exists_nested_open_cover_shrinking`](VectorBundles/Topology/ShrinkingLemma.lean)
-  gives two such covering families with nested closure containment.
-
-The [detailed results guide](docs/Results.md) groups statements and examples by
-topic, with their individual hypotheses and distinctions from existing Mathlib
-constructions. Selected results include:
-
-- **Compatible fiber metrics.**
-  [`VectorBundle.continuousHermitianMetric`](VectorBundles/Topology/VectorBundle/MetricExistence.lean)
-  constructs continuous positive-definite Hermitian metrics on finite-dimensional
-  `RCLike` vector bundles over paracompact Hausdorff bases. They induce the original
-  fiber topologies; the normed model need not have an inner-product norm.
-
-- **Splitting and comparison for supplied metrics.**
-  For a supplied continuous Hermitian metric and an intrinsic submodule bundle
-  whose total-space inclusion is an embedding, with finite-dimensional `RCLike`
-  ambient model, [orthogonal addition](VectorBundles/Topology/VectorBundle/OrthogonalAddition.lean)
-  is a homeomorphism onto the ambient total space; [comparison](VectorBundles/Topology/VectorBundle/OrthogonalComparison.lean)
-  identifies its complements for two such metrics using their projections.
-  The base is any topological space. Complement fiber subtype and ambient-induced
-  total topologies are retained; no global intrinsic-model finiteness is required.
-
-- **Pointwise-continuous surjectivity, without a norm.**
-  Over a field with a given T₁ topology making it a topological ring,
-  [`LinearMap.eventually_surjective_of_continuousAt`](VectorBundles/Topology/Algebra/Module/OpenMap.lean)
-  gives surjectivity near `b₀` from surjectivity there and each fixed-vector evaluation's
-  `ContinuousAt` at `b₀`; [`LinearMap.isOpen_setOf_surjective`](VectorBundles/Topology/Algebra/Module/OpenMap.lean)
-  needs each fixed-vector evaluation `Continuous` for an open locus. The base is
-  arbitrary, source purely algebraic with no topology, and target finite-dimensional
-  with its given `IsModuleTopology`, in four independent universes. No scalar norm,
-  inversion continuity, completeness, extra target continuity/separation hypotheses
-  or base separation are required.
-
-- **Openness of joint linear families and bundle maps.**
-  Over a nontrivially normed field,
-  [`LinearMap.isOpenMap_prodMap`](VectorBundles/Topology/Algebra/Module/OpenMap.lean)
-  makes jointly continuous algebraic linear surjections between topological vector
-  spaces open on products when the finite-dimensional target has its given
-  `IsModuleTopology`. The [bundle theorem](VectorBundles/Topology/VectorBundle/OpenMap.lean)
-  transfers this over a common base with given linear trivializations and original
-  fiber and total-space topologies. Neither model needs a norm, the source need not
-  be finite-dimensional, and no completeness is assumed.
-
-- **Forward continuity gives bundle inverses.**
-  [`VectorBundle.homeomorphOfFiberwiseLinearEquivOfIsModuleTopology`](VectorBundles/Topology/VectorBundle/Isomorphism.lean)
-  constructs a homeomorphism from algebraic fiberwise linear equivalences with a
-  continuous forward total map over a nontrivially normed field. The source normed
-  model is finite-dimensional; the target normed model has `IsModuleTopology`.
-  Empty bases and zero rank are allowed, and models need not be globally identified.
-  A complete-field constructor derives the target properties at each base point.
-
-- **Reciprocal finite sums of real squares.**
-  [`continuous_inv_finset_sum_sq`](VectorBundles/Topology/Algebra/GroupWithZero.lean)
-  gives continuity of the reciprocal of a selected finite sum of real squares
-  when the selected weights are continuous and, at each point, some selected
-  weight is nonzero. Weights outside the selected set are unrestricted; the
-  topological base may be empty. This is a real, ordered-square specialization,
-  not a statement about sums of complex squares.
-
-- **Scalar endomorphisms of line bundles.**
-  [`VectorBundle.scalarEndHomeomorph`](VectorBundles/Topology/VectorBundle/ScalarEnd.lean)
-  identifies `B × κ` with the endomorphism bundle of a line bundle modeled on a
-  nontrivially normed field `κ`, for any topological base `B`, including the empty
-  base. Both directions preserve the base, using the original fiber topologies
-  and continuous-linear-map bundle topology.
-
-- **Sharp projection criteria.**
-  A fiber-bundle projection is an [open embedding](VectorBundles/Topology/FiberBundle/Projection.lean)
-  exactly when every original fiber is subsingleton, and canonically a homeomorphism
-  when each is also nonempty. It is [proper](VectorBundles/Topology/FiberBundle/Proper.lean)
-  exactly when every given fiber is compact, equivalently when the base is empty or
-  the model is compact. The given topologies and fiber-bundle data are retained,
-  without scalar or separation assumptions.
-
-- **Second countability of total spaces.**
-  [`FiberBundle.secondCountableTopology_totalSpace_iff`](VectorBundles/Topology/FiberBundle/Countability.lean)
-  says the total space is second-countable exactly when the base is empty, the model
-  is empty, or both are second-countable. Given topologies, fiber-bundle data and
-  independent base/model/fiber universes are retained, without compactness or
-  separation assumptions. Construction from second-countable factors is Mathlib's
-  existing instance.
-
-- **Finite complementary bundles and cylinder charts.**
-  [`VectorBundle.finiteComplement`](VectorBundles/Topology/VectorBundle/FiniteComplement.lean)
-  gives a finite-dimensional complement for a finite-dimensional `RCLike` bundle
-  on a compact normal base, with a global linear trivialization of their fiberwise product.
-  Subspace fiber and ambient-induced total topologies are retained; the complement
-  is not asserted complementary or orthogonal to a prescribed embedding.
-  [Whole-interval cylinder charts](VectorBundles/Topology/VectorBundle/Cylinder.lean)
-  exist near each point of any `X` for a vector bundle over `X × unitInterval`,
-  without dimension or completeness assumptions; this is not homotopy invariance.
+- **Sharp projection criteria.** A fiber-bundle projection is an [open embedding](VectorBundles/Topology/FiberBundle/Projection.lean)
+  exactly when every original fiber is subsingleton, and [proper](VectorBundles/Topology/FiberBundle/Proper.lean)
+  exactly when each fiber is compact. Its total space is [second-countable](VectorBundles/Topology/FiberBundle/Countability.lean)
+  exactly when the base or model is empty, or both are second-countable, without separation hypotheses.
+  Further compactness, separability and Lindelöf criteria are in the [detailed guide](docs/Results.md#topological-properties-of-bundle-total-spaces).
 
 ## Using the library
 
-With this package available to Lake, import the production root or a narrower module:
+Add the released library to your `lakefile.toml`:
+
+```toml
+[[require]]
+name = "vector-bundles"
+git = "https://github.com/FormalFrontier/vector-bundles.git"
+rev = "main"
+```
+
+GitHub `main` contains reviewed releases. Lake keeps the resolved commit in
+`lake-manifest.json` until you update it; use a full release commit instead of
+`main` to pin a specific version.
+
+Import the production root or a narrower module:
 
 ```lean
 import VectorBundles
@@ -567,6 +242,13 @@ noncomputable example :
   VectorBundle.continuousHermitianMetric ℂ (ℂ × ℂ) (Bundle.Trivial ℝ (ℂ × ℂ))
 ```
 
+For the closed-embedding criterion, import the leaf module
+`VectorBundles.Analysis.InnerProductSpace.FiberEmbedding` directly.
+The normal-space cutoff and closed-subset weight results require
+`VectorBundles.Topology.FiniteNormalWeights`; local constancy of finrank requires
+`VectorBundles.Topology.Module.Finrank`. These are also direct imports rather
+than re-exports of `VectorBundles`.
+
 The raw product model has its sup norm, which is not an inner-product norm.
 `import VectorBundlesTest` also imports the standard and boundary examples.
 
@@ -578,7 +260,7 @@ Lean is pinned to `leanprover/lean4:v4.34.0-rc2`. The direct dependencies are
 [Metrization](https://github.com/FormalFrontier/metrization) at
 `4dcc0f6f903ba4d0c66f230d21f7ac4c31d4ea57`, and
 [ProjectiveModules](https://github.com/FormalFrontier/projective-modules) at
-`8e4495425bb19187fbeb7271d40a111b8ddf36de`.
+`8c99408e99ada67e0de63bb9a58cde4f25c99d07`.
 Both deliverables use the Mathlib revision listed above. Their transitive
 dependencies are pinned in `lake-manifest.json`.
 
@@ -592,10 +274,34 @@ The default build includes both `VectorBundles` and `VectorBundlesTest`.
 ## Contents
 
 Paths below are relative to `VectorBundles/`. Full fiber- and vector-bundle
-examples are collected by `VectorBundlesTest.lean`.
+examples are collected by `VectorBundlesTest.lean`; the [import guide](docs/Results.md#adjoint-partners-gram-operators-and-imports)
+identifies analysis modules and examples requiring direct imports.
 
 | Module | Contents |
 | --- | --- |
+| [`LinearAlgebra.WeightedCoordinates`](VectorBundles/LinearAlgebra/WeightedCoordinates.lean) | Supported weighted maps into the full dependent product; unit-ideal spanning and unit-coordinate injectivity |
+| [`Topology.Maps.WeightedCoordinates`](VectorBundles/Topology/Maps/WeightedCoordinates.lean) | Continuity on original equality fibres with closed cozero supports |
+| [`Topology.FiniteNormalWeights`](VectorBundles/Topology/FiniteNormalWeights.lean) | Normal-space cutoffs, closed-subset weights and finite partition-of-unity components |
+| [`Topology.Module.Finrank`](VectorBundles/Topology/Module/Finrank.lean) | Locally constant fibre finrank from a neighbourhood cover of linear models |
+| [`VectorBundles.Algebra.Ring.CommutingIdempotent`](VectorBundles/Algebra/Ring/CommutingIdempotent.lean) | Cubic identities for commuting idempotents in nonunital rings |
+| [`VectorBundles.Algebra.Ring.Idempotent`](VectorBundles/Algebra/Ring/Idempotent.lean) | Normalized intertwiners and prescribed conjugacy |
+| [`VectorBundles.Algebra.Ring.OrthogonalIdempotents`](VectorBundles/Algebra/Ring/OrthogonalIdempotents.lean) | Matched-product sums and unit conjugacy of finite orthogonal families |
+| [`VectorBundles.Analysis.InnerProductSpace.FiberEmbedding`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean) | Closed embeddings from normed local coordinates on original fibers |
+| [`VectorBundles.Analysis.InnerProductSpace.GramFamily`](VectorBundles/Analysis/InnerProductSpace/GramFamily.lean) | Canonical fixed-domain adjoint, inverse Gram and projection families |
+| [`VectorBundles.Analysis.InnerProductSpace.InducingRetraction`](VectorBundles/Analysis/InnerProductSpace/InducingRetraction.lean) | Continuous retractions from inducing realizations and local finite frames |
+| [`VectorBundles.Analysis.InnerProductSpace.ProjectionContinuity`](VectorBundles/Analysis/InnerProductSpace/ProjectionContinuity.lean) | Continuity of given projections from local algebraic frames |
+| [`VectorBundles.Analysis.Normed.Operator.Idempotent`](VectorBundles/Analysis/Normed/Operator/Idempotent.lean) | Range and kernel transport and cardinal-rank stability |
+| [`VectorBundles.Analysis.Normed.Operator.KernelFamilyCoordinates`](VectorBundles/Analysis/Normed/Operator/KernelFamilyCoordinates.lean) | Fixed-kernel product coordinates on unit domains |
+| [`VectorBundles.Analysis.Normed.Ring.CommutingIdempotent`](VectorBundles/Analysis/Normed/Ring/CommutingIdempotent.lean) | Seminorm gaps and rigidity of close commuting idempotents |
+| [`VectorBundles.Analysis.Normed.Ring.CommutingIdempotent.Topology`](VectorBundles/Analysis/Normed/Ring/CommutingIdempotent/Topology.lean) | Local constancy from eventual nearby commutation |
+| [`LinearAlgebra.Pairing.Adjoint`](VectorBundles/LinearAlgebra/Pairing/Adjoint.lean) | Raw adjoint relations and linear bundling from right-linear pairings with separating columns |
+| [`Analysis.InnerProductSpace.AdjointPair`](VectorBundles/Analysis/InnerProductSpace/AdjointPair.lean) | Given inner-product adjoint partners, norm bounds and exact linear/continuous-linear bundling |
+| [`Analysis.InnerProductSpace.AdjointPairFamily`](VectorBundles/Analysis/InnerProductSpace/AdjointPairFamily.lean) | Joint continuity of raw partner evaluations from forward operator-norm continuity |
+| [`Analysis.InnerProductSpace.Adjoint`](VectorBundles/Analysis/InnerProductSpace/Adjoint.lean) | Complete-domain adjoint construction and composition laws |
+| [`Analysis.InnerProductSpace.GramRetraction`](VectorBundles/Analysis/InnerProductSpace/GramRetraction.lean) | Supplied-unit normalization, pairing and kernel laws, finite-dimensional adjoint retractions and continuity |
+| [`Analysis.Normed.Operator.UnitGramContinuity`](VectorBundles/Analysis/Normed/Operator/UnitGramContinuity.lean) | Normalizer and ambient-projection continuity along eventually unit Grams, without completeness |
+| [`Analysis.Normed.Ring.UnitContinuity`](VectorBundles/Analysis/Normed/Ring/UnitContinuity.lean) | Inversion within the unit locus of a seminormed ring and along eventual units |
+| [`Analysis.InnerProductSpace.Projection.Distance`](VectorBundles/Analysis/InnerProductSpace/Projection/Distance.lean) | Distance, projected-image contraction and image/orthogonal-kernel laws for supplied retractions |
 | [`Analysis.InnerProductSpace.PositiveForm`](VectorBundles/Analysis/InnerProductSpace/PositiveForm.lean) | Bounded positive-form unit sublevels in the original topology |
 | [`Analysis.InnerProductSpace.Projection.LinearMap`](VectorBundles/Analysis/InnerProductSpace/Projection/LinearMap.lean) | Projection/preimage retractions onto injective images of plain modules, with a finite-dimensional specialization |
 | [`Analysis.InnerProductSpace.Projection.Fiberwise`](VectorBundles/Analysis/InnerProductSpace/Projection/Fiberwise.lean) | Algebraic total-space retractions on given projection fibres, with projection and left-inverse laws |
@@ -695,8 +401,9 @@ homotopy-invariance, constant-rank kernel-bundle, tensor-product or
 projective-section theorem is provided here. Finite cylinder transport assumes a
 finite ordered family of whole-interval charts. It does not assert independence
 from weights or chart order, or the full statement of Hatcher's Proposition 1.7.
-The units embedding does not assert that the unit locus is open or that partial
-inversion on the ambient ring is continuous. The finite-operator
+The units embedding does not assert that the unit locus is open. The separate
+inverse-continuity API works within that locus or under supplied eventual-unit
+hypotheses, not on an automatically available ambient neighborhood. The finite-operator
 criterion requires the source's module topology, which cannot simply be dropped
 over an incomplete field.
 
@@ -724,68 +431,6 @@ over an incomplete field.
 ## Credits and license
 
 Authors: Formal Frontier Agents. AI agents contributed to the formalization and
-its documentation. The mathematics draws on Hatcher's constructions and on
-Mathlib; no book text, figures or source assets are distributed. The Hermitian
-metric implementation follows Sébastien Gouëzel's Riemannian metrics, and the
-semilinear evaluation proofs follow work by Heather Macbeth, Floris van Doorn,
-Sébastien Gouëzel, Sophie Morel and Yury Kudryashov. Their authentic notices and
-the additional contributor credits in the module documentation are preserved.
-Pullback bundle constructions follow Nicolò Cavalleri, Sébastien Gouëzel, Heather
-Macbeth and Floris van Doorn; quotient-complement equivalences and projections
-follow Yury Kudryashov's Mathlib formalization.
-Compact rectangular refinements use Mathlib's tube lemma and finite-subcover API
-in `Topology.Compactness.Compact` (Johannes Hölzl, Mario Carneiro and Yury Kudryashov)
-and follow the finite slice-neighbourhood argument in
-`Topology.Compactness.Paracompact` (Reid Barton and Yury Kudryashov).
-The real closed-slab refinement combines the compact-product grid with the finite
-interval subdivision API, using Patrick Massot and Kim Morrison's Mathlib
-unit-interval formalization.
-The Hermitian and semilinear APIs extend those prior formalizations; the other
-modules document their own mathematical and formalization sources. Finite cylinder
-transport reuses Mathlib's bundle, pullback-topology and trivialization APIs through
-the supported chart transport and standard pullback comparisons.
-Fiber-bundle metrizability follows the original formalization by Formal Frontier Agents
-and uses Metrization's locally finite closed-neighbourhood-cover criterion.
-The locally finite and paracompactness statements use Yury Kudryashov's locally
-finite-family API, Reid Barton and Yury Kudryashov's paracompactness formalization,
-and Anatole Dedecker and Etienne Marion's proper-map API in Mathlib.
-The scalar-endomorphism construction uses ProjectiveModules' invertible-module
-topology and continuous scalar-endomorphism equivalence, and Prism's formalization
-of the algebraic scalar-endomorphism equivalence.
-Licensed under Apache-2.0; see [LICENSE](LICENSE).
-
-
-## Fixed-kernel coordinates on unit domains
-
-Let `K` be a nontrivially normed field. Both `H` and `A` retain their given
-seminormed additive commutative group and `NormedSpace K` structures; neither
-norm definiteness nor completeness is required for either space. Let `D` be a
-topological parameter space, with `Γ d : H →L[K] A` and supplied linear
-retractions `r d : A →ₗ[K] H` satisfying `r d (Γ d h) = h`.
-
-Fix `q0 : A →L[K] H` such that `q0.comp (Γ d)` is a unit in the
-continuous-linear endomorphism ring for every `d`. The map `q0` need not
-itself retract every `Γ d`: the canonical
-`q_d = ContinuousLinearMap.inverseGramComp (Γ d) q0` supplies the normalized
-retractions. If the joint difference
-`(d, a) ↦ Γ d (r d a) - Γ d (q_d a)` is continuous, then
-`ContinuousLinearMap.kerFamilyHomeomorphOfIsUnit` gives
-
-```lean
-{p : D × A // r p.1 p.2 = 0} ≃ₜ D × LinearMap.ker q0.toLinearMap
-```
-
-with the original product and subtype topologies. No individual continuity
-of the supplied `r d` is assumed. The parameter space may be empty. On the
-subtype where `q0.comp (Γ b)` is a unit, retraction data are needed only on
-that subtype, with no openness assumption or extension outside it.
-
-The public equations
-`ContinuousLinearMap.kerFamilyHomeomorphOfIsUnit_apply_snd` and
-`ContinuousLinearMap.kerFamilyHomeomorphOfIsUnit_symm_apply_snd` give ambient
-coordinates `a - Γ d (q_d a)` and `b - Γ d (r d b)`; both maps preserve the
-base point. Equality of the supplied retraction with `q0.toLinearMap` gives
-identity on that fibre, whereas an anchor `q0.comp (Γ d) = id` alone does not.
-`ContinuousLinearMap.kerFamilyHomeomorphOfContinuous` gives the same
-coordinates from operator-seminorm continuity of `Γ` and joint continuity of
-the original projection `(d, a) ↦ Γ d (r d a)`.
+its documentation. The mathematics draws on Hatcher and Mathlib; prior formalizations,
+contributors and authentic notices are acknowledged in [Credits](CREDITS.md) and
+individual modules. Licensed under Apache-2.0; see [LICENSE](LICENSE).

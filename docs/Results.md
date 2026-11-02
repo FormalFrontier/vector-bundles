@@ -4,18 +4,87 @@
 [Using the library](../README.md#using-the-library) ·
 [Credits and license](../README.md#credits-and-license) · [License](../LICENSE)
 
-Each description below carries its own hypotheses, examples and dependency
+The [result catalogue](HeadlineResults.md) covers the headline families and their
+variants. Each description below carries its own hypotheses, examples and dependency
 distinctions. Pointwise-continuous surjectivity is separate from the stronger
 normed-field product and bundle statements.
 
 ## Topics
 
+- [Adjoint partners, Gram operators and imports](#adjoint-partners-gram-operators-and-imports)
 - [Metrics and complementary bundles](#metrics-and-complementary-bundles)
 - [Pointwise-continuous surjectivity](#pointwise-continuous-surjectivity)
 - [Continuous linear and bundle calculus](#continuous-linear-and-bundle-calculus)
 - [Projections and pullbacks](#projections-and-pullbacks)
 - [Proper and open maps](#proper-and-open-maps)
 - [Topological properties of bundle total spaces](#topological-properties-of-bundle-total-spaces)
+
+## Adjoint partners, Gram operators and imports
+
+The package's default build targets both `VectorBundles` and `VectorBundlesTest`,
+including the additional modules listed in the Lake library globs. Building a
+module does not re-export its declarations from a root import. The production
+root re-exports `AdjointPairFamily` and hence `AdjointPair`, but the following
+specialized routes are useful when selecting an analysis interface:
+
+| Direct import | Use |
+| --- | --- |
+| `VectorBundles.LinearAlgebra.Pairing.Adjoint` | Adjoint relations for arbitrary pairings and linear bundling from right-linear rows with separating columns |
+| `VectorBundles.Analysis.InnerProductSpace.AdjointPair` | Exact linear or continuous-linear bundling of a supplied partner, with normed partner target and seminormed partner source |
+| `VectorBundles.Analysis.InnerProductSpace.Adjoint` | Produce an adjoint from a continuous-linear map with complete normed inner-product domain and seminormed target |
+| `VectorBundles.Analysis.InnerProductSpace.GramRetraction` | Total inverse Gram composites and their supplied-unit, adjoint and finite-dimensional laws |
+| `VectorBundles.Analysis.Normed.Ring.UnitContinuity` | Inverse continuity within supplied units in a seminormed ring |
+| `VectorBundles.Analysis.Normed.Operator.UnitGramContinuity` | Normalizer and ambient-projection continuity from continuity of both families and eventual unit Grams |
+| `VectorBundles.Analysis.InnerProductSpace.Projection.Distance` | Distance, closure, orthogonal-kernel and projected-image bounds for a given orthogonal retraction |
+| `VectorBundles.Analysis.Normed.Operator.KernelChart` | Local kernel charts for a continuous idempotent family on a complete normed space |
+
+`UnitGramContinuity` publicly imports `UnitContinuity` and `GramRetraction`;
+`GramRetraction` publicly imports `AdjointPair` and the algebraic retraction module.
+The [catalogue](HeadlineResults.md#given-adjoint-partners) states the distinct
+hypotheses for given-partner bundling and adjoint construction. In particular,
+no completeness-free manufacture of a missing adjoint is asserted.
+
+For direct examples, import or consult
+[`VectorBundlesTest.AdjointPartnerLinearity`](../VectorBundlesTest/AdjointPartnerLinearity.lean),
+[`VectorBundlesTest.GramRetraction`](../VectorBundlesTest/GramRetraction.lean) and
+[`VectorBundlesTest.OrthogonalRetractionDistance`](../VectorBundlesTest/OrthogonalRetractionDistance.lean).
+They are default library-glob targets, but are not re-exported by
+`import VectorBundlesTest`. The first bundles the real-linear partner on the
+complex line without changing its values. The Gram example uses the original
+real and complex norms: `v ↦ (1 + I) * v` has partner `z ↦ z.re + z.im`, Gram
+`2 • id` and normalizer `(z.re + z.im) / 2`. Its residual at `1` is nonzero and
+its forward map is not an isometry. With the real-part partner instead, the
+Gram is a unit but the residual is not orthogonal. Thus unit normalization is
+not by itself an orthogonal projection. A positive rescaling by `1 + t^2`
+varies the normalizer continuously while leaving the nonzero proper ambient
+projection fixed, illustrating the supplied-unit continuity route.
+
+For a supplied algebraic `β : F →ₗ[K] A`, `r : A →ₗ[K] F` and
+`h : β.IsOrthogonalRetraction r`, the distance API uses the original seminormed
+inner product on `A` and only the additive group and module on `F`. Its
+contraction inequalities concern `β (r a)` in `A`, not the coefficient `r a`.
+Closure equals the sesquilinear orthogonal complement of `r.ker`; replacing
+closure by the actual range and zero pseudodistance by equality requires
+normed `A`. These conclusions are conditional on `h`, not a new construction
+of it or continuity of a family of retractions.
+
+For ordinary frame use, the [frame API](../VectorBundles/Topology/VectorBundle/Frame.lean)
+takes given finite continuous fiberwise bases, and a model basis for its global
+trivialization. Over a nontrivially normed field it uses the model's given
+`IsModuleTopology`; the complete-field specialization derives that topology.
+No basis at a single point is silently substituted for bases in every fiber.
+Separately, [local kernel charts](../VectorBundles/Analysis/Normed/Operator/KernelChart.lean)
+start with an operator-norm-continuous family of idempotents on a **complete
+normed** space over a nontrivially normed field. Their transport
+`P x * P x₀ + (1 - P x) * (1 - P x₀)` gives a chart on the open half-unit
+neighborhood `‖kernelTransport P x₀ x - 1‖ < 1/2`, with inherited
+product-subtype kernel-total-space topology and identity at the center.
+The given-unit inverse-continuity results do not remove this construction's
+completeness premise. The [fixed-complement projection API](../VectorBundles/Topology/VectorBundle/KernelProjection.lean)
+is different again: it gives jointly continuous kernel projections near a
+surjective member, with finite-dimensional normed source and target's given
+module topology, without completeness, but does not assert a bundle atlas.
+None of these statements upgrades the cylinder or homotopy-invariance scope.
 
 ## Metrics and complementary bundles
 
@@ -206,8 +275,8 @@ normed-field product and bundle statements.
   forward-coordinate and inverse directions. A finite open base cover is
   selected with these same properties. This is selection **from supplied
   local whole-interval charts**, not an initial-chart existence theorem from
-  an ordinary atlas, and is distinct from the weighted transport and
-  vector-bundle chart-existence results above.
+  an ordinary atlas, and is distinct from the [weighted transport](../VectorBundles/Topology/FiberBundle/FiniteTransport.lean)
+  and the vector-bundle chart-existence result above.
 
 ## Projections and pullbacks
 
