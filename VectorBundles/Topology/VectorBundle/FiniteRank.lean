@@ -134,7 +134,8 @@ belongs to the chart base set. -/
   rfl
 
 /-- Chart membership for a vector in a specified fibre. -/
-@[simp] theorem mk_mem_source_iff (i : A.Index) (b : B) (v : E b) :
+@[simp]
+theorem mk_mem_source_iff (i : A.Index) (b : B) (v : E b) :
     TotalSpace.mk b v ∈ (A.chart i).source ↔ b ∈ (A.chart i).baseSet :=
   A.mem_source_iff i (TotalSpace.mk b v)
 
@@ -210,7 +211,8 @@ def invCoord (i : A.Index) (b : (A.chart i).baseSet) (w : Fin (A.rank i) → K) 
   ((A.sourceHomeomorph i).symm (b, w)).1
 
 /-- Inverse coordinates always lie in the original chart source. -/
-@[simp] theorem invCoord_mem_source (i : A.Index) (b : (A.chart i).baseSet)
+@[simp]
+theorem invCoord_mem_source (i : A.Index) (b : (A.chart i).baseSet)
     (w : Fin (A.rank i) → K) : A.invCoord i b w ∈ (A.chart i).source :=
   ((A.sourceHomeomorph i).symm (b, w)).2
 
@@ -228,7 +230,8 @@ def invCoord (i : A.Index) (b : (A.chart i).baseSet) (w : Fin (A.rank i) → K) 
   simpa only [sourceHomeomorph_snd, invCoord] using h
 
 /-- Inverting the coordinates of a fibre vector recovers that original vector. -/
-@[simp] theorem invCoord_coord (i : A.Index) {b : B}
+@[simp]
+theorem invCoord_coord (i : A.Index) {b : B}
     (hb : b ∈ (A.chart i).baseSet) (v : E b) :
     A.invCoord i ⟨b, hb⟩ (A.coord i b v) = TotalSpace.mk b v := by
   let p : (A.chart i).source :=
