@@ -76,3 +76,18 @@ theorem equivFunLOfIsModuleTopology_symm_apply_eq_sum [Fintype ι]
   rw [equivFunLOfIsModuleTopology_symm_apply, b.equivFun_symm_apply]
 
 end Module.Basis
+
+@[expose] public section
+
+namespace Module.Basis
+
+/-- The inverse coordinate equivalence sends a standard coordinate vector to its basis vector. -/
+theorem equivFunLOfIsModuleTopology_symm_single
+    {R : Type*} [Semiring R] [TopologicalSpace R] [IsTopologicalSemiring R]
+    {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+    [IsModuleTopology R M] {ι : Type*} [Finite ι] [DecidableEq ι]
+    (b : Module.Basis ι R M) (i : ι) :
+    b.equivFunLOfIsModuleTopology.symm (Pi.single i (1 : R)) = b i := by
+  simp
+
+end Module.Basis

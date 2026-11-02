@@ -527,3 +527,31 @@ retraction on the whole product. The Euclidean dimension is exactly the finrank
 of the full product of local models; its linear equivalence with that auxiliary
 supremum-norm product is not asserted to be isometric. The construction reuses
 the finite real weights and the supplied-weight embedding theorem.
+
+
+## Finite-coordinate operator spaces
+
+`VectorBundles.Topology.Module.FiniteCoordinates` identifies continuous linear maps from a
+finite scalar product with their columns:
+
+```text
+((ι → K) →L[K] F) ≃L[K] (ι → F).
+```
+
+Here `K` is a nontrivially normed field and `F` is a topological additive group with a
+continuous `K`-module structure. The scalar field need not be complete, and the target need
+not be normed, separated, complete, or finite dimensional. The construction uses the given
+product and bounded-convergence topologies; in normed spaces this is the operator-norm
+topology with the given norms and scalar actions.
+
+A supplied continuous linear coordinate equivalence gives finite-evaluation criteria for
+continuity, continuity at a point, and continuity on or within a set. For a finite basis whose
+given topology satisfies `IsModuleTopology`, the existing basis coordinate equivalence
+supplies these data. The parameter space is an arbitrary topological space, with no required algebraic
+structure. Joint continuity reuses the finite-basis semilinear evaluation criterion.
+
+`VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional` compares the scalar-source
+equivalence with Mathlib's complete-field `ContinuousLinearEquiv.piRing` at the same field,
+target, and index type. These supplied-coordinate and module-topology hypotheses are
+sufficient inputs, not a necessity assertion for every normed finite-dimensional operator
+criterion.

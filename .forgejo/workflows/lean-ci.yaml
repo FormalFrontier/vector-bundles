@@ -47,9 +47,177 @@ jobs:
       - name: Remove dependency credentials
         if: always()
         run: ff-lean-auth cleanup
+      - name: Record own setup metadata before the configured build/audit
+        id: own_setup_baseline
+        if: steps.reuse.outputs.reused != 'true'
+        continue-on-error: true
+        run: |
+          python3 -X utf8 - <<'EOF'
+          import json, os, stat
+          # Metadata only, rooted at cwd: never follow input symlinks or open setup contents.
+          def snapshot(name):
+              parts = name.split("/")
+              if any(part in ("", ".", "..") for part in parts):
+                  raise OSError("Non-canonical input path")
+              flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+              fd = os.open(".", flags)
+              try:
+                  s = os.fstat(fd)
+                  parents = [[s.st_dev, s.st_ino]]
+                  missing = False
+                  for part in parts[:-1]:
+                      if not missing:
+                          try:
+                              child = os.open(part, flags, dir_fd=fd)
+                          except FileNotFoundError:
+                              missing = True
+                          else:
+                              os.close(fd)
+                              fd = child
+                      if missing:
+                          parents.append(None)
+                      else:
+                          s = os.fstat(fd)
+                          parents.append([s.st_dev, s.st_ino])
+                  leaf = None
+                  if not missing:
+                      try:
+                          s = os.stat(parts[-1], dir_fd=fd, follow_symlinks=False)
+                      except FileNotFoundError:
+                          pass
+                      else:
+                          if not stat.S_ISREG(s.st_mode):
+                              raise OSError("Non-regular input path")
+                          leaf = [s.st_dev, s.st_ino, s.st_mode, s.st_size, s.st_mtime_ns, s.st_ctime_ns]
+                  return {"parents": parents, "leaf": leaf}
+              finally:
+                  os.close(fd)
+          modules = (
+              "VectorBundles/Topology/Module/FiniteCoordinates",
+              "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional",
+          )
+          states = {}
+          for module in modules:
+              try:
+                  states[module] = {
+                      "setup": snapshot(f".lake/build/ir/{module}.setup.json"),
+                      "source": snapshot(module + ".lean"),
+                  }
+              except OSError:
+                  states[module] = None
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              print("setups=" + json.dumps(states, separators=(",", ":")), file=output)
+          EOF
       - name: Build and run the configured audit
+        id: build
         if: steps.reuse.outputs.reused != 'true'
         run: ff-lean-ci-v6 run
+      - name: Produce independent own Lean JSON diagnostics
+        id: own_diagnostics
+        if: failure() && steps.build.outcome == 'failure' && steps.reuse.outputs.reused != 'true'
+        continue-on-error: true
+        env:
+          OWN_SETUP_BASELINE: ${{ steps.own_setup_baseline.outputs.setups }}
+        run: |
+          python3 -X utf8 - <<'EOF'
+          import json, os, pathlib, stat, subprocess
+          # Same no-follow snapshot as before the build, including every existing ancestor.
+          def snapshot(name):
+              parts = name.split("/")
+              if any(part in ("", ".", "..") for part in parts):
+                  raise OSError("Non-canonical input path")
+              flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+              fd = os.open(".", flags)
+              try:
+                  s = os.fstat(fd)
+                  parents = [[s.st_dev, s.st_ino]]
+                  missing = False
+                  for part in parts[:-1]:
+                      if not missing:
+                          try:
+                              child = os.open(part, flags, dir_fd=fd)
+                          except FileNotFoundError:
+                              missing = True
+                          else:
+                              os.close(fd)
+                              fd = child
+                      if missing:
+                          parents.append(None)
+                      else:
+                          s = os.fstat(fd)
+                          parents.append([s.st_dev, s.st_ino])
+                  leaf = None
+                  if not missing:
+                      try:
+                          s = os.stat(parts[-1], dir_fd=fd, follow_symlinks=False)
+                      except FileNotFoundError:
+                          pass
+                      else:
+                          if not stat.S_ISREG(s.st_mode):
+                              raise OSError("Non-regular input path")
+                          leaf = [s.st_dev, s.st_ino, s.st_mode, s.st_size, s.st_mtime_ns, s.st_ctime_ns]
+                  return {"parents": parents, "leaf": leaf}
+              finally:
+                  os.close(fd)
+          # The opaque configured build/audit step failed; these are diagnostics, not audit evidence.
+          # This artifact contains only these new processes' streams and availability/exit info.
+          root = pathlib.Path(".own-lean-diagnostics")
+          root.mkdir()  # Fail closed rather than upload any pre-existing diagnostic files.
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              print(f"directory={root}/", file=output)
+          try:
+              baseline = json.loads(os.environ.get("OWN_SETUP_BASELINE", ""))
+          except ValueError:
+              baseline = {}
+          if not isinstance(baseline, dict):
+              baseline = {}
+          # Static whitelist, priority order; no discovery or dependency-module execution.
+          modules = (
+              "VectorBundles/Topology/Module/FiniteCoordinates",
+              "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional",
+          )
+          for module in modules:
+              feedback = root / module
+              feedback.mkdir(parents=True, exist_ok=True)
+              setup = f".lake/build/ir/{module}.setup.json"
+              source = module + ".lean"
+              reason = None
+              try:
+                  before = baseline[module]
+                  current = snapshot(setup)
+                  current_source = snapshot(source)
+                  old_setup = before["setup"]
+                  # Missing parents may be created, but existing ancestry must retain identity.
+                  old_parents = old_setup["parents"]
+                  if (len(old_parents) != len(current["parents"]) or any(
+                          old is not None and old != new
+                          for old, new in zip(old_parents, current["parents"]))):
+                      reason = "Existing setup ancestry was replaced or became unavailable."
+                  elif current_source["leaf"] is None or before["source"] != current_source:
+                      reason = "The exact own source or its ancestry changed or is unavailable."
+                  elif current["leaf"] is None:
+                      reason = "The configured build did not leave the exact setup file."
+                  elif old_setup["leaf"] == current["leaf"]:
+                      reason = "The setup was not newly generated or changed by this build."
+              except (KeyError, TypeError):
+                  reason = "Pre-build input metadata is unavailable."
+              except OSError:
+                  reason = "An input path is symlinked, non-regular or unavailable."
+              if reason is not None:
+                  (feedback / "unavailable.txt").write_text(reason + "\n", encoding="utf-8")
+                  continue
+              # Pass the same-run setup filename unchanged; never read its JSON contents here.
+              with (feedback / "stdout.jsonl").open("wb") as stdout, (feedback / "stderr.log").open("wb") as stderr:
+                  try:
+                      result = subprocess.run(
+                          ["lake", "env", "lean", source, "--setup", setup, "--json"],
+                          stdout=stdout, stderr=stderr, check=False,
+                      )
+                  except OSError:
+                      (feedback / "unavailable.txt").write_text("The diagnostic process could not start.\n", encoding="utf-8")
+                      continue
+              (feedback / "exit-code.txt").write_text(str(result.returncode) + "\n", encoding="utf-8")
+          EOF
       - name: Record the lint tool digest
         if: steps.reuse.outputs.reused != 'true'
         run: ff-lean-lint tools-sha
@@ -101,6 +269,16 @@ jobs:
         with:
           name: lean-feedback
           path: .lean-feedback/
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Preserve independent own Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.directory != ''
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: own-lean-diagnostics
+          path: ${{ steps.own_diagnostics.outputs.directory }}
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 30
