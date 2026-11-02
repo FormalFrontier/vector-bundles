@@ -229,7 +229,7 @@ rev = "4dcc0f6f903ba4d0c66f230d21f7ac4c31d4ea57"
 [[require]]
 name = "projective-modules"
 git = "https://github.com/FormalFrontier/projective-modules.git"
-rev = "8c99408e99ada67e0de63bb9a58cde4f25c99d07"
+rev = "77a601ffd885a18a7c0fd90e311b7f530ac4762b"
 
 [[lean_lib]]
 name = "VectorBundles.Topology.Module.Finrank"

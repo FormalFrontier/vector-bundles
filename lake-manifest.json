@@ -106,10 +106,10 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "8c99408e99ada67e0de63bb9a58cde4f25c99d07",
+   "rev": "77a601ffd885a18a7c0fd90e311b7f530ac4762b",
    "name": "«projective-modules»",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "8c99408e99ada67e0de63bb9a58cde4f25c99d07",
+   "inputRev": "77a601ffd885a18a7c0fd90e311b7f530ac4762b",
    "inherited": false,
    "configFile": "lakefile.toml"
 },

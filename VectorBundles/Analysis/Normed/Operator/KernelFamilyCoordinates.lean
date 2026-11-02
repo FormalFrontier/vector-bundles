@@ -256,3 +256,205 @@ noncomputable example {B : Type uB} [TopologicalSpace B]
   kerFamilyHomeomorphOfIsUnit (fun u => Γ u.val) q0 (fun u => u.property) r hr hΔ
 
 end ContinuousLinearMap
+
+namespace ContinuousLinearMap
+
+variable {K : Type uK} [NontriviallyNormedField K]
+variable {H : Type uH} [SeminormedAddCommGroup H] [NormedSpace K H]
+variable {A : Type uA} [SeminormedAddCommGroup A] [NormedSpace K A]
+variable {D : Type uD} [TopologicalSpace D]
+
+private noncomputable def submoduleIdentityOfEq
+    (S T : Submodule K A) (h : S = T) : S ≃L[K] T := by
+  cases h
+  exact ContinuousLinearEquiv.refl K S
+
+private theorem coe_submoduleIdentityOfEq_apply
+    (S T : Submodule K A) (h : S = T) (a : S) :
+    (submoduleIdentityOfEq S T h a : A) = (a : A) := by
+  cases h
+  simp [submoduleIdentityOfEq]
+
+private theorem coe_submoduleIdentityOfEq_symm_apply
+    (S T : Submodule K A) (h : S = T) (b : T) :
+    ((submoduleIdentityOfEq S T h).symm b : A) = (b : A) := by
+  exact (coe_submoduleIdentityOfEq_apply S T h
+    ((submoduleIdentityOfEq S T h).symm b)).symm.trans
+      (congrArg (fun a : T => (a : A))
+        ((submoduleIdentityOfEq S T h).apply_symm_apply b))
+
+/-- The fibrewise continuous linear equivalence underlying fixed-kernel coordinates
+on an all-unit domain. Both kernels carry their original submodule structures;
+only the difference of the ambient projections must be jointly continuous. -/
+noncomputable def kerFamilyContinuousLinearEquivOfIsUnit
+    (Γ : D → H →L[K] A) (q0 : A →L[K] H)
+    (hunit : ∀ d, IsUnit (q0.comp (Γ d)))
+    (r : D → A →ₗ[K] H) (hr : ∀ d h, r d (Γ d h) = h)
+    (hΔ : Continuous (fun p : D × A =>
+      Γ p.1 (r p.1 p.2) - Γ p.1 (inverseGramComp (Γ p.1) q0 p.2)))
+    (d : D) :
+    LinearMap.ker (r d) ≃L[K] LinearMap.ker q0.toLinearMap := by
+  have hq : ∀ h : H, inverseGramComp (Γ d) q0 (Γ d h) = h :=
+    fun h => congrArg (fun f : H →L[K] H => f h)
+      (inverseGramComp_comp_of_isUnit (hunit d))
+  have hΔd : Continuous (fun a : A =>
+      Γ d (r d a) - Γ d (inverseGramComp (Γ d) q0 a)) :=
+    hΔ.comp ((continuous_const : Continuous (fun _ : A => d)).prodMk continuous_id)
+  have hker : LinearMap.ker (inverseGramComp (Γ d) q0).toLinearMap =
+      LinearMap.ker q0.toLinearMap := by
+    ext a
+    exact inverseGramComp_eq_zero_iff_of_isUnit (hunit d) a
+  exact (LinearMap.kerContinuousLinearEquivOfCommonRightInverseOfContinuous
+    (Γ d).toLinearMap (r d) (inverseGramComp (Γ d) q0).toLinearMap
+    (hr d) hq hΔd).trans (submoduleIdentityOfEq _ _ hker)
+
+section FibreCharacteristicAPI
+
+variable (Γ : D → H →L[K] A) (q0 : A →L[K] H)
+variable (hunit : ∀ d, IsUnit (q0.comp (Γ d)))
+variable (r : D → A →ₗ[K] H) (hr : ∀ d h, r d (Γ d h) = h)
+variable (hΔ : Continuous (fun p : D × A =>
+  Γ p.1 (r p.1 p.2) - Γ p.1 (inverseGramComp (Γ p.1) q0 p.2)))
+
+/-- The forward fibre coordinate has the normalized residual as ambient value. -/
+@[simp]
+theorem coe_kerFamilyContinuousLinearEquivOfIsUnit_apply
+    (d : D) (a : LinearMap.ker (r d)) :
+    (kerFamilyContinuousLinearEquivOfIsUnit Γ q0 hunit r hr hΔ d a : A) =
+      (a : A) - Γ d (inverseGramComp (Γ d) q0 (a : A)) := by
+  unfold kerFamilyContinuousLinearEquivOfIsUnit
+  erw [ContinuousLinearEquiv.trans_apply, coe_submoduleIdentityOfEq_apply,
+    LinearMap.coe_kerContinuousLinearEquivOfCommonRightInverseOfContinuous_apply]; rfl
+
+/-- The inverse fibre coordinate uses the original supplied linear retraction. -/
+@[simp]
+theorem coe_kerFamilyContinuousLinearEquivOfIsUnit_symm_apply
+    (d : D) (b : LinearMap.ker q0.toLinearMap) :
+    ((kerFamilyContinuousLinearEquivOfIsUnit Γ q0 hunit r hr hΔ d).symm b : A) =
+      (b : A) - Γ d (r d (b : A)) := by
+  have hq : ∀ h : H, inverseGramComp (Γ d) q0 (Γ d h) = h :=
+    fun h => congrArg (fun f : H →L[K] H => f h)
+      (inverseGramComp_comp_of_isUnit (hunit d))
+  have hΔd : Continuous (fun a : A =>
+      Γ d (r d a) - Γ d (inverseGramComp (Γ d) q0 a)) :=
+    hΔ.comp ((continuous_const : Continuous (fun _ : A => d)).prodMk continuous_id)
+  have hker : LinearMap.ker (inverseGramComp (Γ d) q0).toLinearMap =
+      LinearMap.ker q0.toLinearMap := by
+    ext a
+    exact inverseGramComp_eq_zero_iff_of_isUnit (hunit d) a
+  let e := LinearMap.kerContinuousLinearEquivOfCommonRightInverseOfContinuous
+    (Γ d).toLinearMap (r d) (inverseGramComp (Γ d) q0).toLinearMap
+    (hr d) hq hΔd
+  let i := submoduleIdentityOfEq _ _ hker
+  have hsymm : (e.trans i).symm b = e.symm (i.symm b) := by
+    apply (e.trans i).injective
+    rw [ContinuousLinearEquiv.apply_symm_apply, ContinuousLinearEquiv.trans_apply,
+      ContinuousLinearEquiv.apply_symm_apply, ContinuousLinearEquiv.apply_symm_apply]
+  simpa only [kerFamilyContinuousLinearEquivOfIsUnit] using
+    (calc
+      ((e.trans i).symm b : A) = (e.symm (i.symm b) : A) :=
+        congrArg (fun a : LinearMap.ker (r d) => (a : A)) hsymm
+      _ = (b : A) - Γ d (r d (b : A)) := by
+        dsimp only [e, i]
+        erw [LinearMap.coe_kerContinuousLinearEquivOfCommonRightInverseOfContinuous_symm_apply,
+          coe_submoduleIdentityOfEq_symm_apply]; rfl)
+
+/-- After inclusion in the ambient space, forgetting continuity recovers the
+algebraic common-section kernel comparison with the normalized retraction. -/
+theorem kerFamilyContinuousLinearEquivOfIsUnit_toLinearMap
+    (d : D) :
+    (LinearMap.ker q0.toLinearMap).subtype.comp
+        (kerFamilyContinuousLinearEquivOfIsUnit Γ q0 hunit r hr hΔ d).toLinearEquiv.toLinearMap =
+      (LinearMap.ker (inverseGramComp (Γ d) q0).toLinearMap).subtype.comp
+        (LinearMap.kerEquivOfCommonRightInverse (Γ d).toLinearMap (r d)
+          (inverseGramComp (Γ d) q0).toLinearMap (hr d)
+          (fun h => congrArg (fun f : H →L[K] H => f h)
+            (inverseGramComp_comp_of_isUnit (hunit d)))).toLinearMap := by
+  apply DFunLike.ext
+  intro a
+  change (kerFamilyContinuousLinearEquivOfIsUnit Γ q0 hunit r hr hΔ d a : A) =
+    (LinearMap.kerEquivOfCommonRightInverse (Γ d).toLinearMap (r d)
+      (inverseGramComp (Γ d) q0).toLinearMap (hr d)
+      (fun h => congrArg (fun f : H →L[K] H => f h)
+        (inverseGramComp_comp_of_isUnit (hunit d))) a : A)
+  exact (coe_kerFamilyContinuousLinearEquivOfIsUnit_apply Γ q0 hunit r hr hΔ d a).trans
+    (LinearMap.coe_kerEquivOfCommonRightInverse_apply (Γ d).toLinearMap (r d)
+      (inverseGramComp (Γ d) q0).toLinearMap (hr d)
+      (fun h => congrArg (fun f : H →L[K] H => f h)
+        (inverseGramComp_comp_of_isUnit (hunit d))) a).symm
+
+/-- The fibre equivalence agrees with the second coordinate of the total-space
+fixed-kernel homeomorphism. -/
+theorem kerFamilyContinuousLinearEquivOfIsUnit_apply_eq_snd
+    (d : D) (a : LinearMap.ker (r d)) :
+    kerFamilyContinuousLinearEquivOfIsUnit Γ q0 hunit r hr hΔ d a =
+      (kerFamilyHomeomorphOfIsUnit Γ q0 hunit r hr hΔ
+        ⟨(d, (a : A)), a.property⟩).2 := by
+  apply Subtype.ext
+  exact (coe_kerFamilyContinuousLinearEquivOfIsUnit_apply
+    Γ q0 hunit r hr hΔ d a).trans
+      (kerFamilyHomeomorphOfIsUnit_apply_snd
+        Γ q0 hunit r hr hΔ ⟨(d, (a : A)), a.property⟩).symm
+
+/-- The inverse fibre equivalence agrees in the ambient space with the inverse
+total-space fixed-kernel homeomorphism. -/
+theorem kerFamilyContinuousLinearEquivOfIsUnit_symm_apply_eq_snd
+    (d : D) (b : LinearMap.ker q0.toLinearMap) :
+    ((kerFamilyContinuousLinearEquivOfIsUnit Γ q0 hunit r hr hΔ d).symm b : A) =
+      ((kerFamilyHomeomorphOfIsUnit Γ q0 hunit r hr hΔ).symm (d, b)).val.2 := by
+  exact (coe_kerFamilyContinuousLinearEquivOfIsUnit_symm_apply
+    Γ q0 hunit r hr hΔ d b).trans
+      (kerFamilyHomeomorphOfIsUnit_symm_apply_snd
+        Γ q0 hunit r hr hΔ (d, b)).symm
+
+/-- The forward ambient residual uniquely determines the fibre equivalence. -/
+theorem kerFamilyContinuousLinearEquivOfIsUnit_unique
+    (d : D) (e : LinearMap.ker (r d) ≃L[K] LinearMap.ker q0.toLinearMap)
+    (hvalue : ∀ a, (e a : A) =
+      (a : A) - Γ d (inverseGramComp (Γ d) q0 (a : A))) :
+    e = kerFamilyContinuousLinearEquivOfIsUnit Γ q0 hunit r hr hΔ d := by
+  apply DFunLike.ext
+  intro a
+  apply Subtype.ext
+  exact (hvalue a).trans (coe_kerFamilyContinuousLinearEquivOfIsUnit_apply
+    Γ q0 hunit r hr hΔ d a).symm
+
+end FibreCharacteristicAPI
+
+-- Inverse fibre coordinates vary continuously on the original relative unit subtype.
+example {B : Type uB} [TopologicalSpace B]
+    (Γ : B → H →L[K] A) (q0 : A →L[K] H)
+    (r : {b : B // IsUnit (q0.comp (Γ b))} → A →ₗ[K] H)
+    (hr : ∀ u h, r u (Γ u.val h) = h)
+    (hΔ : Continuous
+      (fun p : {b : B // IsUnit (q0.comp (Γ b))} × A =>
+        Γ p.1.val (r p.1 p.2) -
+          Γ p.1.val (inverseGramComp (Γ p.1.val) q0 p.2))) :
+    Continuous
+      (fun p : {b : B // IsUnit (q0.comp (Γ b))} × LinearMap.ker q0.toLinearMap =>
+        ((kerFamilyContinuousLinearEquivOfIsUnit (fun u => Γ u.val) q0
+          (fun u => u.property) r hr hΔ p.1).symm p.2 : A)) := by
+  let e :
+      {p : {b : B // IsUnit (q0.comp (Γ b))} × A // r p.1 p.2 = 0} ≃ₜ
+        {b : B // IsUnit (q0.comp (Γ b))} × LinearMap.ker q0.toLinearMap :=
+    kerFamilyHomeomorphOfIsUnit (fun u => Γ u.val) q0
+      (fun u => u.property) r hr hΔ
+  have hinv : Continuous
+      (fun p : {b : B // IsUnit (q0.comp (Γ b))} × LinearMap.ker q0.toLinearMap =>
+        (e.symm p).val) :=
+    continuous_subtype_val.comp e.symm.continuous_toFun
+  have hambient : Continuous
+      (fun p : {b : B // IsUnit (q0.comp (Γ b))} × LinearMap.ker q0.toLinearMap =>
+        (e.symm p).val.2) :=
+    continuous_snd.comp hinv
+  have hpoint (u : {b : B // IsUnit (q0.comp (Γ b))})
+      (b : LinearMap.ker q0.toLinearMap) :
+      (e.symm (u, b)).val.2 =
+        ((kerFamilyContinuousLinearEquivOfIsUnit (fun u => Γ u.val) q0
+          (fun u => u.property) r hr hΔ u).symm b : A) := by
+    exact (kerFamilyContinuousLinearEquivOfIsUnit_symm_apply_eq_snd
+      (D := {b : B // IsUnit (q0.comp (Γ b))})
+      (fun u => Γ u.val) q0 (fun u => u.property) r hr hΔ u b).symm
+  exact hambient.congr (fun p => hpoint p.1 p.2)
+
+end ContinuousLinearMap
