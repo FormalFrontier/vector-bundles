@@ -434,3 +434,21 @@ Authors: Formal Frontier Agents. AI agents contributed to the formalization and
 its documentation. The mathematics draws on Hatcher and Mathlib; prior formalizations,
 contributors and authentic notices are acknowledged in [Credits](CREDITS.md) and
 individual modules. Licensed under Apache-2.0; see [LICENSE](LICENSE).
+
+## Finite normal covers and Euclidean coordinates
+
+`ContinuousLinearMap.exists_retraction_isClosedEmbedding_of_finite_normal_cover`
+in `VectorBundles.Analysis.InnerProductSpace.WeightedFiberEmbedding` constructs
+supported continuous real weights and a closed embedding of a total space into
+a product of its base with Euclidean space. It assumes a normal base, a finite
+family of normed finite-dimensional local models, and arbitrary chart domains
+whose interiors cover the base. The given projection, chart realizations and
+inverse vector coordinates must be continuous. No inner product on the given
+models, T1 or compact base, nonempty index type, or positive rank is required.
+
+The equality-subtype fibres keep their given module structures and inherited
+topologies. The inverse extends to a jointly continuous fibrewise linear
+retraction on the whole product. The Euclidean dimension is exactly the finrank
+of the full product of local models; its linear equivalence with that auxiliary
+supremum-norm product is not asserted to be isometric. The construction reuses
+the finite real weights and the supplied-weight embedding theorem.
