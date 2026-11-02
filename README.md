@@ -55,6 +55,20 @@ the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib co
   semiring-linear maps specialize this scalar-free construction by forgetting
   linearity, retaining their original scalar actions.
 
+- **Prescribed finite-dimensional projection families.** Over a complete
+  nontrivially normed field, given linear encoders and retractions between the
+  original equality fibres of `p : T → B` and an arbitrary finite-dimensional
+  normed space `A` yield an
+  [operator-norm-continuous family of idempotents](VectorBundles/Topology/Maps/FiberwiseProjection.lean)
+  acting by `β b (ρ b a)`, provided the two exact total maps are continuous.
+  The existing complementary continuous-map expression acts by
+  `a - β b (ρ b a)`, lies in the retraction kernel and vanishes on encoded
+  vectors; it gives the image–kernel decomposition of every ambient vector.
+  No fibre norm or continuity of fibre operations, ambient completeness,
+  nontriviality of `A`, or separation of the base is assumed. Neither
+  orthogonality nor commutation at different parameters is asserted; the
+  ambient norm stays unchanged, including the standard sup norm for finite Pi.
+
 - **Joint evaluation of algebraic semilinear families.** For possibly noncommutative
   semirings `R,S`, a ring homomorphism `σ : R →+* S` and a finite `R`-basis of the source,
   assume that its scalar coordinates composed with `σ` are continuous. Joint continuity
@@ -332,6 +346,7 @@ identifies analysis modules and examples requiring direct imports.
 | [`LinearAlgebra.WeightedCoordinates`](VectorBundles/LinearAlgebra/WeightedCoordinates.lean) | Supported weighted maps into the full dependent product; unit-ideal spanning and unit-coordinate injectivity |
 | [`Topology.Maps.WeightedCoordinates`](VectorBundles/Topology/Maps/WeightedCoordinates.lean) | Continuity on original equality fibres with closed cozero supports |
 | [`Topology.Maps.FiberwiseSplitting`](VectorBundles/Topology/Maps/FiberwiseSplitting.lean) | Additive sum–kernel homeomorphism on the original subspace, with a base-and-sum continuity criterion |
+| [`Topology.Maps.FiberwiseProjection`](VectorBundles/Topology/Maps/FiberwiseProjection.lean) | Prescribed operator-norm-continuous idempotent families on an arbitrary finite-dimensional ambient space, with complementary kernel and decomposition laws |
 | [`Topology.FiniteNormalWeights`](VectorBundles/Topology/FiniteNormalWeights.lean) | Normal-space cutoffs, closed-subset weights and finite partition-of-unity components |
 | [`Topology.Module.Finrank`](VectorBundles/Topology/Module/Finrank.lean) | Locally constant fibre finrank from a neighbourhood cover of linear models |
 | [`VectorBundles.Algebra.Ring.CommutingIdempotent`](VectorBundles/Algebra/Ring/CommutingIdempotent.lean) | Cubic identities for commuting idempotents in nonunital rings |
@@ -483,7 +498,10 @@ over an incomplete field.
 - ProjectiveModules' `ContinuousLinearMap.equivProdKerOfRightInverse` provides the
   pointwise continuous-linear splitting used for additive sum–kernel coordinates.
   Mathlib's injective commutativity transport and canonical natural-number modules
-  give its scalar-free application here.
+  give its scalar-free application here. The prescribed projection family uses
+  the whole sum–kernel homeomorphism's inverse to obtain residual continuity,
+  then Mathlib's finite-dimensional `continuous_clm_apply` for continuity in
+  the original operator norm.
 
 ## Credits and license
 

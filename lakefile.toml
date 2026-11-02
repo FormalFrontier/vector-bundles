@@ -95,6 +95,7 @@ globs = [
   "VectorBundles.Topology.FiberBundle.CoordChange",
   "VectorBundles.Topology.Maps.FiberCoordinates",
   "VectorBundles.Topology.Maps.FiberwiseSplitting",
+  "VectorBundles.Topology.Maps.FiberwiseProjection",
   "VectorBundles.Topology.Maps.FiniteChartReconstruction",
   "VectorBundles.Topology.Maps.FiniteChartReconstructionContinuity",
   "VectorBundles.Topology.Maps.Proper",
