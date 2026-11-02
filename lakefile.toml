@@ -90,6 +90,8 @@ globs = [
   "VectorBundles.Topology.FiberBundle.Paracompact",
   "VectorBundles.Topology.FiberBundle.CoordChange",
   "VectorBundles.Topology.Maps.FiberCoordinates",
+  "VectorBundles.Topology.Maps.FiniteChartReconstruction",
+  "VectorBundles.Topology.Maps.FiniteChartReconstructionContinuity",
   "VectorBundles.Topology.Maps.Proper",
   "VectorBundles.Topology.VectorBundle.CoordinateMap",
   "VectorBundles.Topology.VectorBundle.FiniteSum",

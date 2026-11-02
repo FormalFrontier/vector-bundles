@@ -4,6 +4,9 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import VectorBundles.Topology.Maps.FiniteChartReconstruction
+public import VectorBundles.Topology.Maps.FiniteChartReconstructionContinuity
+
 public import VectorBundles.LinearAlgebra.WeightedCoordinates
 public import VectorBundles.Topology.Maps.WeightedCoordinates
 

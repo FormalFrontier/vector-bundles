@@ -260,4 +260,53 @@ theorem finiteChartReconstruction_comp_weightedCoordinates_of_sum_eq_one
   rw [finiteChartReconstruction_comp_weightedCoordinates U w c x s a hvalid,
     hsum, one_smul]
 
+open Classical in
+/-- Filtering to the charts defined at `x` reconstructs by summing their chart values,
+with zero contribution from every chart not defined at `x`. -/
+theorem finiteChartReconstruction_filter_apply (x : X) (s : Finset I)
+    (a : I → K) (z : ∀ i, G i) :
+    finiteChartReconstruction U c x (s.filter (fun i => x ∈ U i)) a
+        (fun _ hi => (Finset.mem_filter.mp hi).2) z =
+      ∑ i ∈ s, if hi : x ∈ U i then c i x hi (a i • z i) else 0 := by
+  rw [finiteChartReconstruction_apply]
+  calc
+    _ = ∑ i ∈ (s.filter (fun i => x ∈ U i)).attach,
+        (if hi : x ∈ U (i : I) then c i x hi (a i • z i) else 0) := by
+      apply Finset.sum_congr rfl
+      intro i _
+      rw [dite_eq_left (Finset.mem_filter.mp i.property).2,
+        (c i x ((Finset.mem_filter.mp i.property).2)).map_smul]
+    _ = ∑ i ∈ s.filter (fun i => x ∈ U i),
+        if hi : x ∈ U i then c i x hi (a i • z i) else 0 :=
+      Finset.sum_attach (s := s.filter (fun i => x ∈ U i))
+        (f := fun i : I => if hi : x ∈ U i then c i x hi (a i • z i) else 0)
+    _ = _ := by
+      rw [Finset.sum_filter]
+      apply Finset.sum_congr rfl
+      intro i _
+      by_cases hi : x ∈ U i
+      · simp only [ite_eq_left hi, dite_eq_left hi]
+      · simp only [ite_eq_right hi, dite_eq_right hi]
+
+open Classical in
+/-- A coefficient-weight sum of one gives reconstruction after filtering to valid
+charts, provided the coefficients of invalid charts in the finite set vanish. -/
+theorem finiteChartReconstruction_filter_comp_weightedCoordinates_of_sum_eq_one
+    (x : X) (s : Finset I) (a : I → K)
+    (ha_zero : ∀ i ∈ s, x ∉ U i → a i = 0)
+    (hsum : ∑ i ∈ s, a i * w i x = 1) :
+    (finiteChartReconstruction U c x (s.filter (fun i => x ∈ U i)) a
+        (fun _ hi => (Finset.mem_filter.mp hi).2)).comp (weightedCoordinates U w c x) =
+      LinearMap.id := by
+  apply finiteChartReconstruction_comp_weightedCoordinates_of_sum_eq_one U w c x
+    (s.filter (fun i => x ∈ U i)) a (fun _ hi => (Finset.mem_filter.mp hi).2)
+  calc
+    ∑ i ∈ s.filter (fun i => x ∈ U i), a i * w i x =
+        ∑ i ∈ s, a i * w i x := by
+      apply Finset.sum_filter_of_ne
+      intro i hi hne
+      by_contra hix
+      exact hne (by rw [ha_zero i hi hix, zero_mul])
+    _ = 1 := hsum
+
 end LinearMap
