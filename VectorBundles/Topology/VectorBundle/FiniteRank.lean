@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.Topology.Bases
 public import Mathlib.Topology.VectorBundle.Basic
 
 /-!
@@ -393,3 +394,40 @@ example (i : A.Index) {b : B}
 end FiniteRankAtlas
 
 end Bundle
+
+namespace Bundle.FiniteRankAtlas
+
+/-- A finite-rank atlas has second-countable total space if its base and every
+chart-coordinate space are second countable. The given bundle data and all
+original topologies are retained, and chart ranks may vary without a global bound. -/
+theorem secondCountableTopology
+    {K : Type uK} [Field K] [TopologicalSpace K]
+    {B : Type uB} [TopologicalSpace B]
+    {P : Type uP} {E : B → Type uE}
+    [∀ b, AddCommGroup (E b)] [∀ b, Module K (E b)]
+    [∀ b, TopologicalSpace (E b)]
+    [TopologicalSpace (Bundle.TotalSpace P E)]
+    (A : Bundle.FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    [SecondCountableTopology B]
+    [∀ i : A.Index, SecondCountableTopology (Fin (A.rank i) → K)] :
+    SecondCountableTopology (Bundle.TotalSpace P E) := by
+  obtain ⟨s, hs, hcover⟩ := TopologicalSpace.isOpen_iUnion_countable
+    (fun i : A.Index => (A.chart i).baseSet) (fun i => (A.chart i).open_baseSet)
+  have hbase : (⋃ i ∈ s, (A.chart i).baseSet) = Set.univ := by
+    rw [hcover]
+    exact Set.eq_univ_iff_forall.mpr fun b => Set.mem_iUnion.mpr (A.cover b)
+  have : Countable s := hs.to_subtype
+  have : ∀ i : s, SecondCountableTopology (A.chart i.1).source := fun i =>
+    (A.sourceHomeomorph i.1).isInducing.secondCountableTopology
+  refine TopologicalSpace.secondCountableTopology_of_countable_cover
+    (U := fun i : s => (A.chart i.1).source) (fun i => (A.chart i.1).open_source) ?_
+  apply Set.eq_univ_iff_forall.mpr
+  intro p
+  have hp : p.proj ∈ ⋃ i ∈ s, (A.chart i).baseSet := by
+    rw [hbase]
+    exact Set.mem_univ _
+  rcases Set.mem_iUnion.mp hp with ⟨i, hp⟩
+  rcases Set.mem_iUnion.mp hp with ⟨hi, hpi⟩
+  exact Set.mem_iUnion.mpr ⟨⟨i, hi⟩, (A.mem_source_iff i p).mpr hpi⟩
+
+end Bundle.FiniteRankAtlas
