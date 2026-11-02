@@ -159,6 +159,9 @@ globs = [
   "VectorBundles.Topology.VectorBundle.FiniteRank.Patch",
   "VectorBundles.Topology.VectorBundle.FiniteRank.Projection",
   "VectorBundles.Topology.VectorBundle.FiniteRank.Trivial",
+  "VectorBundles.Topology.VectorBundle.FiniteRank.Weights",
+  "VectorBundles.Topology.VectorBundle.FiniteRank.FiberCoordinates",
+  "VectorBundles.Topology.VectorBundle.FiniteRank.Embedding",
 ]
 
 [[lean_lib]]

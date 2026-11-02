@@ -23,6 +23,10 @@ pullback family and the same model on both sides, the map is `Bundle.Pullback.li
 `Bundle.TotalSpace.fiberEquiv` identifies each original fibre with the equality subtype of
 the total space over its base point. The canonical additive monoids and modules on these
 subtypes are reducible non-instances, transported only from the given original fibres.
+The pointwise constructions `fiberAddCommMonoidAt`, `fiberModuleAt` and
+`fiberLinearEquivAt` require algebraic structures only on `E b`: addition is independent
+of the scalar type, and the scalar type needs only to be a semiring. The corresponding
+family constructions are applications of these pointwise constructions.
 Install their families with `letI := Bundle.TotalSpace.fiberAddCommMonoid (E := E) P` and
 `letI := Bundle.TotalSpace.fiberModule R (E := E) P`. The resulting `fiberLinearEquiv`
 preserves the original total-space values. No topology or structure on the total space
@@ -121,6 +125,68 @@ theorem mk_fiberEquiv_symm (P : Type uF) (b : B)
     (mk b ((fiberEquiv P b).symm p) : TotalSpace P E) = p.val :=
   congrArg Subtype.val ((fiberEquiv P b).apply_symm_apply p)
 
+section PointwiseAlgebra
+
+/-- The additive monoid on a projection fibre transported from its original fibre.
+No algebraic structure on any other fibre or scalar type is required. -/
+abbrev fiberAddCommMonoidAt (P : Type uF) (b : B) [AddCommMonoid (E b)] :
+    AddCommMonoid {p : TotalSpace P E // p.proj = b} :=
+  (fiberEquiv P b).symm.addCommMonoid
+
+attribute [local instance] fiberAddCommMonoidAt
+
+/-- Zero in a projection fibre is the packed original zero, using only that fibre's monoid. -/
+theorem fiberAt_zero_def (P : Type uF) (b : B) [AddCommMonoid (E b)] :
+    (0 : {p : TotalSpace P E // p.proj = b}) = fiberEquiv P b 0 := rfl
+
+/-- Addition in a projection fibre packs the sum in the original fibre. -/
+theorem fiberAt_add_def (P : Type uF) (b : B) [AddCommMonoid (E b)]
+    (p q : {p : TotalSpace P E // p.proj = b}) :
+    p + q = fiberEquiv P b ((fiberEquiv P b).symm p + (fiberEquiv P b).symm q) := rfl
+
+/-- The module on a projection fibre transported from its original module over a semiring.
+Its addition is `fiberAddCommMonoidAt`, independent of the scalar type. -/
+abbrev fiberModuleAt (R : Type uR) [Semiring R] (P : Type uF) (b : B)
+    [AddCommMonoid (E b)] [Module R (E b)] :
+    Module R {p : TotalSpace P E // p.proj = b} :=
+  (fiberEquiv P b).symm.addEquiv.module R
+
+attribute [local instance] fiberModuleAt
+
+/-- Scalar multiplication in a projection fibre packs the original scalar multiplication. -/
+theorem fiberAt_smul_def (R : Type uR) [Semiring R] (P : Type uF) (b : B)
+    [AddCommMonoid (E b)] [Module R (E b)] (r : R)
+    (p : {p : TotalSpace P E // p.proj = b}) :
+    r • p = fiberEquiv P b (r • (fiberEquiv P b).symm p) := rfl
+
+/-- The canonical linear identification of one original fibre with its projection equality
+subtype. Only that fibre's module over a semiring is required, with no topology assumptions. -/
+def fiberLinearEquivAt (R : Type uR) [Semiring R] (P : Type uF) (b : B)
+    [AddCommMonoid (E b)] [Module R (E b)] :
+    E b ≃ₗ[R] {p : TotalSpace P E // p.proj = b} :=
+  ((fiberEquiv (E := E) P b).symm.addEquiv.linearEquiv R).symm
+
+/-- Forgetting pointwise linearity recovers the canonical equivalence of the original carriers. -/
+@[simp]
+theorem fiberLinearEquivAt_toEquiv (R : Type uR) [Semiring R] (P : Type uF) (b : B)
+    [AddCommMonoid (E b)] [Module R (E b)] :
+    (fiberLinearEquivAt (E := E) R P b).toEquiv = fiberEquiv (E := E) P b := rfl
+
+/-- The pointwise linear identification packs the original vector in the same total space. -/
+@[simp]
+theorem fiberLinearEquivAt_apply (R : Type uR) [Semiring R] (P : Type uF) (b : B)
+    [AddCommMonoid (E b)] [Module R (E b)] (v : E b) :
+    fiberLinearEquivAt R P b v = ⟨mk b v, rfl⟩ := rfl
+
+/-- The inverse pointwise linear identification is the original unpacking map. -/
+@[simp]
+theorem fiberLinearEquivAt_symm_apply (R : Type uR) [Semiring R] (P : Type uF) (b : B)
+    [AddCommMonoid (E b)] [Module R (E b)]
+    (p : {p : TotalSpace P E // p.proj = b}) :
+    (fiberLinearEquivAt R P b).symm p = (fiberEquiv P b).symm p := rfl
+
+end PointwiseAlgebra
+
 section Algebra
 
 variable [∀ b, AddCommMonoid (E b)]
@@ -129,18 +195,20 @@ variable [∀ b, AddCommMonoid (E b)]
 This family is not a global instance and changes no original fibre operation. -/
 abbrev fiberAddCommMonoid (P : Type uF) :
     ∀ b : B, AddCommMonoid {p : TotalSpace P E // p.proj = b} :=
-  fun b => (fiberEquiv P b).symm.addCommMonoid
+  fun b => fiberAddCommMonoidAt (E := E) P b
 
 attribute [local instance] fiberAddCommMonoid
 
 /-- Zero in a projection fibre is the packed original zero. -/
 theorem fiber_zero_def (P : Type uF) (b : B) :
-    (0 : {p : TotalSpace P E // p.proj = b}) = fiberEquiv P b 0 := rfl
+    (0 : {p : TotalSpace P E // p.proj = b}) = fiberEquiv P b 0 :=
+  fiberAt_zero_def (E := E) P b
 
 /-- Addition in a projection fibre packs the sum of the original unpacked vectors. -/
 theorem fiber_add_def (P : Type uF) (b : B)
     (p q : {p : TotalSpace P E // p.proj = b}) :
-    p + q = fiberEquiv P b ((fiberEquiv P b).symm p + (fiberEquiv P b).symm q) := rfl
+    p + q = fiberEquiv P b ((fiberEquiv P b).symm p + (fiberEquiv P b).symm q) :=
+  fiberAt_add_def P b p q
 
 variable (R : Type uR) [Semiring R] [∀ b, Module R (E b)]
 
@@ -148,20 +216,21 @@ variable (R : Type uR) [Semiring R] [∀ b, Module R (E b)]
 Use this family together with `fiberAddCommMonoid`; neither is a global instance. -/
 abbrev fiberModule (P : Type uF) :
     ∀ b : B, Module R {p : TotalSpace P E // p.proj = b} :=
-  fun b => (fiberEquiv P b).symm.addEquiv.module R
+  fun b => fiberModuleAt (E := E) R P b
 
 attribute [local instance] fiberModule
 
 /-- Scalar multiplication in a projection fibre packs the original scalar multiplication. -/
 theorem fiber_smul_def (P : Type uF) (b : B) (r : R)
     (p : {p : TotalSpace P E // p.proj = b}) :
-    r • p = fiberEquiv P b (r • (fiberEquiv P b).symm p) := rfl
+    r • p = fiberEquiv P b (r • (fiberEquiv P b).symm p) :=
+  fiberAt_smul_def R P b r p
 
 /-- The canonical linear identification of an original fibre with its projection equality subtype.
 Its target uses `fiberAddCommMonoid` and `fiberModule`, without any topology assumptions. -/
 def fiberLinearEquiv (P : Type uF) (b : B) :
     E b ≃ₗ[R] {p : TotalSpace P E // p.proj = b} :=
-  ((fiberEquiv (E := E) P b).symm.addEquiv.linearEquiv R).symm
+  fiberLinearEquivAt (E := E) R P b
 
 /-- Forgetting linearity recovers the canonical equivalence of the original carriers. -/
 @[simp]

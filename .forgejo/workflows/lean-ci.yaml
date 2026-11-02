@@ -95,6 +95,10 @@ jobs:
           modules = (
               "VectorBundles/Topology/Module/FiniteCoordinates",
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional",
+              "VectorBundles/Data/Bundle",
+              "VectorBundles/Topology/VectorBundle/FiniteRank/Weights",
+              "VectorBundles/Topology/VectorBundle/FiniteRank/FiberCoordinates",
+              "VectorBundles/Topology/VectorBundle/FiniteRank/Embedding",
           )
           states = {}
           for module in modules:
@@ -175,6 +179,10 @@ jobs:
           modules = (
               "VectorBundles/Topology/Module/FiniteCoordinates",
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional",
+              "VectorBundles/Data/Bundle",
+              "VectorBundles/Topology/VectorBundle/FiniteRank/Weights",
+              "VectorBundles/Topology/VectorBundle/FiniteRank/FiberCoordinates",
+              "VectorBundles/Topology/VectorBundle/FiniteRank/Embedding",
           )
           for module in modules:
               feedback = root / module
