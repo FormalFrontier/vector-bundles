@@ -21,6 +21,7 @@
         "VectorBundles.Analysis.Normed.Ring.CommutingIdempotent.Topology",
         "+VectorBundles.Topology.FiniteNormalWeights",
         "+VectorBundles.Topology.FiniteScalarWeights",
+        "+VectorBundles.Analysis.Normed.Operator.NearbyIdempotent",
         "VectorBundles.Algebra.Ring.OrthogonalIdempotents",
         "VectorBundlesTest.AdjointPartnerLinearity",
         "VectorBundlesTest.Topology.ContinuousMap.PiBasis",

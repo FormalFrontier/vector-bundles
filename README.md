@@ -15,6 +15,18 @@ These families are proved here, with the original fiber and total-space topologi
 The [catalogue](docs/HeadlineResults.md) gives the individual statements and variants;
 the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib constructions.
 
+- **Nearby noncommuting idempotents.** For bounded idempotents `P` and `Q` on a
+  normed space over a nontrivially normed field, finite-dimensional range of `P`
+  and `‖Q - P‖ < 1` give continuous linear equivalences between their ranges and
+  between their kernels. The
+  [compression and kernel-coordinate constructions](VectorBundles/Analysis/Normed/Operator/NearbyIdempotent.lean)
+  use the original subspace norms; neither the field nor the ambient space needs
+  to be complete. Finite dimension of the range of `Q` is a consequence, not an
+  extra hypothesis. For a continuous family of idempotents over an arbitrary
+  topological base, the kernel graph on the norm neighborhood has product
+  coordinates preserving the base point. A kernel section is continuous exactly
+  when its fixed-kernel coordinate is continuous.
+
 - **Supported weighted coordinates.** Given module families over a commutative semiring
   and linear chart equivalences on arbitrary subsets, the
   [weighted coordinate map](VectorBundles/LinearAlgebra/WeightedCoordinates.lean)
