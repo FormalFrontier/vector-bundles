@@ -6,6 +6,7 @@ module
 
 public import VectorBundles.Topology.Maps.FiniteChartReconstruction
 public import VectorBundles.Topology.Maps.FiniteChartReconstructionContinuity
+public import VectorBundles.Topology.Maps.FiberwiseSplitting
 
 public import VectorBundles.LinearAlgebra.WeightedCoordinates
 public import VectorBundles.Topology.Maps.WeightedCoordinates
@@ -113,7 +114,7 @@ public import VectorBundles.Topology.VectorBundle.HermitianMetric.Operations
 # Geometry of topological vector bundles
 
 This root reexports algebraic projection/preimage retractions, bundle metrics,
-orthogonal splitting, fiberwise isomorphisms,
+orthogonal splitting, additive sum–kernel coordinates, fiberwise isomorphisms,
 products, pullbacks, cylinder charts, frames, finite embeddings, ranges and complements,
 together with pullbacks of supplied Hermitian metrics and canonical comparisons of their
 orthogonal complements. The projection modules give open-embedding criteria by subsingleton

@@ -13,6 +13,7 @@
         "+VectorBundles.Topology.Module.Basis.FiniteDimensional",
         "+VectorBundles.LinearAlgebra.WeightedCoordinates",
         "+VectorBundles.Topology.Maps.WeightedCoordinates",
+        "+VectorBundles.Topology.Maps.FiberwiseSplitting",
         "+VectorBundles.Analysis.Normed.Module.JointEvaluation",
         "+VectorBundles.Analysis.InnerProductSpace.FiberEmbedding",
         "+VectorBundles.Analysis.InnerProductSpace.WeightedFiberEmbedding",

@@ -43,6 +43,18 @@ the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib co
   of each weight's cozero set lies in its domain. No openness, finite-index,
   finite-dimensionality, norm or continuity of fibre operations is required.
 
+- **Additive sum–kernel coordinates.** For a projection `p : T → B` with given
+  additive monoid structures on its equality fibres, additive maps `β b` into a
+  topological abelian group `A` and retractions `ρ b` give a
+  [homeomorphism](VectorBundles/Topology/Maps/FiberwiseSplitting.lean)
+  from `{z : T × A // ρ (p z.1) z.2 = 0}` to `B × A` when their two total maps
+  are continuous. Its coordinates are `(p t, β (p t) ⟨t,rfl⟩ + v)`; its inverse
+  uses the given retraction and residual `a - β b (ρ b a)`. Continuity into the
+  original subspace is equivalent to continuity of the base and sum coordinates.
+  No continuity of fibre operations or scalar topology is required. Given
+  semiring-linear maps specialize this scalar-free construction by forgetting
+  linearity, retaining their original scalar actions.
+
 - **Joint evaluation of algebraic semilinear families.** For possibly noncommutative
   semirings `R,S`, a ring homomorphism `σ : R →+* S` and a finite `R`-basis of the source,
   assume that its scalar coordinates composed with `σ` are continuous. Joint continuity
@@ -319,6 +331,7 @@ identifies analysis modules and examples requiring direct imports.
 | --- | --- |
 | [`LinearAlgebra.WeightedCoordinates`](VectorBundles/LinearAlgebra/WeightedCoordinates.lean) | Supported weighted maps into the full dependent product; unit-ideal spanning and unit-coordinate injectivity |
 | [`Topology.Maps.WeightedCoordinates`](VectorBundles/Topology/Maps/WeightedCoordinates.lean) | Continuity on original equality fibres with closed cozero supports |
+| [`Topology.Maps.FiberwiseSplitting`](VectorBundles/Topology/Maps/FiberwiseSplitting.lean) | Additive sum–kernel homeomorphism on the original subspace, with a base-and-sum continuity criterion |
 | [`Topology.FiniteNormalWeights`](VectorBundles/Topology/FiniteNormalWeights.lean) | Normal-space cutoffs, closed-subset weights and finite partition-of-unity components |
 | [`Topology.Module.Finrank`](VectorBundles/Topology/Module/Finrank.lean) | Locally constant fibre finrank from a neighbourhood cover of linear models |
 | [`VectorBundles.Algebra.Ring.CommutingIdempotent`](VectorBundles/Algebra/Ring/CommutingIdempotent.lean) | Cubic identities for commuting idempotents in nonunital rings |
@@ -466,6 +479,11 @@ over an incomplete field.
   submodule-valued orthogonal projections, inherited finite-dimensional completeness,
   orthogonal complements, partitions of unity and continuous functional calculus.
   Individual modules identify the particular APIs and contributors followed.
+
+- ProjectiveModules' `ContinuousLinearMap.equivProdKerOfRightInverse` provides the
+  pointwise continuous-linear splitting used for additive sum–kernel coordinates.
+  Mathlib's injective commutativity transport and canonical natural-number modules
+  give its scalar-free application here.
 
 ## Credits and license
 
