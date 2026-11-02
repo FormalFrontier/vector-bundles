@@ -55,12 +55,15 @@ the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib co
   semiring-linear maps specialize this scalar-free construction by forgetting
   linearity, retaining their original scalar actions.
 
-- **Prescribed finite-dimensional projection families.** Over a complete
-  nontrivially normed field, given linear encoders and retractions between the
-  original equality fibres of `p : T → B` and an arbitrary finite-dimensional
-  normed space `A` yield an
+- **Prescribed finite-dimensional projection families.** Over a nontrivially normed
+  field `K`, let the original finite-dimensional normed ambient `A` have its
+  module topology (`[IsModuleTopology K A]`). Linear encoders and retractions
+  between the equality fibres of `p : T → B` and `A`, with `ρ b (β b u) = u`,
+  yield an
   [operator-norm-continuous family of idempotents](VectorBundles/Topology/Maps/FiberwiseProjection.lean)
-  acting by `β b (ρ b a)`, provided the two exact total maps are continuous.
+  acting by `β b (ρ b a)` when the two exact total maps are continuous.
+  The complete-field frontend obtains this module topology locally from finite
+  dimensionality; the core construction needs no scalar completeness.
   The existing complementary continuous-map expression acts by
   `a - β b (ρ b a)`, lies in the retraction kernel and vanishes on encoded
   vectors; it gives the image–kernel decomposition of every ambient vector.
@@ -498,10 +501,12 @@ over an incomplete field.
 - ProjectiveModules' `ContinuousLinearMap.equivProdKerOfRightInverse` provides the
   pointwise continuous-linear splitting used for additive sum–kernel coordinates.
   Mathlib's injective commutativity transport and canonical natural-number modules
-  give its scalar-free application here. The prescribed projection family uses
-  the whole sum–kernel homeomorphism's inverse to obtain residual continuity,
-  then Mathlib's finite-dimensional `continuous_clm_apply` for continuity in
-  the original operator norm.
+  give its scalar-free application here.
+- The prescribed projection family composes the two total maps to obtain joint
+  continuity. Fixed-base slices give continuous linear maps, and
+  `Module.Basis.continuous_clm_apply_iff` yields continuity in the original
+  operator norm. Its complete-field frontend uses Mathlib's
+  `isModuleTopologyOfFiniteDimensional` locally.
 
 ## Credits and license
 
