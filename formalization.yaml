@@ -63,6 +63,47 @@ automation:
     - method: agent
       tool_setup: Lean 4 and Mathlib
   notes: AI agents contributed to the formalization and documentation.
+highlights:
+  - title: Compatible Hermitian metrics
+    statement: >-
+      Every vector bundle over an RCLike scalar field with finite-dimensional normed
+      model and paracompact Hausdorff base admits a continuous positive-definite
+      Hermitian fiber metric compatible with the original fiber topologies.
+    declarations:
+      - declaration: VectorBundle.continuousHermitianMetric
+        file: VectorBundles/Topology/VectorBundle/MetricExistence.lean
+  - title: Orthogonal complements for a supplied metric
+    statement: >-
+      For a vector bundle over an RCLike scalar field with finite-dimensional normed
+      model and a supplied continuous Hermitian metric, every intrinsic vector bundle
+      of fiber submodules with a normed model and a topologically embedded total
+      inclusion has an orthogonal-complement vector bundle in the original fiber
+      subtype and ambient-induced total topologies, and addition identifies their
+      fiberwise product with its equal-base product topology homeomorphically with
+      the original ambient total space.
+    declarations:
+      - declaration: Bundle.ContinuousHermitianMetric.orthogonalBundle
+        file: VectorBundles/Topology/VectorBundle/OrthogonalComplement.lean
+      - declaration: Bundle.ContinuousHermitianMetric.orthogonalAdditionHomeomorph
+        file: VectorBundles/Topology/VectorBundle/OrthogonalAddition.lean
+  - title: Fiberwise linear isomorphism criterion
+    statement: >-
+      Over a nontrivially normed field, a family of fiberwise algebraic linear
+      equivalences between two vector bundles on the same topological base induces
+      a base-preserving homeomorphism of their original total spaces whenever its
+      total-space map is continuous, the source normed model is finite-dimensional
+      and the target normed model has the module topology.
+    declarations:
+      - declaration: VectorBundle.homeomorphOfFiberwiseLinearEquivOfIsModuleTopology
+        file: VectorBundles/Topology/VectorBundle/Isomorphism.lean
+  - title: Sigma-compactness of a fiber bundle
+    statement: >-
+      For a fiber bundle with nonempty R₁ base and nonempty model, the original
+      total space is sigma-compact if and only if the base and model are both
+      sigma-compact.
+    declarations:
+      - declaration: FiberBundle.sigmaCompactSpace_totalSpace_iff
+        file: VectorBundles/Topology/FiberBundle/SigmaCompact.lean
 status:
   scope: >-
     Foundational metrics, supplied-metric orthogonal splitting and local
