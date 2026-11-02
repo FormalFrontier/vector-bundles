@@ -104,6 +104,8 @@ public import VectorBundles.Topology.VectorBundle.FiniteComplement
 public import VectorBundles.Topology.VectorBundle.FiniteEmbedding
 public import VectorBundles.Topology.VectorBundle.Frame
 public import VectorBundles.Topology.VectorBundle.KernelProjection
+public import VectorBundles.Topology.VectorBundle.ProjectorAtlas
+public import VectorBundles.Topology.VectorBundle.ProjectorAtlas.FiniteAmbient
 public import VectorBundles.Topology.VectorBundle.Range
 public import VectorBundles.Topology.VectorBundle.TrivialMetric
 

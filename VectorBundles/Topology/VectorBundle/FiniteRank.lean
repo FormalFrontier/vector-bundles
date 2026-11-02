@@ -134,7 +134,6 @@ belongs to the chart base set. -/
   rfl
 
 /-- Chart membership for a vector in a specified fibre. -/
-@[simp]
 theorem mk_mem_source_iff (i : A.Index) (b : B) (v : E b) :
     TotalSpace.mk b v ∈ (A.chart i).source ↔ b ∈ (A.chart i).baseSet :=
   A.mem_source_iff i (TotalSpace.mk b v)
@@ -211,7 +210,6 @@ def invCoord (i : A.Index) (b : (A.chart i).baseSet) (w : Fin (A.rank i) → K) 
   ((A.sourceHomeomorph i).symm (b, w)).1
 
 /-- Inverse coordinates always lie in the original chart source. -/
-@[simp]
 theorem invCoord_mem_source (i : A.Index) (b : (A.chart i).baseSet)
     (w : Fin (A.rank i) → K) : A.invCoord i b w ∈ (A.chart i).source :=
   ((A.sourceHomeomorph i).symm (b, w)).2
@@ -230,7 +228,7 @@ theorem invCoord_mem_source (i : A.Index) (b : (A.chart i).baseSet)
   simpa only [sourceHomeomorph_snd, invCoord] using h
 
 /-- Inverting the coordinates of a fibre vector recovers that original vector. -/
-@[simp]
+@[simp↓]
 theorem invCoord_coord (i : A.Index) {b : B}
     (hb : b ∈ (A.chart i).baseSet) (v : E b) :
     A.invCoord i ⟨b, hb⟩ (A.coord i b v) = TotalSpace.mk b v := by
@@ -320,4 +318,26 @@ def patchTotalSpaceHomeomorph (i : A.Index) :
       ⟨TotalSpace.mk b.1 v, b.2⟩ := rfl
 
 end FiniteRankAtlas
+end Bundle
+
+-- Inverse coordinates reconstruct a vector by default simplification.
+namespace Bundle
+
+variable (K : Type uK) [Field K] [TopologicalSpace K]
+variable {B : Type uB} [TopologicalSpace B]
+variable (P : Type uP) (E : B → Type uE)
+variable [∀ b, AddCommGroup (E b)] [∀ b, Module K (E b)]
+variable [∀ b, TopologicalSpace (E b)] [TopologicalSpace (TotalSpace P E)]
+
+namespace FiniteRankAtlas
+
+variable {K P E}
+variable (A : FiniteRankAtlas K P E)
+
+example (i : A.Index) {b : B}
+    (hb : b ∈ (A.chart i).baseSet) (v : E b) :
+    A.invCoord i ⟨b, hb⟩ (A.coord i b v) = TotalSpace.mk b v := by simp
+
+end FiniteRankAtlas
+
 end Bundle
