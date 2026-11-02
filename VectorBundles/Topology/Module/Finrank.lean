@@ -11,14 +11,17 @@ import Mathlib.Tactic
 /-!
 # Fibre rank from local linear models
 
-A family of modules over a semiring has locally constant cardinal rank if it is pointwise linearly
-equivalent to fixed models on a neighbourhood cover. Over a division ring, its numerical finrank is
-locally constant as well. The covering family can be infinite, and no common finite dimension bound
-is required. No finite-dimensionality or topology on the modules is needed.
+A family of modules over a semiring has locally constant cardinal and numerical rank if it is
+pointwise linearly equivalent to fixed models on a neighbourhood cover. The index set and models
+may be arbitrary, including infinite ones. No common finite rank bound,
+finite-generation hypothesis, or topology on the modules is required.
 
-Over a division ring, cardinal rank retains infinite vector-space dimensions, whereas
-`Module.finrank` is zero on infinite-dimensional fibres. These results isolate the algebraic
-local-model argument; they do not construct a vector bundle.
+The numerical rank `Module.finrank K M` is `Cardinal.toNat (Module.rank K M)`, so infinite cardinal
+ranks are sent to zero. It remains invariant under linear equivalence, but need not recover cardinal
+rank or certify finite generation. Interpreting it as the size of a chosen finite basis requires
+appropriate rank conditions. Over a division ring, cardinal rank retains infinite vector-space
+dimensions, whereas `Module.finrank` is zero on infinite-dimensional fibres. These results isolate
+the algebraic local-model argument; they do not construct a vector bundle.
 
 ## References
 
@@ -34,10 +37,11 @@ namespace Module
 /-- Pointwise linear equivalences to fixed models on a neighbourhood cover make the cardinal-valued
 fibre rank over a semiring locally constant.
 
-The index set and models may vary arbitrarily. In contrast to the finite-dimensional real or complex
-setting of Hatcher's *Vector Bundles & K-Theory*, §1.1, the scalars need not be a division ring.
-No finite-dimensionality or module topology is assumed. Over a division ring, the conclusion retains
-the cardinal dimension of infinite-dimensional fibres. -/
+The index set and models may be arbitrary, including infinite ones. In contrast to the fixed
+finite-dimensional real or complex setting of Hatcher's *Vector Bundles & K-Theory*, §1.1,
+the scalars need not be a division ring. No finite-generation hypothesis or module topology is
+assumed. Over a division ring, the conclusion retains the cardinal dimension of
+infinite-dimensional fibres. -/
 theorem isLocallyConstant_rank_of_linearEquiv_cover
     {K : Type uK} [Semiring K]
     {X : Type uX} [TopologicalSpace X]
@@ -58,13 +62,16 @@ theorem isLocallyConstant_rank_of_linearEquiv_cover
   exact (ey.trans ex.symm).rank_eq
 
 /-- Pointwise linear equivalences to fixed models on a neighbourhood cover make the
-natural-number-valued fibre finrank locally constant.
+natural-number-valued fibre finrank over a semiring locally constant.
 
-This follows from `isLocallyConstant_rank_of_linearEquiv_cover` by applying `Cardinal.toNat`.
-Unlike cardinal rank, `Module.finrank` is zero on infinite-dimensional fibres, so local constancy
-of finrank alone cannot distinguish such fibres from zero-dimensional ones. -/
+The index set and models may be arbitrary, including infinite ones. This follows from
+`isLocallyConstant_rank_of_linearEquiv_cover` by applying `Cardinal.toNat`, since
+`Module.finrank K M = Cardinal.toNat (Module.rank K M)`. Numerical finrank remains invariant under
+linear equivalence, but sends infinite cardinal ranks to zero. Thus it need not recover cardinal
+rank or certify finite generation, and interpreting it as the size of a chosen finite basis requires
+appropriate rank conditions. -/
 theorem isLocallyConstant_finrank_of_linearEquiv_cover
-    {K : Type uK} [DivisionRing K]
+    {K : Type uK} [Semiring K]
     {X : Type uX} [TopologicalSpace X]
     {I : Type uI}
     (F : X → Type uF) (G : I → Type uG)
