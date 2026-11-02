@@ -241,6 +241,11 @@ git = "https://github.com/FormalFrontier/metrization.git"
 rev = "4dcc0f6f903ba4d0c66f230d21f7ac4c31d4ea57"
 
 [[require]]
+name = "stable-range"
+git = "https://github.com/FormalFrontier/stable-range.git"
+rev = "a78ced2ddff23ca1897ca9643121afa2be48c3d8"
+
+[[require]]
 name = "projective-modules"
 git = "https://github.com/FormalFrontier/projective-modules.git"
 rev = "77a601ffd885a18a7c0fd90e311b7f530ac4762b"

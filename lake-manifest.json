@@ -118,11 +118,11 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e",
+   "rev": "a78ced2ddff23ca1897ca9643121afa2be48c3d8",
    "name": "«stable-range»",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e",
-   "inherited": true,
+   "inputRev": "a78ced2ddff23ca1897ca9643121afa2be48c3d8",
+   "inherited": false,
    "configFile": "lakefile.toml"
 },
   {
