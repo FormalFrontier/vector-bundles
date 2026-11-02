@@ -7,12 +7,14 @@ module
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
-# Joint continuity of linear evaluation
+# Joint continuity of semilinear evaluation
 
-For a finite basis with continuous scalar coordinates over a semiring with a given topology,
-a family of algebraic linear maps is jointly continuous exactly when its evaluations
-at the basis vectors are continuous. The source needs no continuous operations;
-the target only needs continuous addition and scalar multiplication.
+For a finite basis over a semiring `R` and a ring homomorphism `σ : R →+* S`, assume
+that the scalar coordinates composed with `σ` are continuous. A family of algebraic
+`σ`-semilinear maps is jointly continuous exactly when its evaluations at the basis
+vectors are continuous. No topology on `R` or continuity of `σ` is required. The source
+needs no continuous operations; the target only needs continuous addition and jointly
+continuous `S`-scalar multiplication. The linear criterion is the identity-hom specialization.
 
 Over a complete nontrivially normed field, a family of algebraic linear maps from
 a finite-dimensional Hausdorff topological module to a topological module with
@@ -25,6 +27,7 @@ continuity of the family into the operator space.
 
 ## References
 
+The finite-basis expansion uses Mathlib's `Module.Basis.sum_repr` and semilinear-map API.
 The finite-dimensional specialization uses Mathlib's `Module.Basis.continuous_coe_repr`
 and agrees with `continuous_clm_apply` from its finite-dimensional normed-module API,
 developed by Sébastien Gouëzel.
@@ -35,8 +38,46 @@ developed by Sébastien Gouëzel.
 open scoped BigOperators
 
 universe uR uι uK uG uA uZ
+universe uS
 
 namespace Module.Basis
+
+/-- For a finite basis whose scalar coordinates become continuous after applying `σ`,
+a family of `σ`-semilinear maps is jointly continuous exactly when its evaluations at
+the basis vectors are continuous. No topology on the source semiring is required;
+only the target needs continuous addition and jointly continuous scalar multiplication. -/
+theorem continuous_uncurry_iff_semilinear
+    {R : Type uR} [Semiring R]
+    {S : Type uS} [Semiring S] [TopologicalSpace S]
+    {σ : R →+* S}
+    {ι : Type uι} [Finite ι]
+    {G : Type uG} [AddCommMonoid G] [Module R G] [TopologicalSpace G]
+    {A : Type uA} [AddCommMonoid A] [Module S A]
+    [TopologicalSpace A] [ContinuousAdd A] [ContinuousSMul S A]
+    {Z : Type uZ} [TopologicalSpace Z]
+    (b : Module.Basis ι R G)
+    (hcoord : ∀ i, Continuous (fun g : G => σ (b.repr g i)))
+    {L : Z → G →ₛₗ[σ] A} :
+    Continuous (fun p : Z × G => L p.1 p.2) ↔
+      ∀ i, Continuous (fun z : Z => L z (b i)) := by
+  classical
+  let : Fintype ι := Fintype.ofFinite ι
+  constructor
+  · intro hL i
+    exact hL.comp (continuous_id.prodMk continuous_const)
+  · intro hL
+    have hexp (z : Z) (v : G) :
+        L z v = ∑ i, σ (b.repr v i) • L z (b i) := by
+      calc
+        L z v = L z (∑ i, (b.repr v i) • b i) :=
+          congrArg (fun w : G => L z w) (b.sum_repr v).symm
+        _ = ∑ i, σ (b.repr v i) • L z (b i) := by
+          simp only [map_sum, LinearMap.map_smulₛₗ]
+    have hsum : Continuous (fun p : Z × G =>
+        ∑ i, σ (b.repr p.2 i) • L p.1 (b i)) := by
+      exact continuous_finsetSum Finset.univ (fun i _ =>
+        ((hcoord i).comp continuous_snd).smul ((hL i).comp continuous_fst))
+    exact hsum.congr (fun p => (hexp p.1 p.2).symm)
 
 /-- For a finite basis with continuous scalar coordinates, a family of linear maps
 is jointly continuous exactly when its evaluations at the basis vectors are continuous.
@@ -53,24 +94,7 @@ theorem continuous_uncurry_iff
     {L : Z → G →ₗ[R] A} :
     Continuous (fun p : Z × G => L p.1 p.2) ↔
       ∀ i, Continuous (fun z : Z => L z (b i)) := by
-  classical
-  let : Fintype ι := Fintype.ofFinite ι
-  constructor
-  · intro hL i
-    exact hL.comp (continuous_id.prodMk continuous_const)
-  · intro hL
-    have hexp (z : Z) (v : G) :
-        L z v = ∑ i, (b.repr v i) • L z (b i) := by
-      calc
-        L z v = L z (∑ i, (b.repr v i) • b i) :=
-          congrArg (fun w : G => L z w) (b.sum_repr v).symm
-        _ = ∑ i, (b.repr v i) • L z (b i) := by
-          simp only [map_sum, map_smul]
-    have hsum : Continuous (fun p : Z × G =>
-        ∑ i, (b.repr p.2 i) • L p.1 (b i)) := by
-      exact continuous_finsetSum Finset.univ (fun i _ =>
-        ((hcoord i).comp continuous_snd).smul ((hL i).comp continuous_fst))
-    exact hsum.congr (fun p => (hexp p.1 p.2).symm)
+  exact b.continuous_uncurry_iff_semilinear (σ := RingHom.id R) (L := L) hcoord
 
 end Module.Basis
 

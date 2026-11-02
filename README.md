@@ -43,15 +43,17 @@ the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib co
   of each weight's cozero set lies in its domain. No openness, finite-index,
   finite-dimensionality, norm or continuity of fibre operations is required.
 
-- **Joint evaluation of algebraic linear families.** For a finite basis over a
-  semiring with a given topology and continuous scalar coordinate functions, joint continuity
-  is equivalent to continuity at each basis vector. Only the target module needs
-  continuous addition and scalar multiplication; the given source topology need not
-  make its operations continuous. Over a complete nontrivially normed field, a
-  finite-dimensional Hausdorff topological source module needs no explicit basis
-  data: joint continuity is equivalent to continuity at every fixed vector. For
-  continuous linear maps between normed spaces this also agrees with continuity
-  into the operator space. See
+- **Joint evaluation of algebraic semilinear families.** For possibly noncommutative
+  semirings `R,S`, a ring homomorphism `σ : R →+* S` and a finite `R`-basis of the source,
+  assume that its scalar coordinates composed with `σ` are continuous. Joint continuity
+  of a family of `σ`-semilinear maps is then equivalent to continuity at each basis vector.
+  Only `S`, the source, target and parameter carry topologies; the target needs continuous
+  addition and jointly continuous `S`-scalar multiplication. No continuity of source
+  operations or of `σ` is assumed. The linear criterion is the identity specialization.
+  Over a complete nontrivially normed field, a finite-dimensional Hausdorff topological
+  source module needs no explicit basis data: joint continuity is equivalent to continuity
+  at every fixed vector. For continuous linear maps between normed spaces this also agrees
+  with continuity into the operator space. See
   [JointEvaluation](VectorBundles/Analysis/Normed/Module/JointEvaluation.lean).
 
 - **Total-space continuity from finite local bases.**
