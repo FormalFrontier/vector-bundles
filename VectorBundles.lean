@@ -91,6 +91,7 @@ public import VectorBundles.Topology.FiberBundle.ClosedCylinderSubdivisionData
 public import VectorBundles.Topology.FiberBundle.ClosedCylinderSubdivisionDataLinear
 public import VectorBundles.Topology.FiberBundle.FiniteCylinderCover
 public import VectorBundles.Topology.FiberBundle.Prod
+public import VectorBundles.Topology.FiberBundle.SumKer
 public import VectorBundles.Topology.FiberBundle.Pullback
 public import VectorBundles.Topology.FiberBundle.Pullback.Proper
 public import VectorBundles.Topology.FiberBundle.SupportedTransport

@@ -132,6 +132,7 @@ globs = [
   "VectorBundles.Topology.FiberBundle.ClosedCylinderSubdivisionDataLinear",
   "VectorBundles.Topology.FiberBundle.FiniteCylinderCover",
   "VectorBundles.Topology.FiberBundle.Prod",
+  "VectorBundles.Topology.FiberBundle.SumKer",
   "VectorBundles.Topology.FiberBundle.Pullback",
   "VectorBundles.Topology.FiberBundle.Pullback.Proper",
   "VectorBundles.Topology.FiberBundle.SupportedTransport",

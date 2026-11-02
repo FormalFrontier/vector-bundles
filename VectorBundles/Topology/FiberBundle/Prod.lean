@@ -295,3 +295,102 @@ theorem homeomorphPullback_symm_apply_mk (a : A) (v : E₁ (f a) × E₂ (f a)) 
 end Pullback
 
 end FiberBundle.Prod
+
+
+namespace FiberBundle.Prod
+
+section EqualBase
+
+variable {B : Type uB}
+  (F₁ : Type uF₁) (E₁ : B → Type uE₁) (F₂ : Type uF₂) (E₂ : B → Type uE₂)
+  [t₁ : TopologicalSpace (TotalSpace F₁ E₁)] [t₂ : TopologicalSpace (TotalSpace F₂ E₂)]
+
+/-- The total space of a fiberwise product is homeomorphic to the pairs of original total-space
+points with equal base projections.
+
+The source carries `FiberBundle.Prod.topologicalSpace`, and the target carries the product and
+subtype topologies. The inverse retains the first base and first fiber coordinate, transporting
+only the second fiber coordinate along the reversed equality of base projections. No topology
+on the base or model parameters, local triviality, or algebraic structure is required. -/
+def homeomorphEqualBase :
+    @Homeomorph (TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂))
+      {w : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ // w.1.proj = w.2.proj}
+      (@FiberBundle.Prod.topologicalSpace B F₁ E₁ F₂ E₂ t₁ t₂) inferInstance :=
+  @Equiv.toHomeomorphOfIsInducing _ _
+    (@FiberBundle.Prod.topologicalSpace B F₁ E₁ F₂ E₂ t₁ t₂) inferInstance
+    { toFun := fun p ↦ ⟨(⟨p.proj, p.snd.1⟩, ⟨p.proj, p.snd.2⟩), rfl⟩
+      invFun := fun w ↦ ⟨w.1.1.proj,
+        (w.1.1.snd, cast (congrArg E₂ w.property.symm) w.1.2.snd)⟩
+      left_inv := by rintro ⟨b, e, h⟩; rfl
+      right_inv := by
+        rintro ⟨⟨⟨b, e⟩, ⟨c, h⟩⟩, q⟩
+        apply Subtype.ext
+        exact Prod.ext rfl (TotalSpace.mk_cast (F := F₂) q.symm h) }
+    (by
+      -- Forgetting the equal-base witness gives exactly the stock inducing diagonal.
+      exact (Topology.IsInducing.subtypeVal (t :=
+        {w : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ | w.1.proj = w.2.proj})).of_comp_iff.mp
+          (isInducing_diag F₁ E₁ F₂ E₂))
+
+/-- The comparison pairs the two original total-space points over the same base. -/
+@[simp]
+theorem homeomorphEqualBase_apply (p : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) :
+    homeomorphEqualBase F₁ E₁ F₂ E₂ p =
+      ⟨(TotalSpace.mk' F₁ p.proj p.snd.1, TotalSpace.mk' F₂ p.proj p.snd.2), rfl⟩ := rfl
+
+/-- The inverse keeps the first base and transports the second fiber coordinate to that base. -/
+@[simp]
+theorem homeomorphEqualBase_symm_apply
+    (w : {w : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ // w.1.proj = w.2.proj}) :
+    (homeomorphEqualBase F₁ E₁ F₂ E₂).symm w =
+      TotalSpace.mk' (F₁ × F₂) w.1.1.proj
+        (w.1.1.snd, cast (congrArg E₂ w.property.symm) w.1.2.snd) := rfl
+
+/-- On a constructed product point, the comparison preserves both fiber values. -/
+theorem homeomorphEqualBase_apply_mk (b : B) (e : E₁ b) (h : E₂ b) :
+    homeomorphEqualBase F₁ E₁ F₂ E₂ (TotalSpace.mk' (F₁ × F₂) b (e, h)) =
+      ⟨(TotalSpace.mk' F₁ b e, TotalSpace.mk' F₂ b h), rfl⟩ := rfl
+
+/-- For an arbitrary equality of bases, the inverse transports only the second fiber value.
+When the bases and equality witness are reflexive, the cast reduces to the original value. -/
+theorem homeomorphEqualBase_symm_apply_mk {b c : B} (e : E₁ b) (h : E₂ c) (q : b = c) :
+    (homeomorphEqualBase F₁ E₁ F₂ E₂).symm
+      ⟨(TotalSpace.mk' F₁ b e, TotalSpace.mk' F₂ c h), q⟩ =
+        TotalSpace.mk' (F₁ × F₂) b (e, cast (congrArg E₂ q.symm) h) := rfl
+
+/-- The inverse uses the base projection of the first total-space point. -/
+@[simp]
+theorem homeomorphEqualBase_symm_apply_proj
+    (w : {w : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ // w.1.proj = w.2.proj}) :
+    ((homeomorphEqualBase F₁ E₁ F₂ E₂).symm w).proj = w.1.1.proj := rfl
+
+/-- The inverse leaves the first fiber coordinate unchanged. -/
+@[simp]
+theorem homeomorphEqualBase_symm_apply_fst
+    (w : {w : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ // w.1.proj = w.2.proj}) :
+    ((homeomorphEqualBase F₁ E₁ F₂ E₂).symm w).snd.1 = w.1.1.snd := rfl
+
+/-- The second fiber coordinate of the inverse is transported along the reversed base equality. -/
+@[simp]
+theorem homeomorphEqualBase_symm_apply_snd
+    (w : {w : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ // w.1.proj = w.2.proj}) :
+    ((homeomorphEqualBase F₁ E₁ F₂ E₂).symm w).snd.2 =
+      cast (congrArg E₂ w.property.symm) w.1.2.snd := rfl
+
+/-- Reconstructing the first total-space point from the inverse recovers the original point. -/
+theorem homeomorphEqualBase_mk_fst_symm_apply
+    (w : {w : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ // w.1.proj = w.2.proj}) :
+    TotalSpace.mk' F₁ ((homeomorphEqualBase F₁ E₁ F₂ E₂).symm w).proj
+      ((homeomorphEqualBase F₁ E₁ F₂ E₂).symm w).snd.1 = w.1.1 := rfl
+
+/-- Reconstructing the second total-space point from the inverse recovers the original point,
+including its original base projection. -/
+theorem homeomorphEqualBase_mk_snd_symm_apply
+    (w : {w : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ // w.1.proj = w.2.proj}) :
+    TotalSpace.mk' F₂ ((homeomorphEqualBase F₁ E₁ F₂ E₂).symm w).proj
+      ((homeomorphEqualBase F₁ E₁ F₂ E₂).symm w).snd.2 = w.1.2 := by
+  exact TotalSpace.mk_cast (F := F₂) w.property.symm w.1.2.snd
+
+end EqualBase
+
+end FiberBundle.Prod
