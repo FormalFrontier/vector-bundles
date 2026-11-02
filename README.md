@@ -42,16 +42,21 @@ the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib co
   into the operator space. See
   [JointEvaluation](VectorBundles/Analysis/Normed/Module/JointEvaluation.lean).
 
-- **Total-space continuity from inverse local coordinates.**
-  Over a complete nontrivially normed field `K`, let `p : T → X` be continuous
-  and give its equality-subtype fibres their subspace topologies and module
-  structures. Finite-dimensional Hausdorff topological coordinate models may vary
-  over an arbitrary open cover. Algebraic fibre maps into a topological `K`-module
-  with continuous addition and scalar multiplication are continuous on `T` if their
-  values at each fixed local coordinate vector are parameter-continuous and the
-  exact inverse vector coordinates are continuous. No injectivity, forward realization
-  continuity, fibre or target norm, target separation or base separation is required. See
-  [`LinearMap.continuous_total_of_local_coordinates`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean).
+- **Total-space continuity from finite local bases.**
+  Let `p : T → X` be continuous, with given module structures and subspace
+  topologies on its equality-subtype fibres over a semiring `R` with a given topology.
+  Coordinate models with finite bases may vary over an arbitrary open cover.
+  If their scalar basis coordinates and exact inverse vector coordinates are
+  continuous, parameter-continuity of the images of the basis vectors gives
+  continuity of the total algebraic fibre map into any `R`-module with continuous
+  addition and scalar multiplication. No continuous operations on the models or
+  fibres, injectivity, forward-realization continuity, norm, completeness or
+  separation is required. See
+  [`LinearMap.continuous_total_of_local_coordinates_of_basis`](VectorBundles/Topology/Module/LocalCoordinates.lean).
+  Over a complete nontrivially normed field, finite-dimensional Hausdorff
+  topological coordinate models supply the bases and scalar-coordinate continuity;
+  fixed-vector frame continuity gives the corollary
+  [`LinearMap.continuous_total_of_local_coordinates`](VectorBundles/Topology/Module/LocalCoordinates.lean).
 
 - **Local constancy of fibre finrank.** Over a division ring, given pointwise
   [linear equivalences to fixed models](VectorBundles/Topology/Module/Finrank.lean)
@@ -242,6 +247,8 @@ noncomputable example :
   VectorBundle.continuousHermitianMetric ℂ (ℂ × ℂ) (Bundle.Trivial ℝ (ℂ × ℂ))
 ```
 
+For total-space continuity and its finite-dimensional corollary, import
+`VectorBundles.Topology.Module.LocalCoordinates` directly.
 For the closed-embedding criterion, import the leaf module
 `VectorBundles.Analysis.InnerProductSpace.FiberEmbedding` directly.
 The normal-space cutoff and closed-subset weight results require
@@ -260,7 +267,7 @@ Lean is pinned to `leanprover/lean4:v4.34.0-rc2`. The direct dependencies are
 [Metrization](https://github.com/FormalFrontier/metrization) at
 `4dcc0f6f903ba4d0c66f230d21f7ac4c31d4ea57`, and
 [ProjectiveModules](https://github.com/FormalFrontier/projective-modules) at
-`8c99408e99ada67e0de63bb9a58cde4f25c99d07`.
+`77a601ffd885a18a7c0fd90e311b7f530ac4762b`.
 Both deliverables use the Mathlib revision listed above. Their transitive
 dependencies are pinned in `lake-manifest.json`.
 
@@ -306,7 +313,8 @@ identifies analysis modules and examples requiring direct imports.
 | [`Analysis.InnerProductSpace.Projection.LinearMap`](VectorBundles/Analysis/InnerProductSpace/Projection/LinearMap.lean) | Projection/preimage retractions onto injective images of plain modules, with a finite-dimensional specialization |
 | [`Analysis.InnerProductSpace.Projection.Fiberwise`](VectorBundles/Analysis/InnerProductSpace/Projection/Fiberwise.lean) | Algebraic total-space retractions on given projection fibres, with projection and left-inverse laws |
 | [`Analysis.Normed.Module.JointEvaluation`](VectorBundles/Analysis/Normed/Module/JointEvaluation.lean) | Joint evaluation from continuous finite-basis coordinates over semirings; finite-dimensional topological-module criterion and operator-space comparison |
-| [`Analysis.InnerProductSpace.FiberEmbedding`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean) | Total-space continuity from inverse local coordinates; closed fibre embeddings and extending retractions under normed inner-product hypotheses |
+| [`Topology.Module.LocalCoordinates`](VectorBundles/Topology/Module/LocalCoordinates.lean) | Total-space continuity from finite local bases over semirings; finite-dimensional topological-module corollary |
+| [`Analysis.InnerProductSpace.FiberEmbedding`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean) | Closed fibre embeddings and extending retractions under normed inner-product hypotheses; reexports the local-coordinate continuity criteria |
 | [`Analysis.Normed.Ring.Units`](VectorBundles/Analysis/Normed/Ring/Units.lean) | Value embedding for units of a seminormed ring |
 | [`Topology.Algebra.GroupWithZero`](VectorBundles/Topology/Algebra/GroupWithZero.lean) | Continuity of reciprocal selected finite sums of real squares under pointwise nonzero coverage |
 | [`Topology.ContinuousMap.FiniteWeights`](VectorBundles/Topology/ContinuousMap/FiniteWeights.lean) | Finite partitions of unity on normal spaces, with all-index closed-cozero subordination and no further separation assumptions |

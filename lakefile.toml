@@ -37,6 +37,7 @@ globs = [
   "VectorBundles.Analysis.InnerProductSpace.ProjectionContinuity",
   "VectorBundles.Analysis.InnerProductSpace.InducingRetraction",
   "VectorBundles.Analysis.Normed.Module.JointEvaluation",
+  "VectorBundles.Topology.Module.LocalCoordinates",
   "VectorBundles.Analysis.InnerProductSpace.FiberEmbedding",
   "VectorBundles.Analysis.InnerProductSpace.WeightedFiberEmbedding",
   "VectorBundles.Analysis.Normed.Operator.Composition",
