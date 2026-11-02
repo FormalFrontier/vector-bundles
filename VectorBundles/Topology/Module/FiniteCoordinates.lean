@@ -172,7 +172,6 @@ variable {X : Type uX} [TopologicalSpace X]
 /-- Continuity within a set of an operator-valued function is detected by the finitely many
 columns of a supplied coordinate equivalence. -/
 theorem continuousWithinAt_clm_apply_iff_piSingle
-    [IsTopologicalAddGroup E] [ContinuousSMul K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι] [DecidableEq ι]
     (e : E ≃L[K] (ι → K)) {f : X → E →L[K] F} {s : Set X} {x : X} :
     ContinuousWithinAt f s x ↔
@@ -202,7 +201,6 @@ theorem continuousWithinAt_clm_apply_iff_piSingle
 /-- Continuity at a point of an operator-valued function is detected by the finitely many
 columns of a supplied coordinate equivalence. -/
 theorem continuousAt_clm_apply_iff_piSingle
-    [IsTopologicalAddGroup E] [ContinuousSMul K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι] [DecidableEq ι]
     (e : E ≃L[K] (ι → K)) {f : X → E →L[K] F} {x : X} :
     ContinuousAt f x ↔
@@ -213,7 +211,6 @@ theorem continuousAt_clm_apply_iff_piSingle
 /-- Continuity on a set of an operator-valued function is detected by the finitely many
 columns of a supplied coordinate equivalence. -/
 theorem continuousOn_clm_apply_iff_piSingle
-    [IsTopologicalAddGroup E] [ContinuousSMul K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι] [DecidableEq ι]
     (e : E ≃L[K] (ι → K)) {f : X → E →L[K] F} {s : Set X} :
     ContinuousOn f s ↔
@@ -227,7 +224,6 @@ theorem continuousOn_clm_apply_iff_piSingle
 /-- Continuity of an operator-valued function is detected by the finitely many columns of a
 supplied coordinate equivalence. -/
 theorem continuous_clm_apply_iff_piSingle
-    [IsTopologicalAddGroup E] [ContinuousSMul K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι] [DecidableEq ι]
     (e : E ≃L[K] (ι → K)) {f : X → E →L[K] F} :
     Continuous f ↔ ∀ i, Continuous (fun q => f q (e.symm (Pi.single i (1 : K)))) := by
@@ -242,7 +238,6 @@ The finite-coordinate expansion expresses evaluation as a finite sum of products
 scalar coordinates and continuous column functions. Joint continuity uses `ContinuousSMul K F`;
 no norm on either module or algebraic structure on the parameter space is required. -/
 theorem continuous_clm_apply_iff_uncurry
-    [IsTopologicalAddGroup E] [ContinuousSMul K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι]
     (e : E ≃L[K] (ι → K))
     {f : X → E →L[K] F} :
@@ -262,7 +257,6 @@ theorem continuous_clm_apply_iff_uncurry
     simpa only [b, Module.Basis.coe_ofEquivFun, coe_symm_toLinearEquiv] using hjoint.symm)
 
 private theorem continuous_clm_eval_const
-    [IsTopologicalAddGroup E] [ContinuousSMul K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι]
     (e : E ≃L[K] (ι → K)) (v : E) :
     Continuous (fun T : E →L[K] F => T v) := by
@@ -274,7 +268,6 @@ private theorem continuous_clm_eval_const
 /-- For a source with supplied finite continuous coordinates, continuity within a set of an
 operator-valued function is equivalent to continuity of every fixed-vector evaluation. -/
 theorem continuousWithinAt_clm_apply_iff
-    [IsTopologicalAddGroup E] [ContinuousSMul K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι]
     (e : E ≃L[K] (ι → K))
     {f : X → E →L[K] F} {s : Set X} {x : X} :
@@ -290,7 +283,6 @@ theorem continuousWithinAt_clm_apply_iff
 /-- For a source with supplied finite continuous coordinates, continuity at a point of an
 operator-valued function is equivalent to continuity of every fixed-vector evaluation. -/
 theorem continuousAt_clm_apply_iff
-    [IsTopologicalAddGroup E] [ContinuousSMul K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι]
     (e : E ≃L[K] (ι → K))
     {f : X → E →L[K] F} {x : X} :
@@ -306,7 +298,6 @@ theorem continuousAt_clm_apply_iff
 /-- For a source with supplied finite continuous coordinates, continuity on a set of an
 operator-valued function is equivalent to continuity of every fixed-vector evaluation. -/
 theorem continuousOn_clm_apply_iff
-    [IsTopologicalAddGroup E] [ContinuousSMul K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι]
     (e : E ≃L[K] (ι → K))
     {f : X → E →L[K] F} {s : Set X} :
@@ -322,7 +313,6 @@ theorem continuousOn_clm_apply_iff
 /-- For a source with supplied finite continuous coordinates, continuity of an operator-valued
 function is equivalent to continuity of every fixed-vector evaluation. -/
 theorem continuous_clm_apply_iff
-    [IsTopologicalAddGroup E] [ContinuousSMul K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι]
     (e : E ≃L[K] (ι → K)) {f : X → E →L[K] F} :
     Continuous f ↔ ∀ v, Continuous (fun q => f q v) := by
@@ -351,7 +341,7 @@ variable {X : Type uX} [TopologicalSpace X]
 /-- In the given module topology, a finite basis detects continuity within a set of an
 operator-valued function. The source coordinates are `b.equivFunLOfIsModuleTopology`. -/
 theorem continuousWithinAt_clm_apply_iff
-    [IsTopologicalAddGroup E] [ContinuousSMul K E] [IsModuleTopology K E]
+    [IsModuleTopology K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι]
     (b : Module.Basis ι K E)
     {f : X → E →L[K] F} {s : Set X} {x : X} :
@@ -364,7 +354,7 @@ theorem continuousWithinAt_clm_apply_iff
 /-- In the given module topology, a finite basis detects continuity at a point of an
 operator-valued function. The source coordinates are `b.equivFunLOfIsModuleTopology`. -/
 theorem continuousAt_clm_apply_iff
-    [IsTopologicalAddGroup E] [ContinuousSMul K E] [IsModuleTopology K E]
+    [IsModuleTopology K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι]
     (b : Module.Basis ι K E)
     {f : X → E →L[K] F} {x : X} :
@@ -377,7 +367,7 @@ theorem continuousAt_clm_apply_iff
 /-- In the given module topology, a finite basis detects continuity on a set of an
 operator-valued function. The source coordinates are `b.equivFunLOfIsModuleTopology`. -/
 theorem continuousOn_clm_apply_iff
-    [IsTopologicalAddGroup E] [ContinuousSMul K E] [IsModuleTopology K E]
+    [IsModuleTopology K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι]
     (b : Module.Basis ι K E)
     {f : X → E →L[K] F} {s : Set X} :
@@ -390,7 +380,7 @@ theorem continuousOn_clm_apply_iff
 /-- In the given module topology, a finite basis detects continuity of an operator-valued
 function. The source coordinates are `b.equivFunLOfIsModuleTopology`. -/
 theorem continuous_clm_apply_iff
-    [IsTopologicalAddGroup E] [ContinuousSMul K E] [IsModuleTopology K E]
+    [IsModuleTopology K E]
     [IsTopologicalAddGroup F] [ContinuousSMul K F] [Finite ι]
     (b : Module.Basis ι K E) {f : X → E →L[K] F} :
     Continuous f ↔ ∀ i, Continuous (fun q => f q (b i)) := by
