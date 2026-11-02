@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundles.Topology.Maps.FiberwiseSplitting
+public import Mathlib.Algebra.Module.Submodule.Ker
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.Topology.ContinuousMap.Algebra
@@ -98,6 +99,21 @@ def fiberwiseProjection : ContinuousMap B {P : A →L[K] A // IsIdempotentElem P
 @[simp]
 theorem fiberwiseProjection_apply (b : B) (a : A) :
     (fiberwiseProjection p β ρ hρβ hβTotal hρTotal b).val a = β b (ρ b a) := rfl
+
+/-- The prescribed projection has the same kernel as the prescribed retraction. -/
+@[simp]
+theorem fiberwiseProjection_ker (b : B) :
+    LinearMap.ker
+      ((fiberwiseProjection p β ρ hρβ hβTotal hρTotal b).val.toLinearMap) =
+        LinearMap.ker (ρ b) := by
+  have hP :
+      (fiberwiseProjection p β ρ hρβ hβTotal hρTotal b).val.toLinearMap =
+        (β b).comp (ρ b) := by
+    ext a
+    exact fiberwiseProjection_apply p β ρ hρβ hβTotal hρTotal b a
+  rw [hP]
+  exact LinearMap.ker_comp_of_ker_eq_bot (ρ b)
+    (LinearMap.ker_eq_bot_of_injective (hρβ b).injective)
 
 local notation "P" => fiberwiseProjection p β ρ hρβ hβTotal hρTotal
 local notation "Q" =>
