@@ -7,7 +7,10 @@
       "targets": [
         "+VectorBundles.Analysis.Normed.Operator.GramCoordinates",
         "+VectorBundles.Analysis.InnerProductSpace.GramNaturality",
-    "+VectorBundles.Topology.Module.Finrank",
+        "+VectorBundles.Topology.Module.Finrank",
+        "+VectorBundles.Topology.Module.ModuleTopology",
+        "+VectorBundles.Topology.Module.Basis",
+        "+VectorBundles.Topology.Module.Basis.FiniteDimensional",
         "+VectorBundles.LinearAlgebra.WeightedCoordinates",
         "+VectorBundles.Topology.Maps.WeightedCoordinates",
         "+VectorBundles.Analysis.Normed.Module.JointEvaluation",

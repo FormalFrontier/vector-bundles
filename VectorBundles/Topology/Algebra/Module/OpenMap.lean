@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
+import VectorBundles.Topology.Module.Basis
 import VectorBundles.Topology.VectorBundle.KernelProjection
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLin
@@ -229,12 +230,7 @@ theorem isOpenMap_prodMap [FiniteDimensional 𝕜 G] [IsModuleTopology 𝕜 G]
     (hA : Continuous (fun p : X × F ↦ A p.1 p.2))
     (hSurj : ∀ x, Function.Surjective (A x)) :
     IsOpenMap (fun p : X × F ↦ (p.1, A p.1 p.2)) := by
-  classical
-  let b := Module.finBasis 𝕜 G
-  let e : G ≃L[𝕜] (Fin (Module.finrank 𝕜 G) → 𝕜) :=
-    ContinuousLinearEquiv.mk b.equivFun
-      (IsModuleTopology.continuous_of_linearMap b.equivFun.toLinearMap)
-      (IsModuleTopology.continuous_of_linearMap b.equivFun.symm.toLinearMap)
-  exact isOpenMap_prodMap_of_finiteCoordinates e A hA hSurj
+  exact isOpenMap_prodMap_of_finiteCoordinates
+    (Module.finBasis 𝕜 G).equivFunLOfIsModuleTopology A hA hSurj
 
 end LinearMap

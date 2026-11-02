@@ -72,6 +72,19 @@ the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib co
   fixed-vector frame continuity gives the corollary
   [`LinearMap.continuous_total_of_local_coordinates`](VectorBundles/Topology/Module/LocalCoordinates.lean).
 
+- **Module topologies on retracts and finite-basis coordinates.** Over a semiring with
+  a given scalar topology, a continuous linear retract of a module with the module
+  topology inherits that topology, even when the continuous section is nonlinear.
+  In particular, the range of an algebraic idempotent of such a module has its
+  module topology as the inherited subspace topology. Over a topological semiring,
+  a supplied finite basis of a module with the module topology gives a continuous
+  linear equivalence with the standard finite scalar product;
+  neither a field, a norm, completeness nor separation is required. See
+  [module-topology descent](VectorBundles/Topology/Module/ModuleTopology.lean) and
+  [finite-basis coordinates](VectorBundles/Topology/Module/Basis.lean).
+  The [complete-field comparison](VectorBundles/Topology/Module/Basis/FiniteDimensional.lean)
+  agrees exactly with Mathlib's `Module.Basis.equivFunL` without assuming a source norm.
+
 - **Local constancy of fibre finrank.** Over a division ring, given pointwise
   [linear equivalences to fixed models](VectorBundles/Topology/Module/Finrank.lean)
   on sets whose interiors cover the base make natural-number fibre finrank locally

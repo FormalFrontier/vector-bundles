@@ -9,6 +9,9 @@ public import VectorBundles.Topology.Maps.FiniteChartReconstructionContinuity
 
 public import VectorBundles.LinearAlgebra.WeightedCoordinates
 public import VectorBundles.Topology.Maps.WeightedCoordinates
+public import VectorBundles.Topology.Module.ModuleTopology
+public import VectorBundles.Topology.Module.Basis
+public import VectorBundles.Topology.Module.Basis.FiniteDimensional
 
 public import VectorBundles.Analysis.InnerProductSpace.AdjointPairFamily
 public import VectorBundles.Analysis.InnerProductSpace.GramFamily
