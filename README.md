@@ -56,17 +56,21 @@ the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib co
   with continuity into the operator space. See
   [JointEvaluation](VectorBundles/Analysis/Normed/Module/JointEvaluation.lean).
 
-- **Total-space continuity from finite local bases.**
-  Let `p : T → X` be continuous, with given module structures and subspace
-  topologies on its equality-subtype fibres over a semiring `R` with a given topology.
-  Coordinate models with finite bases may vary over an arbitrary open cover.
-  If their scalar basis coordinates and exact inverse vector coordinates are
-  continuous, parameter-continuity of the images of the basis vectors gives
-  continuity of the total algebraic fibre map into any `R`-module with continuous
-  addition and scalar multiplication. No continuous operations on the models or
-  fibres, injectivity, forward-realization continuity, norm, completeness or
-  separation is required. See
-  [`LinearMap.continuous_total_of_local_coordinates_of_basis`](VectorBundles/Topology/Module/LocalCoordinates.lean).
+- **Total-space continuity of semilinear maps from finite local bases.**
+  Let `p : T → X` be continuous, with given `R`-module structures and subspace
+  topologies on its equality-subtype fibres, and let `σ : R →+* S` be a homomorphism
+  of semirings, with a topology on `S`. Coordinate models with finite bases may vary
+  over an arbitrary open cover. If their scalar basis coordinates composed with `σ`
+  and exact inverse vector coordinates are continuous, parameter-continuity of the
+  images of the basis vectors gives continuity of the total semilinear fibre map
+  into any `S`-module with continuous addition and scalar multiplication. No topology
+  on `R`, continuity of `σ`, continuous operations on the models or fibres,
+  injectivity, forward-realization continuity, norm, completeness or separation is
+  required. See
+  [`LinearMap.continuous_total_of_local_coordinates_of_basis_semilinear`](VectorBundles/Topology/Module/LocalCoordinates.lean).
+  The linear criterion
+  [`LinearMap.continuous_total_of_local_coordinates_of_basis`](VectorBundles/Topology/Module/LocalCoordinates.lean)
+  is the identity-hom specialization.
   Over a complete nontrivially normed field, finite-dimensional Hausdorff
   topological coordinate models supply the bases and scalar-coordinate continuity;
   fixed-vector frame continuity gives the corollary
@@ -340,7 +344,7 @@ identifies analysis modules and examples requiring direct imports.
 | [`Analysis.InnerProductSpace.Projection.LinearMap`](VectorBundles/Analysis/InnerProductSpace/Projection/LinearMap.lean) | Projection/preimage retractions onto injective images of plain modules, with a finite-dimensional specialization |
 | [`Analysis.InnerProductSpace.Projection.Fiberwise`](VectorBundles/Analysis/InnerProductSpace/Projection/Fiberwise.lean) | Algebraic total-space retractions on given projection fibres, with projection and left-inverse laws |
 | [`Analysis.Normed.Module.JointEvaluation`](VectorBundles/Analysis/Normed/Module/JointEvaluation.lean) | Joint evaluation from continuous finite-basis coordinates over semirings; finite-dimensional topological-module criterion and operator-space comparison |
-| [`Topology.Module.LocalCoordinates`](VectorBundles/Topology/Module/LocalCoordinates.lean) | Total-space continuity from finite local bases over semirings; finite-dimensional topological-module corollary |
+| [`Topology.Module.LocalCoordinates`](VectorBundles/Topology/Module/LocalCoordinates.lean) | Total-space continuity of semilinear maps from finite local bases over semirings; linear and finite-dimensional topological-module corollaries |
 | [`Analysis.InnerProductSpace.FiberEmbedding`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean) | Closed fibre embeddings and extending retractions under normed inner-product hypotheses; reexports the local-coordinate continuity criteria |
 | [`Analysis.Normed.Ring.Units`](VectorBundles/Analysis/Normed/Ring/Units.lean) | Value embedding for units of a seminormed ring |
 | [`Topology.Algebra.GroupWithZero`](VectorBundles/Topology/Algebra/GroupWithZero.lean) | Continuity of reciprocal selected finite sums of real squares under pointwise nonzero coverage |
