@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.RingTheory.Finiteness.Basic
 public import VectorBundles.Topology.VectorBundle.FiniteRank
 
@@ -127,5 +128,35 @@ theorem moduleFinite_fiber (A : FiniteRankAtlas.{_, _, _, _, uI} K P E) (b : B) 
   obtain ⟨i, hb⟩ := A.exists_mem_baseSet b
   exact Module.Finite.of_surjective (A.coordLinearEquiv i hb).symm.toLinearMap
     (A.coordLinearEquiv i hb).symm.surjective
+
+/-- The finrank of a fibre in a chart domain is the rank of that chart. -/
+theorem finrank_eq_rank (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    (i : A.Index) (b : B) (hb : b ∈ (A.chart i).baseSet) :
+    Module.finrank K (E b) = A.rank i :=
+  (A.coordLinearEquiv i hb).finrank_eq.trans (Module.finrank_fin_fun K)
+
+/-- In a constant-finrank family, a chart containing a base point has that finrank. -/
+theorem rank_eq_of_mem (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    (n : ℕ) (hn : ∀ b, Module.finrank K (E b) = n)
+    (i : A.Index) (b : B) (hb : b ∈ (A.chart i).baseSet) : A.rank i = n :=
+  (A.finrank_eq_rank i b hb).symm.trans (hn b)
+
+/-- In a constant-finrank family, every chart with a nonempty base set has that rank. -/
+theorem rank_eq_of_nonempty_baseSet (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    (n : ℕ) (hn : ∀ b, Module.finrank K (E b) = n)
+    (i : A.Index) (h : (A.chart i).baseSet.Nonempty) : A.rank i = n := by
+  obtain ⟨b, hb⟩ := h
+  exact A.rank_eq_of_mem n hn i b hb
+
+/-- A chart of rank different from the constant fibre finrank has empty base set. -/
+theorem baseSet_eq_empty_of_rank_ne (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    (n : ℕ) (hn : ∀ b, Module.finrank K (E b) = n)
+    (i : A.Index) (h : A.rank i ≠ n) : (A.chart i).baseSet = ∅ := by
+  ext b
+  constructor
+  · intro hb
+    exact h (A.rank_eq_of_mem n hn i b hb)
+  · intro hb
+    exact hb.elim
 
 end Bundle.FiniteRankAtlas
