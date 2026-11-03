@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import VectorBundles.Analysis.Normed.Operator.Basic
 public import VectorBundles.Topology.Bornology.LinearMap
 public import VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Basic
 public import Mathlib.Analysis.Normed.Group.Bounded
