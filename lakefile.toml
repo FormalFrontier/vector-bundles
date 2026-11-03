@@ -173,6 +173,7 @@ globs = [
 [[lean_lib]]
 name = "VectorBundlesTest"
 globs = [
+  "VectorBundlesTest.CompactRank",
   "VectorBundlesTest.AdjointPair",
   "VectorBundlesTest.AdjointPartnerLinearity",
   "VectorBundlesTest.CompleteDomainAdjoint",
