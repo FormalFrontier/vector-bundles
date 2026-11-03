@@ -3,6 +3,8 @@ SPDX-License-Identifier: Apache-2.0
 Authors: Formal Frontier Agents
 -/
 module
+
+public import VectorBundles.Analysis.Normed.Operator.Completion
 public import VectorBundles.Topology.VectorBundle.FiniteRank.Embedding
 
 public import VectorBundles.Topology.Maps.FiniteChartReconstruction

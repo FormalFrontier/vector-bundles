@@ -12,6 +12,7 @@ weak.linter.style.header = false
 [[lean_lib]]
 name = "VectorBundles"
 globs = [
+  "VectorBundles.Analysis.Normed.Operator.Completion",
   "VectorBundles.Analysis.Normed.Operator.GramCoordinates",
   "VectorBundles.Analysis.InnerProductSpace.GramNaturality",
   "VectorBundles.Algebra.Ring.Idempotent",
