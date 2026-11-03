@@ -82,6 +82,7 @@ globs = [
   "VectorBundles.Topology.FiberBundle.SeparatedMap",
   "VectorBundles.Topology.Module.FiniteCoordinates",
     "VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional",
+  "VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Basic",
   "VectorBundles.Topology.FiberBundle.ModelTopology",
   "VectorBundles.Topology.FiberBundle.Connected",
   "VectorBundles.Topology.FiberBundle.Separable",
@@ -176,6 +177,7 @@ globs = [
 name = "VectorBundlesTest"
 globs = [
   "VectorBundlesTest.CompactRank",
+  "VectorBundlesTest.JointEvaluation",
   "VectorBundlesTest.AdjointPair",
   "VectorBundlesTest.AdjointPartnerLinearity",
   "VectorBundlesTest.CompleteDomainAdjoint",

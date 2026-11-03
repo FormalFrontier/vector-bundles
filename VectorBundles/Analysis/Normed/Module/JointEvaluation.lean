@@ -5,6 +5,8 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Basic
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # Joint continuity of semilinear evaluation
@@ -22,15 +24,18 @@ continuous addition and scalar multiplication is jointly continuous exactly when
 its evaluations at fixed vectors are continuous. All topological structures are
 the given ones; no separation assumption is imposed on the target.
 
-For continuous linear maps between normed spaces, this is also equivalent to
-continuity of the family into the operator space.
+For continuous linear maps from a finite-dimensional seminormed space to any seminormed
+space over a possibly incomplete nontrivially normed field, joint continuity is equivalent
+to continuity of the family in the given operator-norm topology. Neither space needs to
+be separated or complete.
 
 ## References
 
 The finite-basis expansion uses Mathlib's `Module.Basis.sum_repr` and semilinear-map API.
 The finite-dimensional specialization uses Mathlib's `Module.Basis.continuous_coe_repr`
 and agrees with `continuous_clm_apply` from its finite-dimensional normed-module API,
-developed by Sébastien Gouëzel.
+developed by Sébastien Gouëzel. The seminormed operator-space criterion uses the
+finite-evaluation bound over an incomplete field and Mathlib's `Continuous.clm_apply`.
 -/
 
 @[expose] public section
@@ -127,18 +132,29 @@ end LinearMap
 
 namespace ContinuousLinearMap
 
-/-- A family of continuous linear maps on a finite-dimensional normed space is
-continuous into the operator space exactly when its joint evaluation is continuous. -/
+/-- A family of continuous linear maps from a finite-dimensional seminormed space is
+continuous in the given operator-norm topology exactly when its joint evaluation is continuous.
+The scalar field may be incomplete, and the original domain and target need not be separated
+or complete. Finite-dimensionality refers to the module underlying the given domain normed
+space. -/
 theorem continuous_iff_continuous_uncurry_of_finiteDimensional
-    {K : Type uK} [NontriviallyNormedField K] [CompleteSpace K]
-    {G : Type uG} [NormedAddCommGroup G] [NormedSpace K G]
-    [FiniteDimensional K G]
-    {A : Type uA} [NormedAddCommGroup A] [NormedSpace K A]
-    {Z : Type uZ} [TopologicalSpace Z]
+    {K : Type uK} [kK : NontriviallyNormedField K]
+    {G : Type uG} [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace K G kK.toNormedField sG]
+    [hG : @FiniteDimensional K G (inferInstance : DivisionRing K)
+      sG.toAddCommGroup nG.toModule]
+    {A : Type uA} [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    {Z : Type uZ} [tZ : TopologicalSpace Z]
     {L : Z → G →L[K] A} :
     Continuous L ↔ Continuous (fun p : Z × G => L p.1 p.2) := by
-  rw [continuous_clm_apply]
-  exact (LinearMap.continuous_uncurry_iff_of_finiteDimensional
-    (L := fun z => (L z).toLinearMap)).symm
+  constructor
+  · intro hL
+    exact (hL.comp continuous_fst).clm_apply continuous_snd
+  · intro hL
+    exact (continuous_iff_apply_of_finiteDimensional
+      (K := K) (A := G) (G := A) (kK := kK) (sA := sG) (nA := nG) (hA := hG)
+      (sG := sA) (nG := nA) L).2
+        (fun v => hL.comp (continuous_id.prodMk continuous_const))
 
 end ContinuousLinearMap

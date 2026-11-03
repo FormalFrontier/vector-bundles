@@ -106,6 +106,9 @@ jobs:
               "VectorBundles/Topology/VectorBundle/FiniteRank/Embedding",
               "VectorBundles/Topology/VectorBundle/ProjectorAtlas/SplitFamily",
               "VectorBundlesTest/Topology/VectorBundle/ComplementaryRangeBundle",
+              "VectorBundles/Analysis/Normed/Module/JointEvaluation",
+              "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Basic",
+              "VectorBundlesTest/JointEvaluation",
           )
           states = {}
           for module in modules:
@@ -197,6 +200,9 @@ jobs:
               "VectorBundles/Topology/VectorBundle/FiniteRank/Embedding",
               "VectorBundles/Topology/VectorBundle/ProjectorAtlas/SplitFamily",
               "VectorBundlesTest/Topology/VectorBundle/ComplementaryRangeBundle",
+              "VectorBundles/Analysis/Normed/Module/JointEvaluation",
+              "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Basic",
+              "VectorBundlesTest/JointEvaluation",
           )
           for module in modules:
               feedback = root / module

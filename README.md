@@ -95,8 +95,10 @@ the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib co
   operations or of `σ` is assumed. The linear criterion is the identity specialization.
   Over a complete nontrivially normed field, a finite-dimensional Hausdorff topological
   source module needs no explicit basis data: joint continuity is equivalent to continuity
-  at every fixed vector. For continuous linear maps between normed spaces this also agrees
-  with continuity into the operator space. See
+  at every fixed vector. For continuous linear maps from a finite-dimensional seminormed
+  domain to a seminormed target, joint continuity is equivalent to continuity in the given
+  operator-norm topology even over an incomplete field; neither space needs to be separated
+  or complete. See
   [JointEvaluation](VectorBundles/Analysis/Normed/Module/JointEvaluation.lean).
 
 - **Total-space continuity of semilinear maps from finite local bases.**
@@ -388,7 +390,7 @@ identifies analysis modules and examples requiring direct imports.
 | [`Analysis.InnerProductSpace.PositiveForm`](VectorBundles/Analysis/InnerProductSpace/PositiveForm.lean) | Bounded positive-form unit sublevels in the original topology |
 | [`Analysis.InnerProductSpace.Projection.LinearMap`](VectorBundles/Analysis/InnerProductSpace/Projection/LinearMap.lean) | Projection/preimage retractions onto injective images of plain modules, with a finite-dimensional specialization |
 | [`Analysis.InnerProductSpace.Projection.Fiberwise`](VectorBundles/Analysis/InnerProductSpace/Projection/Fiberwise.lean) | Algebraic total-space retractions on given projection fibres, with projection and left-inverse laws |
-| [`Analysis.Normed.Module.JointEvaluation`](VectorBundles/Analysis/Normed/Module/JointEvaluation.lean) | Joint evaluation from continuous finite-basis coordinates over semirings; finite-dimensional topological-module criterion and operator-space comparison |
+| [`Analysis.Normed.Module.JointEvaluation`](VectorBundles/Analysis/Normed/Module/JointEvaluation.lean) | Joint evaluation from continuous finite-basis coordinates over semirings; complete-field topological-module criterion; operator-space comparison for finite-dimensional seminormed domains over possibly incomplete fields |
 | [`Topology.Module.LocalCoordinates`](VectorBundles/Topology/Module/LocalCoordinates.lean) | Total-space continuity of semilinear maps from finite local bases over semirings; linear and finite-dimensional topological-module corollaries |
 | [`Analysis.InnerProductSpace.FiberEmbedding`](VectorBundles/Analysis/InnerProductSpace/FiberEmbedding.lean) | Closed fibre embeddings and extending retractions under normed inner-product hypotheses; reexports the local-coordinate continuity criteria |
 | [`Analysis.Normed.Ring.Units`](VectorBundles/Analysis/Normed/Ring/Units.lean) | Value embedding for units of a seminormed ring |
