@@ -32,6 +32,7 @@ globs = [
   "VectorBundles.Analysis.Normed.Operator.KernelChart",
   "VectorBundles.Analysis.Normed.Operator.KernelFamilyCoordinates",
   "VectorBundles.Analysis.Normed.Operator.ComplexShear",
+  "VectorBundles.LinearAlgebra.Retraction",
   "VectorBundles.LinearAlgebra.Pairing.Adjoint",
   "VectorBundles.Topology.MetricSpace.PairwiseDistance",
   "VectorBundles.Analysis.InnerProductSpace.AdjointPair",
