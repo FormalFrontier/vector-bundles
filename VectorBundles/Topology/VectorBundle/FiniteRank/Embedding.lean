@@ -33,6 +33,12 @@ Finally, `embeddingModelEquiv` is the continuous linear coordinate equivalence o
 into `B × (Fin A.embeddingDimension → K)`. No coordinate ordering, rank-sum formula,
 or isometry property of this final equivalence is asserted.
 
+Both stages have named, matching original-fibre retractions from the same selected
+charts and scalar dual weights. Their total maps are jointly continuous for the given
+original total-space topology, and their fibrewise composites with the embeddings
+are the identity. These retractions are not asserted to be orthogonal or canonical
+independently of the selected chart and weight data.
+
 ## References
 
 * Allen Hatcher, *Vector Bundles and K-Theory*, version 2.2 (November 2017), §1.1.
@@ -154,6 +160,103 @@ with the original base point. -/
 @[simp] theorem weightedEmbedding_mk (b : B) (v : E b) :
     A.weightedEmbedding (TotalSpace.mk b v) = (b, A.weightedEmbeddingLinearMap b v) := rfl
 
+/-- The weighted stage preserves the original base point. -/
+@[simp] theorem weightedEmbedding_fst (t : TotalSpace P E) :
+    (A.weightedEmbedding t).1 = t.proj := rfl
+
+local notation "D" =>
+  (fun b : B =>
+    LinearMap.finiteChartReconstruction U c b
+      (Finset.univ.filter (fun i => b ∈ U i)) (fun i => A.embeddingDualWeight i b)
+      (fun i hi => And.right (Finset.mem_filter.mp hi : i ∈ Finset.univ ∧ b ∈ U i)))
+
+open Classical in
+/-- The finite chart reconstruction, unpacked into the original fibre. It uses the
+same selected charts and scalar dual weights as `weightedEmbeddingLinearMap`. -/
+def weightedRetractionLinearMap (b : B) : A.WeightedEmbeddingModel →ₗ[K] E b :=
+  (TotalSpace.fiberLinearEquivAt (E := E) K P b).symm.toLinearMap.comp
+    (D b)
+
+open Classical in
+/-- The original-fibre retraction is exactly the existing filtered chart reconstruction
+followed by the canonical unpacking of the projection equality fibre. -/
+theorem weightedRetractionLinearMap_apply (b : B) (z : A.WeightedEmbeddingModel) :
+    A.weightedRetractionLinearMap b z =
+      (TotalSpace.fiberLinearEquivAt (E := E) K P b).symm
+        (LinearMap.finiteChartReconstruction U c b
+          (Finset.univ.filter (fun i => b ∈ U i)) (fun i => A.embeddingDualWeight i b)
+          (fun _ hi => (Finset.mem_filter.mp hi).2) z) := rfl
+
+/-- The weighted-model retraction takes values in the original total space. -/
+def weightedRetraction : B × A.WeightedEmbeddingModel → TotalSpace P E :=
+  fun z => TotalSpace.mk z.1 (A.weightedRetractionLinearMap z.1 z.2)
+
+/-- Evaluation of the total retraction uses its original-fibre linear map. -/
+theorem weightedRetraction_apply (z : B × A.WeightedEmbeddingModel) :
+    A.weightedRetraction z =
+      TotalSpace.mk z.1 (A.weightedRetractionLinearMap z.1 z.2) := rfl
+
+/-- Reconstruction preserves the specified base point. -/
+@[simp] theorem weightedRetraction_proj (z : B × A.WeightedEmbeddingModel) :
+    (A.weightedRetraction z).proj = z.1 := rfl
+
+open Classical in
+/-- Unpacking and rebuilding the equality-fibre reconstruction preserves its exact
+original total-space value. -/
+theorem weightedRetraction_eq_finiteChartReconstruction
+    (z : B × A.WeightedEmbeddingModel) :
+    A.weightedRetraction z =
+      (LinearMap.finiteChartReconstruction U c z.1
+        (Finset.univ.filter (fun i => z.1 ∈ U i)) (fun i => A.embeddingDualWeight i z.1)
+        (fun _ hi => (Finset.mem_filter.mp hi).2) z.2).val := by
+  rw [weightedRetraction_apply, weightedRetractionLinearMap_apply,
+    TotalSpace.fiberLinearEquivAt_symm_apply, TotalSpace.mk_fiberEquiv_symm]
+
+/-- Scalar dual weights make reconstruction a linear left inverse on each original fibre. -/
+theorem weightedRetractionLinearMap_comp_weightedEmbeddingLinearMap (b : B) :
+    (A.weightedRetractionLinearMap b).comp (A.weightedEmbeddingLinearMap b) =
+      LinearMap.id := by
+  classical
+  obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, hsuppa, hsum⟩ := A.embedding_weights
+  have hleft : (D b).comp
+      (LinearMap.weightedCoordinates U A.embeddingWeight c b) = LinearMap.id := by
+    apply LinearMap.finiteChartReconstruction_filter_comp_weightedCoordinates_of_sum_eq_one
+      U A.embeddingWeight c b Finset.univ (fun i => A.embeddingDualWeight i b)
+    · intro i _ hbi
+      by_contra hai
+      exact hbi (hsuppa i (subset_closure hai))
+    · exact hsum b
+  apply LinearMap.ext
+  intro v
+  have hv := congrArg
+    (fun f : {t : TotalSpace P E // t.proj = b} →ₗ[K]
+        {t : TotalSpace P E // t.proj = b} =>
+      (TotalSpace.fiberLinearEquivAt (E := E) K P b).symm
+        (f (TotalSpace.fiberLinearEquivAt (E := E) K P b v))) hleft
+  simpa only [LinearMap.comp_apply, weightedRetractionLinearMap_apply,
+    weightedEmbeddingLinearMap_apply,
+    ← TotalSpace.fiberLinearEquivAt_apply (E := E) K P b,
+    LinearMap.id_apply, LinearEquiv.symm_apply_apply] using hv
+
+/-- Reconstructing the weighted coordinates returns the original total-space point. -/
+@[simp] theorem weightedRetraction_weightedEmbedding (t : TotalSpace P E) :
+    A.weightedRetraction (A.weightedEmbedding t) = t := by
+  rcases t with ⟨b, v⟩
+  rw [weightedEmbedding_mk, weightedRetraction_apply]
+  exact congrArg (TotalSpace.mk b)
+    (congrArg (fun f : E b →ₗ[K] E b => f v)
+      (A.weightedRetractionLinearMap_comp_weightedEmbeddingLinearMap b))
+
+/-- The total reconstruction is a left inverse of the weighted total embedding. -/
+theorem leftInverse_weightedRetraction_weightedEmbedding :
+    Function.LeftInverse A.weightedRetraction A.weightedEmbedding :=
+  A.weightedRetraction_weightedEmbedding
+
+/-- Reconstruction composed with the weighted total embedding is the identity. -/
+@[simp] theorem weightedRetraction_comp_weightedEmbedding :
+    A.weightedRetraction ∘ A.weightedEmbedding = id :=
+  funext A.weightedRetraction_weightedEmbedding
+
 private theorem continuous_embedding_chart_inverse (i : Fin A.embeddingChartCount) :
     Continuous (fun z : U i × (Fin (A.rank (A.embeddingChartIndex i)) → K) =>
       (c i z.1.val z.1.property z.2).val) :=
@@ -173,32 +276,52 @@ theorem continuous_weightedEmbedding : Continuous A.weightedEmbedding := by
       (TotalSpace.proj : TotalSpace P E → B) U A.embeddingWeight c
       A.continuous_proj hw A.continuous_embedding_chart_coordinate hsuppw)
 
-/-- The exact weighted stage is a closed embedding. Closedness uses the Hausdorff
-model product and does not require the base or original total space to be Hausdorff. -/
-theorem isClosedEmbedding_weightedEmbedding : IsClosedEmbedding A.weightedEmbedding := by
+/-- The weighted reconstruction is jointly continuous into the original total space. -/
+theorem continuous_weightedRetraction : Continuous A.weightedRetraction := by
   classical
-  obtain ⟨_, hcover, _, _, _, _, _, _, _, _, ha, _, hsuppa, hsum⟩ := A.embedding_weights
+  obtain ⟨_, hcover, _, _, _, _, _, _, _, _, ha, _, hsuppa, _⟩ := A.embedding_weights
   have hU (b : B) : ∃ i : Fin A.embeddingChartCount, b ∈ interior (U i) := by
     obtain ⟨i, hi⟩ := hcover b
     refine ⟨i, ?_⟩
     rwa [(A.chart (A.embeddingChartIndex i)).open_baseSet.interior_eq]
-  let ρ (b : B) : A.WeightedEmbeddingModel →ₗ[K]
-      {t : TotalSpace P E // t.proj = b} :=
-    LinearMap.finiteChartReconstruction U c b
-      (Finset.univ.filter (fun i => b ∈ U i)) (fun i => A.embeddingDualWeight i b)
-      (fun _ hi => (Finset.mem_filter.mp hi).2)
-  have hρ : Continuous (fun z : B × A.WeightedEmbeddingModel => (ρ z.1 z.2).val) :=
+  have hρ : Continuous (fun z : B × A.WeightedEmbeddingModel =>
+      (D z.1 z.2).val) :=
     LinearMap.continuous_finiteChartReconstruction U c Finset.univ
       A.embeddingDualWeight hU A.continuous_embedding_chart_inverse
       A.continuous_embedding_chart_coordinate (fun i _ => ha i) (fun i _ => hsuppa i)
-  have hleft (b : B) :
-      (ρ b).comp (LinearMap.weightedCoordinates U A.embeddingWeight c b) = LinearMap.id := by
-    apply LinearMap.finiteChartReconstruction_filter_comp_weightedCoordinates_of_sum_eq_one
-      U A.embeddingWeight c b Finset.univ (fun i => A.embeddingDualWeight i b)
-    · intro i _ hbi
-      by_contra hai
-      exact hbi (hsuppa i (subset_closure hai))
-    · exact hsum b
+  apply hρ.congr
+  intro z
+  exact (A.weightedRetraction_eq_finiteChartReconstruction z).symm
+
+/-- Each reconstruction linear map is continuous for the given original fibre topology. -/
+theorem continuous_weightedRetractionLinearMap (b : B) :
+    Continuous (A.weightedRetractionLinearMap b) := by
+  apply (A.inducing b).continuous_iff.mpr
+  change Continuous (fun z : A.WeightedEmbeddingModel => A.weightedRetraction (b, z))
+  exact A.continuous_weightedRetraction.comp (continuous_const.prodMk continuous_id)
+
+/-- The exact weighted stage is a closed embedding. Closedness uses the Hausdorff
+model product and does not require the base or original total space to be Hausdorff. -/
+theorem isClosedEmbedding_weightedEmbedding : IsClosedEmbedding A.weightedEmbedding := by
+  classical
+  have hρ : Continuous (fun z : B × A.WeightedEmbeddingModel =>
+      (D z.1 z.2).val) := by
+    apply A.continuous_weightedRetraction.congr
+    intro z
+    exact A.weightedRetraction_eq_finiteChartReconstruction z
+  have hleft (b : B) : (D b).comp
+      (LinearMap.weightedCoordinates U A.embeddingWeight c b) = LinearMap.id := by
+    apply LinearMap.ext
+    intro u
+    have hu := congrArg
+      (fun f : E b →ₗ[K] E b =>
+        TotalSpace.fiberLinearEquivAt (E := E) K P b
+          (f ((TotalSpace.fiberLinearEquivAt (E := E) K P b).symm u)))
+      (A.weightedRetractionLinearMap_comp_weightedEmbeddingLinearMap b)
+    simpa only [LinearMap.comp_apply, weightedRetractionLinearMap_apply,
+      weightedEmbeddingLinearMap_apply,
+      ← TotalSpace.fiberLinearEquivAt_apply (E := E) K P b,
+      LinearMap.id_apply, LinearEquiv.apply_symm_apply] using hu
   exact LinearMap.isClosedEmbedding_weightedCoordinates_of_finiteChartReconstruction
     U c Finset.univ A.embeddingDualWeight A.embeddingWeight hρ
     A.continuous_weightedEmbedding hleft
@@ -247,6 +370,89 @@ on every original fibre vector. -/
     A.finiteTrivialEmbedding (TotalSpace.mk b v) =
       (b, A.finiteTrivialEmbeddingLinearMap b v) := rfl
 
+/-- The standard-coordinate stage preserves the original base point. -/
+@[simp] theorem finiteTrivialEmbedding_fst (t : TotalSpace P E) :
+    (A.finiteTrivialEmbedding t).1 = t.proj := rfl
+
+/-- Reconstruction from standard finite coordinates into the original fibre, using
+exactly the inverse of the model equivalence in `finiteTrivialEmbeddingLinearMap`. -/
+def finiteTrivialRetractionLinearMap (b : B) :
+    (Fin A.embeddingDimension → K) →ₗ[K] E b :=
+  (A.weightedRetractionLinearMap b).comp A.embeddingModelEquiv.symm.toLinearMap
+
+/-- Standard-coordinate reconstruction first returns to the full selected model product. -/
+theorem finiteTrivialRetractionLinearMap_apply (b : B) (z : Fin A.embeddingDimension → K) :
+    A.finiteTrivialRetractionLinearMap b z =
+      A.weightedRetractionLinearMap b (A.embeddingModelEquiv.symm z) := rfl
+
+/-- The finite-trivial retraction takes values in the original total space. -/
+def finiteTrivialRetraction : B × (Fin A.embeddingDimension → K) → TotalSpace P E :=
+  fun z => TotalSpace.mk z.1 (A.finiteTrivialRetractionLinearMap z.1 z.2)
+
+/-- Evaluation of the standard-coordinate retraction uses its original-fibre linear map. -/
+theorem finiteTrivialRetraction_apply (z : B × (Fin A.embeddingDimension → K)) :
+    A.finiteTrivialRetraction z =
+      TotalSpace.mk z.1 (A.finiteTrivialRetractionLinearMap z.1 z.2) := rfl
+
+/-- Standard-coordinate reconstruction preserves the specified base point. -/
+@[simp] theorem finiteTrivialRetraction_proj (z : B × (Fin A.embeddingDimension → K)) :
+    (A.finiteTrivialRetraction z).proj = z.1 := rfl
+
+/-- The standard-coordinate retraction changes only the model coordinates of the
+weighted retraction, using the inverse of the same equivalence as the embedding. -/
+theorem finiteTrivialRetraction_eq_weightedRetraction
+    (z : B × (Fin A.embeddingDimension → K)) :
+    A.finiteTrivialRetraction z =
+      A.weightedRetraction (z.1, A.embeddingModelEquiv.symm z.2) := rfl
+
+/-- Standard-coordinate reconstruction is a linear left inverse on each original fibre. -/
+theorem finiteTrivialRetractionLinearMap_comp_finiteTrivialEmbeddingLinearMap (b : B) :
+    (A.finiteTrivialRetractionLinearMap b).comp (A.finiteTrivialEmbeddingLinearMap b) =
+      LinearMap.id := by
+  apply LinearMap.ext
+  intro v
+  change A.weightedRetractionLinearMap b
+    (A.embeddingModelEquiv.symm
+      (A.embeddingModelEquiv (A.weightedEmbeddingLinearMap b v))) = v
+  rw [A.embeddingModelEquiv.symm_apply_apply]
+  exact congrArg (fun f : E b →ₗ[K] E b => f v)
+    (A.weightedRetractionLinearMap_comp_weightedEmbeddingLinearMap b)
+
+/-- Reconstructing the finite-trivial embedding returns the original total-space point. -/
+@[simp] theorem finiteTrivialRetraction_finiteTrivialEmbedding (t : TotalSpace P E) :
+    A.finiteTrivialRetraction (A.finiteTrivialEmbedding t) = t := by
+  rcases t with ⟨b, v⟩
+  rw [finiteTrivialEmbedding_mk, finiteTrivialRetraction_apply]
+  exact congrArg (TotalSpace.mk b)
+    (congrArg (fun f : E b →ₗ[K] E b => f v)
+      (A.finiteTrivialRetractionLinearMap_comp_finiteTrivialEmbeddingLinearMap b))
+
+/-- The finite-trivial total retraction is a left inverse of the named total embedding. -/
+theorem leftInverse_finiteTrivialRetraction_finiteTrivialEmbedding :
+    Function.LeftInverse A.finiteTrivialRetraction A.finiteTrivialEmbedding :=
+  A.finiteTrivialRetraction_finiteTrivialEmbedding
+
+/-- The finite-trivial total retraction composed with the embedding is the identity. -/
+@[simp] theorem finiteTrivialRetraction_comp_finiteTrivialEmbedding :
+    A.finiteTrivialRetraction ∘ A.finiteTrivialEmbedding = id :=
+  funext A.finiteTrivialRetraction_finiteTrivialEmbedding
+
+/-- The finite-trivial reconstruction is jointly continuous into the original total space. -/
+theorem continuous_finiteTrivialRetraction : Continuous A.finiteTrivialRetraction := by
+  have h := A.continuous_weightedRetraction.comp
+    (continuous_fst.prodMk (A.embeddingModelEquiv.symm.continuous.comp continuous_snd))
+  apply h.congr
+  intro z
+  exact (A.finiteTrivialRetraction_eq_weightedRetraction z).symm
+
+/-- Standard-coordinate reconstruction is continuous for each original fibre topology. -/
+theorem continuous_finiteTrivialRetractionLinearMap (b : B) :
+    Continuous (A.finiteTrivialRetractionLinearMap b) := by
+  apply (A.inducing b).continuous_iff.mpr
+  change Continuous (fun z : Fin A.embeddingDimension → K =>
+    A.finiteTrivialRetraction (b, z))
+  exact A.continuous_finiteTrivialRetraction.comp (continuous_const.prodMk continuous_id)
+
 /-- The standard finite-dimensional embedding is continuous on the original total space. -/
 theorem continuous_finiteTrivialEmbedding : Continuous A.finiteTrivialEmbedding :=
   (continuous_fst.prodMk (A.embeddingModelEquiv.continuous.comp continuous_snd)).comp
@@ -271,6 +477,33 @@ theorem exists_finiteTrivialEmbedding :
   ⟨A.embeddingDimension, A.finiteTrivialEmbeddingLinearMap, A.finiteTrivialEmbedding,
     A.continuous_finiteTrivialEmbedding, A.isClosedEmbedding_finiteTrivialEmbedding,
     A.finiteTrivialEmbedding_mk⟩
+
+include A in
+/-- A compact normal finite-rank atlas admits a matched finite-trivial embedding and
+original-fibre retraction. Both total maps are continuous, the embedding is closed,
+and reconstruction is a linear left inverse in every original fibre. -/
+theorem exists_finiteTrivialEmbedding_and_retraction :
+    ∃ (N : ℕ)
+      (β : ∀ b : B, E b →ₗ[K] (Fin N → K))
+      (ρ : ∀ b : B, (Fin N → K) →ₗ[K] E b),
+      Continuous (fun t : TotalSpace P E => (t.proj, β t.proj t.snd)) ∧
+      IsClosedEmbedding (fun t : TotalSpace P E => (t.proj, β t.proj t.snd)) ∧
+      Continuous (fun z : B × (Fin N → K) =>
+        (TotalSpace.mk z.1 (ρ z.1 z.2) : TotalSpace P E)) ∧
+      ∀ b : B, (ρ b).comp (β b) = LinearMap.id := by
+  have hβ : (fun t : TotalSpace P E =>
+      (t.proj, A.finiteTrivialEmbeddingLinearMap t.proj t.snd)) =
+      A.finiteTrivialEmbedding := by
+    funext t
+    rcases t with ⟨b, v⟩
+    exact (A.finiteTrivialEmbedding_mk b v).symm
+  refine ⟨A.embeddingDimension, A.finiteTrivialEmbeddingLinearMap,
+    A.finiteTrivialRetractionLinearMap, ?_, ?_, A.continuous_finiteTrivialRetraction,
+    A.finiteTrivialRetractionLinearMap_comp_finiteTrivialEmbeddingLinearMap⟩
+  · rw [hβ]
+    exact A.continuous_finiteTrivialEmbedding
+  · rw [hβ]
+    exact A.isClosedEmbedding_finiteTrivialEmbedding
 
 end
 
