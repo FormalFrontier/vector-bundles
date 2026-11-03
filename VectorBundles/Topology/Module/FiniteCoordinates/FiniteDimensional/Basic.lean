@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundles.Topology.Module.FiniteCoordinates.OperatorNorm
+public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Data.Fintype.BigOperators
@@ -24,6 +25,10 @@ and target need not be separated or complete. The sample vectors and constant de
 on the given domain, without requiring its algebraic coordinates to be continuous.
 Consequently, continuity of an operator-valued family in the given operator-norm topology
 is equivalent to continuity of every fixed-vector evaluation.
+
+The canonical identity to the pointwise-convergence copy is a continuous linear equivalence,
+so convergence along any filter is likewise equivalent to convergence of every fixed-vector
+evaluation.
 
 ## References
 
@@ -351,5 +356,99 @@ theorem continuous_iff_apply_of_finiteDimensional
         K A (kK := kK) (sA := sA) (nA := nA) (hA := hA)
     exact (continuous_iff_apply_finset_of_opNorm_le s C (hbound G sG nG) L).2
       (fun v _ => hL v)
+
+end ContinuousLinearMap
+
+open Filter
+open scoped Topology
+
+namespace ContinuousLinearEquiv
+
+/-- For a finite-dimensional seminormed domain, the identity identifies the
+given operator-norm topology with the pointwise-convergence topology on
+continuous linear maps. The scalar field and both spaces may be incomplete,
+and the spaces need not be separated. -/
+def toPointwiseConvergenceCLMOfFiniteDimensional
+    (K : Type uK) [kK : NontriviallyNormedField K]
+    (A : Type uA) [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    [hA : @FiniteDimensional K A (inferInstance : DivisionRing K)
+      sA.toAddCommGroup nA.toModule]
+    (G : Type uG) [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace K G kK.toNormedField sG] :
+    (A →L[K] G) ≃L[K] (A →Lₚₜ[K] G) := by
+  exact
+    { toLinearEquiv :=
+        ContinuousLinearMap.toUniformConvergenceCLM (RingHom.id K) G {s : Set A | Finite s}
+      continuous_toFun :=
+        (ContinuousLinearMap.toPointwiseConvergenceCLM K (RingHom.id K) A G).continuous
+      continuous_invFun := by
+        apply (ContinuousLinearMap.continuous_iff_apply_of_finiteDimensional
+          ((ContinuousLinearMap.toUniformConvergenceCLM
+            (RingHom.id K) G {s : Set A | Finite s}).symm :
+            (A →Lₚₜ[K] G) → A →L[K] G)).2
+        intro v
+        simpa only [ContinuousLinearMap.toUniformConvergenceCLM_symm_apply] using
+          (continuous_eval_const v : Continuous (fun T : A →Lₚₜ[K] G => T v)) }
+
+variable {K : Type uK} [kK : NontriviallyNormedField K]
+variable {A : Type uA} [sA : SeminormedAddCommGroup A]
+variable [nA : @NormedSpace K A kK.toNormedField sA]
+variable [hA : @FiniteDimensional K A (inferInstance : DivisionRing K)
+  sA.toAddCommGroup nA.toModule]
+variable {G : Type uG} [sG : SeminormedAddCommGroup G]
+variable [nG : @NormedSpace K G kK.toNormedField sG]
+
+/-- The equivalence preserves each original fixed-vector evaluation. -/
+@[simp]
+theorem toPointwiseConvergenceCLMOfFiniteDimensional_apply
+    (T : A →L[K] G) (v : A) :
+    toPointwiseConvergenceCLMOfFiniteDimensional K A G T v = T v := by
+  exact ContinuousLinearMap.toUniformConvergenceCLM_apply
+    (σ := RingHom.id K) (F := G) (𝔖 := {s : Set A | Finite s})
+
+/-- The inverse equivalence preserves each original fixed-vector evaluation. -/
+@[simp]
+theorem toPointwiseConvergenceCLMOfFiniteDimensional_symm_apply
+    (T : A →Lₚₜ[K] G) (v : A) :
+    (toPointwiseConvergenceCLMOfFiniteDimensional K A G).symm T v = T v := by
+  exact ContinuousLinearMap.toUniformConvergenceCLM_symm_apply
+    (σ := RingHom.id K) (F := G) (𝔖 := {s : Set A | Finite s})
+
+/-- Forgetting the inverse recovers Mathlib's canonical map to the
+pointwise-convergence space on the same continuous linear maps. -/
+theorem toPointwiseConvergenceCLMOfFiniteDimensional_toContinuousLinearMap :
+    (toPointwiseConvergenceCLMOfFiniteDimensional K A G).toContinuousLinearMap =
+      ContinuousLinearMap.toPointwiseConvergenceCLM K (RingHom.id K) A G := by
+  ext T v
+  exact toPointwiseConvergenceCLMOfFiniteDimensional_apply T v
+
+end ContinuousLinearEquiv
+
+namespace ContinuousLinearMap
+
+/-- From a finite-dimensional seminormed domain, convergence in the given
+operator-norm topology along any filter is equivalent to convergence of every
+fixed-vector evaluation. The scalar field may be incomplete, and the original
+spaces need not be separated or complete. Finite-dimensionality uses the given
+domain module structure. -/
+theorem tendsto_iff_apply_of_finiteDimensional
+    {K : Type uK} [kK : NontriviallyNormedField K]
+    {A : Type uA} [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    [hA : @FiniteDimensional K A (inferInstance : DivisionRing K)
+      sA.toAddCommGroup nA.toModule]
+    {G : Type uG} [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace K G kK.toNormedField sG]
+    {X : Type uX} {l : Filter X}
+    {L : X → A →L[K] G} {L0 : A →L[K] G} :
+    Tendsto L l (𝓝 L0) ↔
+      ∀ v : A, Tendsto (fun x : X => L x v) l (𝓝 (L0 v)) := by
+  let e := ContinuousLinearEquiv.toPointwiseConvergenceCLMOfFiniteDimensional K A G
+  have htransport :
+      Tendsto L l (𝓝 L0) ↔ Tendsto (fun x : X => e (L x)) l (𝓝 (e L0)) :=
+    e.toHomeomorph.isEmbedding.tendsto_nhds_iff
+  rw [htransport, PointwiseConvergenceCLM.tendsto_iff_forall_tendsto]
+  simp only [e, ContinuousLinearEquiv.toPointwiseConvergenceCLMOfFiniteDimensional_apply]
 
 end ContinuousLinearMap

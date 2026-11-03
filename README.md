@@ -16,7 +16,11 @@ topological fiber bundles.
   domain, is continuous in the original operator-norm topology exactly when every original
   fixed-vector evaluation is continuous
   (`ContinuousLinearMap.continuous_iff_apply_of_finiteDimensional` in
-  [module](VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional.lean)).
+  [module](VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional.lean)). The canonical
+  identity to the pointwise-convergence copy of the same continuous linear maps is a continuous
+  linear equivalence (`ContinuousLinearEquiv.toPointwiseConvergenceCLMOfFiniteDimensional`);
+  convergence along any filter is therefore equivalent to convergence at every fixed vector
+  (`ContinuousLinearMap.tendsto_iff_apply_of_finiteDimensional`).
 
 These families are proved here, with the original fiber and total-space topologies.
 The [catalogue](docs/HeadlineResults.md) gives the individual statements and variants;

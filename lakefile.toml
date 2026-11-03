@@ -142,6 +142,7 @@ globs = [
   "VectorBundles.Topology.FiberBundle.Prod",
   "VectorBundles.Topology.FiberBundle.SumKer",
   "VectorBundles.Topology.FiberBundle.SumRange",
+  "VectorBundles.Topology.FiberBundle.SumRangeTrivialization",
   "VectorBundles.Topology.FiberBundle.Pullback",
   "VectorBundles.Topology.FiberBundle.Pullback.Proper",
   "VectorBundles.Topology.FiberBundle.SupportedTransport",
