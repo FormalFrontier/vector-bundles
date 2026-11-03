@@ -24,12 +24,26 @@ topological fiber bundles.
   For an isometric field homomorphism `σ : K →+* L`, the same criterion holds for
   continuous `σ`-semilinear maps with their original actions and seminorms
   (`ContinuousLinearMap.continuous_iff_apply_of_finiteDimensionalₛₗ`). Here `K` is
-  nontrivially normed and `L` need only be a normed field. For any family of bounded sets
-  whose union algebraically spans the original domain, the identity to the space of uniform
-  convergence on that family is a continuous `L`-linear equivalence
-  (`ContinuousLinearEquiv.toUniformConvergenceCLMOfFiniteDimensional`). This includes bounded
-  covers and a singleton family containing a finite algebraic basis, without requiring
-  completeness, separation or surjectivity of `σ`.
+  nontrivially normed and `L` need only be a normed field. More generally, the ambient
+  domain need not be finite-dimensional: evaluations on a set `D` suffice when its original
+  `K`-span is finite-dimensional and dense
+  (`ContinuousLinearMap.continuous_iff_apply_of_dense_spanₛₗ`); `D` need not be bounded.
+  For any family of bounded sets, the canonical identity to uniform convergence on that
+  family is a continuous `L`-linear equivalence if `D` lies in the `K`-span of its union
+  (`ContinuousLinearEquiv.toUniformConvergenceCLMOfDenseTestSpan` in
+  [module](VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Basic.lean)).
+  Only the dense controlling span of `D` must be finite-dimensional, so further bounded
+  sets may be added even when they make the whole union span infinite-dimensional.
+  The union-based construction (`ContinuousLinearEquiv.toUniformConvergenceCLMOfDenseSpan`)
+  is the `D = ⋃₀𝔖` specialization, and the algebraic-spanning finite-dimensional construction
+  (`ContinuousLinearEquiv.toUniformConvergenceCLMOfFiniteDimensional`) specializes it further.
+  No completeness, separation or surjectivity of `σ` is required.
+  For example, `R` over `Q` has the one-dimensional dense test span `Q·1`, although its
+  ambient algebraic dimension is infinite: `D = {1}` controls the family consisting of
+  `{1}` and `[-1,1]`, whose union spans all of `R` over `Q`.
+  In `Q(√2)` with inherited real absolute value,
+  `Q·1` is proper and dense. The equivalence acts on the same full maps, not on their
+  restrictions; dense restriction need not be injective for a nonseparated target.
 
 These families are proved here, with the original fiber and total-space topologies.
 The [catalogue](docs/HeadlineResults.md) gives the individual statements and variants;

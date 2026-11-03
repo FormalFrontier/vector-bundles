@@ -14,6 +14,7 @@ public import Mathlib.Topology.MetricSpace.Antilipschitz
 public import Mathlib.Analysis.Normed.Group.Constructions
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import VectorBundles.Analysis.Normed.Module.Completion
+public import VectorBundles.Analysis.Normed.Operator.Restrict
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 
@@ -35,9 +36,14 @@ function space, this identifies total boundedness for the operator-norm uniformi
 boundedness of every fixed-vector image.
 
 The same criterion holds for continuous semilinear maps along an isometric homomorphism
-of normed fields. Uniform convergence on a bounded family whose union algebraically spans
-the original domain also gives the operator-norm topology. The identity with this family
-topology is linear over the original target field; its action on the target is unchanged.
+of normed fields. More generally, the ambient domain can have infinite algebraic dimension:
+it is enough to test evaluations on a set whose original scalar span is finite-dimensional
+and dense. Uniform convergence on any bounded family whose union algebraically spans
+such a controlling test set also gives the operator-norm topology, even if the whole
+union has infinite-dimensional span. The identity with this family topology is linear
+over the original target field; its action on the target is unchanged. Dense span need
+not be algebraically the whole domain, and restriction to a dense subspace need not be
+injective when the target is not separated.
 
 ## References
 
@@ -470,6 +476,76 @@ theorem continuous_iff_apply_of_finiteDimensionalₛₗ
         (fun a => by simpa only [e, semilinearRestrictHomeomorph_apply] using hf a)
     simpa only [Function.comp_def, Homeomorph.symm_apply_apply] using e.symm.continuous.comp h
 
+/-- Continuity of fixed-vector evaluations propagates algebraically to the span. -/
+private theorem continuous_apply_of_mem_span
+    {K : Type uK} [Semiring K] {L : Type uL} [Semiring L]
+    {σ : K →+* L}
+    {A : Type uA} [AddCommMonoid A] [Module K A] [TopologicalSpace A]
+    {G : Type uG} [AddCommMonoid G] [Module L G] [TopologicalSpace G]
+    [ContinuousAdd G] [ContinuousConstSMul L G]
+    {X : Type uX} [TopologicalSpace X]
+    (f : X → A →SL[σ] G) {D : Set A}
+    (hD : ∀ a ∈ D, Continuous (fun x : X => f x a))
+    {a : A} (ha : a ∈ Submodule.span K D) :
+    Continuous (fun x : X => f x a) := by
+  let P : Submodule K A :=
+    { carrier := {a | Continuous (fun x : X => f x a)}
+      zero_mem' := by
+        simpa only [Set.mem_ofPred_eq, map_zero] using
+          (continuous_const : Continuous (fun _ : X => (0 : G)))
+      add_mem' := by
+        intro a b ha hb
+        change Continuous (fun x : X => f x (a + b))
+        have hfun : ((fun x : X => f x a) + fun x => f x b) =
+            (fun x : X => f x (a + b)) := by
+          funext x
+          exact (map_add (f x) a b).symm
+        exact hfun ▸ ha.add hb
+      smul_mem' := by
+        intro c a ha
+        change Continuous (fun x : X => f x (c • a))
+        have hfun : (σ c • fun x : X => f x a) =
+            (fun x : X => f x (c • a)) := by
+          funext x
+          exact (map_smulₛₗ (f x) c a).symm
+        exact hfun ▸ ha.const_smul (σ c) }
+  exact (Submodule.span_le.mpr (show D ⊆ P from hD)) ha
+
+/-- Continuity of a family of continuous semilinear maps can be tested on a set whose
+scalar span is finite-dimensional and dense in the original seminormed domain. The
+ambient domain need not be finite-dimensional, and the testing set need not be bounded.
+The fields and spaces may be incomplete, the spaces need not be separated, and the
+target retains its original scalar action.
+
+The proof applies the independent global evaluation criterion to the inherited
+submodule spanned by the tests, then reflects continuity through dense restriction. -/
+theorem continuous_iff_apply_of_dense_spanₛₗ
+    {K : Type uK} [kK : NontriviallyNormedField K]
+    {L : Type uL} [kL : NormedField L]
+    {σ : K →+* L} [RingHomIsometric σ]
+    {A : Type uA} [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    {G : Type uG} [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace L G kL sG]
+    {X : Type uX} [tX : TopologicalSpace X]
+    (D : Set A)
+    [hD : FiniteDimensional K (Submodule.span K D)]
+    (hdense : Dense (Submodule.span K D : Set A))
+    (f : X → A →SL[σ] G) :
+    Continuous f ↔ ∀ a ∈ D, Continuous (fun x : X => f x a) := by
+  constructor
+  · intro hf a _
+    exact hf.eval_const a
+  · intro hf
+    -- Test on the inherited span, then reflect continuity through dense restriction.
+    have hr : Continuous (fun x : X => (f x).domRestrict (Submodule.span K D)) := by
+      apply (continuous_iff_apply_of_finiteDimensionalₛₗ _).2
+      intro a
+      change Continuous (fun x : X => f x (a : A))
+      exact continuous_apply_of_mem_span f hf a.property
+    exact (isUniformInducing_domRestrict_of_dense (σ := σ) (G := G)
+      (Submodule.span K D) hdense).isInducing.continuous_iff.mpr hr
+
 end ContinuousLinearMap
 
 namespace UniformConvergenceCLM
@@ -483,38 +559,142 @@ private theorem continuous_eval_of_mem_span
     [IsTopologicalAddGroup G] [ContinuousConstSMul L G]
     (𝔖 : Set (Set A)) {a : A} (ha : a ∈ Submodule.span K (⋃₀ 𝔖)) :
     Continuous (fun T : UniformConvergenceCLM σ G 𝔖 => T a) := by
-  let P : Submodule K A :=
-    { carrier := {a | Continuous (fun T : UniformConvergenceCLM σ G 𝔖 => T a)}
-      zero_mem' := by
-        simpa only [Set.mem_ofPred_eq, map_zero] using
-          (continuous_const : Continuous (fun _ : UniformConvergenceCLM σ G 𝔖 => (0 : G)))
-      add_mem' := by
-        intro a b ha hb
-        change Continuous (fun T : UniformConvergenceCLM σ G 𝔖 => T (a + b))
-        have hfun : ((fun T : UniformConvergenceCLM σ G 𝔖 => T a) + fun T => T b) =
-            (fun T : UniformConvergenceCLM σ G 𝔖 => T (a + b)) := by
-          funext T
-          exact (map_add T a b).symm
-        exact hfun ▸ ha.add hb
-      smul_mem' := by
-        intro c a ha
-        change Continuous (fun T : UniformConvergenceCLM σ G 𝔖 => T (c • a))
-        have hfun : (σ c • fun T : UniformConvergenceCLM σ G 𝔖 => T a) =
-            (fun T : UniformConvergenceCLM σ G 𝔖 => T (c • a)) := by
-          funext T
-          exact (map_smulₛₗ T c a).symm
-        exact hfun ▸ ha.const_smul (σ c) }
-  have hP : ⋃₀ 𝔖 ⊆ P := by
-    intro a ha
-    let : UniformSpace G := IsTopologicalAddGroup.rightUniformSpace G
-    have : IsUniformAddGroup G := isUniformAddGroup_of_addCommGroup
-    exact (UniformOnFun.uniformContinuous_eval_of_mem_sUnion G 𝔖 ha).continuous.comp
-      (UniformConvergenceCLM.isEmbedding_coeFn σ G 𝔖).continuous
-  exact (Submodule.span_le.mpr hP) ha
+  apply ContinuousLinearMap.continuous_apply_of_mem_span
+    (fun T : UniformConvergenceCLM σ G 𝔖 => T) (a := a) (D := ⋃₀ 𝔖) ?_ ha
+  intro a ha
+  let : UniformSpace G := IsTopologicalAddGroup.rightUniformSpace G
+  have : IsUniformAddGroup G := isUniformAddGroup_of_addCommGroup
+  exact (UniformOnFun.uniformContinuous_eval_of_mem_sUnion G 𝔖 ha).continuous.comp
+    (UniformConvergenceCLM.isEmbedding_coeFn σ G 𝔖).continuous
 
 end UniformConvergenceCLM
 
 namespace ContinuousLinearEquiv
+
+/-- Uniform convergence on a bounded family agrees with the operator-norm topology when
+its union algebraically spans a set of tests with finite-dimensional dense scalar span.
+Only the controlling test span is required to be finite-dimensional; the ambient domain
+and the whole family union may have infinite-dimensional span. The tests need not be bounded.
+The underlying equivalence is Mathlib's canonical identity on the same full maps, linear
+over the original target field. No completeness, separation or surjectivity of the scalar
+homomorphism is assumed. -/
+def toUniformConvergenceCLMOfDenseTestSpan
+    (K : Type uK) [kK : NontriviallyNormedField K]
+    (L : Type uL) [kL : NormedField L]
+    (σ : K →+* L) [RingHomIsometric σ]
+    (A : Type uA) [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    (G : Type uG) [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace L G kL sG]
+    (𝔖 : Set (Set A)) (D : Set A)
+    [hD : FiniteDimensional K (Submodule.span K D)]
+    (hbounded : ∀ s ∈ 𝔖, Bornology.IsBounded s)
+    (hcontrol : D ⊆ Submodule.span K (⋃₀ 𝔖))
+    (hdense : Dense (Submodule.span K D : Set A)) :
+    (A →SL[σ] G) ≃L[L] UniformConvergenceCLM σ G 𝔖 :=
+  { toLinearEquiv := ContinuousLinearMap.toUniformConvergenceCLM σ G 𝔖
+    continuous_toFun := ContinuousLinearMap.toUniformConvergenceCLM_continuous σ G 𝔖
+      (fun s hs => NormedSpace.isVonNBounded_of_isBounded K (hbounded s hs))
+    continuous_invFun := by
+      apply (ContinuousLinearMap.continuous_iff_apply_of_dense_spanₛₗ D hdense
+        ((ContinuousLinearMap.toUniformConvergenceCLM σ G 𝔖).symm :
+          UniformConvergenceCLM σ G 𝔖 → A →SL[σ] G)).2
+      intro a ha
+      simpa only [ContinuousLinearMap.toUniformConvergenceCLM_symm_apply] using
+        UniformConvergenceCLM.continuous_eval_of_mem_span (σ := σ) 𝔖 (hcontrol ha) }
+
+section DenseTestUniformConvergence
+
+variable {K : Type uK} [kK : NontriviallyNormedField K]
+variable {L : Type uL} [kL : NormedField L]
+variable {σ : K →+* L} [RingHomIsometric σ]
+variable {A : Type uA} [sA : SeminormedAddCommGroup A]
+variable [nA : @NormedSpace K A kK.toNormedField sA]
+variable {G : Type uG} [sG : SeminormedAddCommGroup G]
+variable [nG : @NormedSpace L G kL sG]
+variable (𝔖 : Set (Set A)) (D : Set A)
+variable [hD : FiniteDimensional K (Submodule.span K D)]
+variable (hbounded : ∀ s ∈ 𝔖, Bornology.IsBounded s)
+variable (hcontrol : D ⊆ Submodule.span K (⋃₀ 𝔖))
+variable (hdense : Dense (Submodule.span K D : Set A))
+
+/-- The dense-test-span equivalence preserves every original fixed-vector evaluation. -/
+@[simp]
+theorem toUniformConvergenceCLMOfDenseTestSpan_apply (T : A →SL[σ] G) (v : A) :
+    toUniformConvergenceCLMOfDenseTestSpan K L σ A G 𝔖 D hbounded hcontrol hdense T v = T v :=
+  ContinuousLinearMap.toUniformConvergenceCLM_apply
+
+/-- The inverse dense-test-span equivalence preserves every original fixed-vector evaluation. -/
+@[simp]
+theorem toUniformConvergenceCLMOfDenseTestSpan_symm_apply
+    (T : UniformConvergenceCLM σ G 𝔖) (v : A) :
+    (toUniformConvergenceCLMOfDenseTestSpan K L σ A G 𝔖 D hbounded hcontrol hdense).symm T v =
+      T v :=
+  ContinuousLinearMap.toUniformConvergenceCLM_symm_apply
+
+/-- Forgetting continuity gives the canonical same-function linear equivalence. -/
+@[simp]
+theorem toUniformConvergenceCLMOfDenseTestSpan_toLinearEquiv :
+    (toUniformConvergenceCLMOfDenseTestSpan K L σ A G 𝔖 D hbounded hcontrol hdense).toLinearEquiv =
+      ContinuousLinearMap.toUniformConvergenceCLM σ G 𝔖 := rfl
+
+end DenseTestUniformConvergence
+
+/-- Uniform convergence on a bounded family whose union has finite-dimensional dense
+scalar span agrees with the operator-norm topology on continuous semilinear maps. The
+ambient seminormed domain need not be finite-dimensional. The underlying equivalence
+is Mathlib's canonical identity on the same full maps, linear over the original target
+field. No completeness, separation or surjectivity of the scalar homomorphism is assumed. -/
+def toUniformConvergenceCLMOfDenseSpan
+    (K : Type uK) [kK : NontriviallyNormedField K]
+    (L : Type uL) [kL : NormedField L]
+    (σ : K →+* L) [RingHomIsometric σ]
+    (A : Type uA) [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    (G : Type uG) [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace L G kL sG]
+    (𝔖 : Set (Set A))
+    [h𝔖 : FiniteDimensional K (Submodule.span K (⋃₀ 𝔖))]
+    (hbounded : ∀ s ∈ 𝔖, Bornology.IsBounded s)
+    (hdense : Dense (Submodule.span K (⋃₀ 𝔖) : Set A)) :
+    (A →SL[σ] G) ≃L[L] UniformConvergenceCLM σ G 𝔖 :=
+  toUniformConvergenceCLMOfDenseTestSpan K L σ A G 𝔖 (⋃₀ 𝔖) hbounded
+    (fun _ ha => Submodule.subset_span ha) hdense
+
+section DenseUniformConvergence
+
+variable {K : Type uK} [kK : NontriviallyNormedField K]
+variable {L : Type uL} [kL : NormedField L]
+variable {σ : K →+* L} [RingHomIsometric σ]
+variable {A : Type uA} [sA : SeminormedAddCommGroup A]
+variable [nA : @NormedSpace K A kK.toNormedField sA]
+variable {G : Type uG} [sG : SeminormedAddCommGroup G]
+variable [nG : @NormedSpace L G kL sG]
+variable (𝔖 : Set (Set A))
+variable [h𝔖 : FiniteDimensional K (Submodule.span K (⋃₀ 𝔖))]
+variable (hbounded : ∀ s ∈ 𝔖, Bornology.IsBounded s)
+variable (hdense : Dense (Submodule.span K (⋃₀ 𝔖) : Set A))
+
+/-- The dense-span equivalence preserves every original fixed-vector evaluation. -/
+@[simp]
+theorem toUniformConvergenceCLMOfDenseSpan_apply (T : A →SL[σ] G) (v : A) :
+    toUniformConvergenceCLMOfDenseSpan K L σ A G 𝔖 hbounded hdense T v = T v :=
+  ContinuousLinearMap.toUniformConvergenceCLM_apply
+
+/-- The inverse dense-span equivalence preserves every original fixed-vector evaluation. -/
+@[simp]
+theorem toUniformConvergenceCLMOfDenseSpan_symm_apply
+    (T : UniformConvergenceCLM σ G 𝔖) (v : A) :
+    (toUniformConvergenceCLMOfDenseSpan K L σ A G 𝔖 hbounded hdense).symm T v = T v :=
+  ContinuousLinearMap.toUniformConvergenceCLM_symm_apply
+
+/-- Forgetting continuity gives the canonical same-function linear equivalence. -/
+@[simp]
+theorem toUniformConvergenceCLMOfDenseSpan_toLinearEquiv :
+    (toUniformConvergenceCLMOfDenseSpan K L σ A G 𝔖 hbounded hdense).toLinearEquiv =
+      ContinuousLinearMap.toUniformConvergenceCLM σ G 𝔖 := rfl
+
+end DenseUniformConvergence
 
 /-- Uniform convergence on a bounded family whose union algebraically spans a
 finite-dimensional seminormed domain agrees with the operator-norm topology on continuous
@@ -536,17 +716,11 @@ def toUniformConvergenceCLMOfFiniteDimensional
     (hbounded : ∀ s ∈ 𝔖, Bornology.IsBounded s)
     (hspan : Submodule.span K (⋃₀ 𝔖) = ⊤) :
     (A →SL[σ] G) ≃L[L] UniformConvergenceCLM σ G 𝔖 :=
-  { toLinearEquiv := ContinuousLinearMap.toUniformConvergenceCLM σ G 𝔖
-    continuous_toFun := ContinuousLinearMap.toUniformConvergenceCLM_continuous σ G 𝔖
-      (fun s hs => NormedSpace.isVonNBounded_of_isBounded K (hbounded s hs))
-    continuous_invFun := by
-      apply (ContinuousLinearMap.continuous_iff_apply_of_finiteDimensionalₛₗ
-        ((ContinuousLinearMap.toUniformConvergenceCLM σ G 𝔖).symm :
-          UniformConvergenceCLM σ G 𝔖 → A →SL[σ] G)).2
-      intro a
-      have ha : a ∈ Submodule.span K (⋃₀ 𝔖) := by rw [hspan]; trivial
-      simpa only [ContinuousLinearMap.toUniformConvergenceCLM_symm_apply] using
-        UniformConvergenceCLM.continuous_eval_of_mem_span (σ := σ) 𝔖 ha }
+  toUniformConvergenceCLMOfDenseSpan K L σ A G 𝔖 hbounded
+    (by
+      rw [hspan]
+      change Dense (Set.univ : Set A)
+      exact dense_univ)
 
 section UniformConvergence
 

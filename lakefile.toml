@@ -14,6 +14,7 @@ name = "VectorBundles"
 globs = [
   "VectorBundles.Topology.FiberBundle.Trivialization.CompHomeomorph",
   "VectorBundles.Analysis.Normed.Operator.Completion",
+  "VectorBundles.Analysis.Normed.Operator.Restrict",
   "VectorBundles.Analysis.Normed.Module.Completion",
   "VectorBundles.Topology.Module.FiniteCoordinates.OperatorNorm",
   "VectorBundles.Analysis.Normed.Operator.GramCoordinates",
