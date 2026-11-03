@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundles.Analysis.Normed.Operator.Completion
+public import VectorBundles.Topology.Module.FiniteCoordinates.OperatorNorm
 public import VectorBundles.Topology.VectorBundle.FiniteRank.Embedding
 
 public import VectorBundles.Topology.Maps.FiniteChartReconstruction

@@ -94,6 +94,7 @@ jobs:
                   os.close(fd)
           modules = (
               "VectorBundles/Analysis/Normed/Operator/Completion",
+              "VectorBundles/Topology/Module/FiniteCoordinates/OperatorNorm",
               "VectorBundles/Topology/Module/FiniteCoordinates",
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional",
               "VectorBundles/Data/Bundle",
@@ -179,6 +180,7 @@ jobs:
           # Static whitelist, priority order; no discovery or dependency-module execution.
           modules = (
               "VectorBundles/Analysis/Normed/Operator/Completion",
+              "VectorBundles/Topology/Module/FiniteCoordinates/OperatorNorm",
               "VectorBundles/Topology/Module/FiniteCoordinates",
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional",
               "VectorBundles/Data/Bundle",
