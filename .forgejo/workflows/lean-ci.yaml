@@ -93,6 +93,8 @@ jobs:
               finally:
                   os.close(fd)
           modules = (
+              "VectorBundles/Topology/FiberBundle/SumRange",
+              "VectorBundlesTest/SplitRangeHomeomorph",
               "VectorBundles/Analysis/Normed/Operator/Completion",
               "VectorBundles/Analysis/Normed/Module/Completion",
               "VectorBundles/Topology/Module/FiniteCoordinates/OperatorNorm",
@@ -180,6 +182,8 @@ jobs:
               baseline = {}
           # Static whitelist, priority order; no discovery or dependency-module execution.
           modules = (
+              "VectorBundles/Topology/FiberBundle/SumRange",
+              "VectorBundlesTest/SplitRangeHomeomorph",
               "VectorBundles/Analysis/Normed/Operator/Completion",
               "VectorBundles/Analysis/Normed/Module/Completion",
               "VectorBundles/Topology/Module/FiniteCoordinates/OperatorNorm",

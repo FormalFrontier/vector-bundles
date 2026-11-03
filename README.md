@@ -61,6 +61,13 @@ the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib co
   No continuity of fibre operations or scalar topology is required. Given
   semiring-linear maps specialize this scalar-free construction by forgetting
   linearity, retaining their original scalar actions.
+  For semiring-linear split maps on a given family `E b`, the
+  [complementary-range sum coordinates](VectorBundles/Topology/FiberBundle/SumRange.lean)
+  identify the fiberwise product of `E b` and `range (id - β.comp ρ)` with `B × A`,
+  under the same two total continuity hypotheses. The source has the canonical
+  product-total topology from the given first total space and the range graph topology.
+  The inverse uses `ρ` and the complementary endomorphism, and the forward fiber map
+  is the linear coproduct. No separate kernel topology is assumed.
 
 - **Prescribed finite-dimensional projection families.** Over a nontrivially normed
   field `K`, let the original finite-dimensional normed ambient `A` have its
