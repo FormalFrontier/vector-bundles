@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundles.Topology.Module.FiniteCoordinates.OperatorNorm
+public import VectorBundles.Topology.UniformSpace.Pi
 public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Data.Fintype.Option
@@ -28,7 +29,10 @@ is equivalent to continuity of every fixed-vector evaluation.
 
 The canonical identity to the pointwise-convergence copy is a continuous linear equivalence,
 so convergence along any filter is likewise equivalent to convergence of every fixed-vector
-evaluation.
+evaluation. The equivalence is also a uniform embedding for the inherited additive uniformities.
+Together with Mathlib's uniform embedding of the pointwise-convergence space into the full
+function space, this identifies total boundedness for the operator-norm uniformity with total
+boundedness of every fixed-vector image.
 
 ## References
 
@@ -450,5 +454,33 @@ theorem tendsto_iff_apply_of_finiteDimensional
     e.toHomeomorph.isEmbedding.tendsto_nhds_iff
   rw [htransport, PointwiseConvergenceCLM.tendsto_iff_forall_tendsto]
   simp only [e, ContinuousLinearEquiv.toPointwiseConvergenceCLMOfFiniteDimensional_apply]
+
+/-- A set of continuous linear maps on a finite-dimensional seminormed domain
+is totally bounded for the operator-norm uniformity if and only if its image
+under every fixed-vector evaluation is totally bounded. The scalar field may
+be incomplete, and the domain and target need not be separated or complete. -/
+theorem totallyBounded_iff_apply_of_finiteDimensional
+    {K : Type uK} [kK : NontriviallyNormedField K]
+    {A : Type uA} [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    [hA : @FiniteDimensional K A (inferInstance : DivisionRing K)
+      sA.toAddCommGroup nA.toModule]
+    {G : Type uG} [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace K G kK.toNormedField sG]
+    (s : Set (A →L[K] G)) :
+    TotallyBounded s ↔
+      ∀ v : A, TotallyBounded ((fun T : A →L[K] G => T v) '' s) := by
+  let e := ContinuousLinearEquiv.toPointwiseConvergenceCLMOfFiniteDimensional K A G
+  calc
+    TotallyBounded s ↔ TotallyBounded (e '' s) :=
+      (totallyBounded_image_iff e.isUniformEmbedding.isUniformInducing).symm
+    _ ↔ TotallyBounded (((↑) : (A →Lₚₜ[K] G) → A → G) '' (e '' s)) :=
+      (totallyBounded_image_iff
+        (PointwiseConvergenceCLM.isUniformEmbedding_coeFn
+          (RingHom.id K) A G).isUniformInducing).symm
+    _ ↔ ∀ v : A, TotallyBounded ((fun T : A →L[K] G => T v) '' s) := by
+      rw [totallyBounded_pi_iff]
+      simp only [Set.image_image, e,
+        ContinuousLinearEquiv.toPointwiseConvergenceCLMOfFiniteDimensional_apply]
 
 end ContinuousLinearMap

@@ -95,6 +95,7 @@ jobs:
           modules = (
               "VectorBundles/Topology/FiberBundle/SumRange",
               "VectorBundles/Topology/FiberBundle/SumRangeTrivialization",
+              "VectorBundles/Topology/UniformSpace/Pi",
               "VectorBundlesTest/SplitRangeHomeomorph",
               "VectorBundles/Analysis/Normed/Operator/Completion",
               "VectorBundles/Analysis/Normed/Module/Completion",
@@ -192,6 +193,7 @@ jobs:
           modules = (
               "VectorBundles/Topology/FiberBundle/SumRange",
               "VectorBundles/Topology/FiberBundle/SumRangeTrivialization",
+              "VectorBundles/Topology/UniformSpace/Pi",
               "VectorBundlesTest/SplitRangeHomeomorph",
               "VectorBundles/Analysis/Normed/Operator/Completion",
               "VectorBundles/Analysis/Normed/Module/Completion",

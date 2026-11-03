@@ -83,6 +83,7 @@ globs = [
   "VectorBundles.Topology.FiberBundle.SeparatedMap",
   "VectorBundles.Topology.Module.FiniteCoordinates",
     "VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional",
+  "VectorBundles.Topology.UniformSpace.Pi",
   "VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Basic",
   "VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Bounded",
   "VectorBundles.Topology.FiberBundle.ModelTopology",
