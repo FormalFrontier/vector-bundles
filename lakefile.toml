@@ -84,6 +84,7 @@ globs = [
   "VectorBundles.Topology.Module.FiniteCoordinates",
     "VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional",
   "VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Basic",
+  "VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Bounded",
   "VectorBundles.Topology.FiberBundle.ModelTopology",
   "VectorBundles.Topology.FiberBundle.Connected",
   "VectorBundles.Topology.FiberBundle.Separable",
