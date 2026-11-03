@@ -13,6 +13,7 @@ weak.linter.style.header = false
 name = "VectorBundles"
 globs = [
   "VectorBundles.Analysis.Normed.Operator.Completion",
+  "VectorBundles.Analysis.Normed.Module.Completion",
   "VectorBundles.Topology.Module.FiniteCoordinates.OperatorNorm",
   "VectorBundles.Analysis.Normed.Operator.GramCoordinates",
   "VectorBundles.Analysis.InnerProductSpace.GramNaturality",

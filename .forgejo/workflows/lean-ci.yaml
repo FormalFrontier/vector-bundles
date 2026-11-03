@@ -94,6 +94,7 @@ jobs:
                   os.close(fd)
           modules = (
               "VectorBundles/Analysis/Normed/Operator/Completion",
+              "VectorBundles/Analysis/Normed/Module/Completion",
               "VectorBundles/Topology/Module/FiniteCoordinates/OperatorNorm",
               "VectorBundles/Topology/Module/FiniteCoordinates",
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional",
@@ -180,6 +181,7 @@ jobs:
           # Static whitelist, priority order; no discovery or dependency-module execution.
           modules = (
               "VectorBundles/Analysis/Normed/Operator/Completion",
+              "VectorBundles/Analysis/Normed/Module/Completion",
               "VectorBundles/Topology/Module/FiniteCoordinates/OperatorNorm",
               "VectorBundles/Topology/Module/FiniteCoordinates",
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional",
@@ -231,9 +233,96 @@ jobs:
               (feedback / "exit-code.txt").write_text(str(result.returncode) + "\n", encoding="utf-8")
           EOF
       - name: Record the lint tool digest
+        id: lint_tools
         if: steps.reuse.outputs.reused != 'true'
-        run: ff-lean-lint tools-sha
+        run: |
+          python3 -X utf8 - <<'EOF'
+          import os, subprocess, sys
+          # Exactly one existing tool call; forward its stdout bytes without decoding.
+          try:
+              process = subprocess.Popen(["ff-lean-lint", "tools-sha"], stdout=subprocess.PIPE)
+          except FileNotFoundError:
+              sys.exit(127)
+          except OSError:
+              sys.exit(126)
+          raw = b""
+          while True:
+              chunk = process.stdout.read1(8192)
+              if not chunk:
+                  break
+              sys.stdout.buffer.write(chunk)
+              sys.stdout.buffer.flush()
+              if raw is not None:
+                  raw = raw + chunk if len(raw) + len(chunk) <= 65 else None
+          status = process.wait()
+          try:
+              import re
+              def digest(value, pattern):
+                  if value is None:
+                      return "unknown", "invalid"
+                  if not value:
+                      return "missing", "missing"
+                  if re.fullmatch(pattern, value):
+                      return value.decode("ascii") if isinstance(value, bytes) else value, "valid"
+                  return "unknown", "invalid"
+              # Accept only a public SHA256, with at most one stdout line terminator.
+              candidate = raw[:-1] if raw is not None and raw.endswith(b"\n") else raw
+              actual, actual_shape = digest(candidate, b"[0-9a-f]{64}")
+              expected, expected_shape = digest(os.environ.get("FF_LEAN_LINT_TOOLS_SHA256", ""), r"[0-9a-f]{64}")
+              equality = "unknown"
+              if actual_shape == expected_shape == "valid":
+                  equality = "equal" if actual == expected else "different"
+              fields = {
+                  "actual_sha256": actual,
+                  "expected_sha256": expected,
+                  "actual_shape": actual_shape,
+                  "expected_shape": expected_shape,
+                  "equality": equality,
+              }
+              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="ascii") as output:
+                  for name, value in fields.items():
+                      print(f"{name}={value}", file=output)
+          except Exception:
+              pass  # Metadata failure must not change the original tool's job status.
+          sys.exit(status if status >= 0 else 128 - status)
+          EOF
+      - name: Reserve a fresh lint feedback file
+        id: own_lint_file_baseline
+        if: steps.build.outcome == 'success' && steps.reuse.outputs.reused != 'true'
+        continue-on-error: true
+        run: |
+          python3 -X utf8 - <<'EOF'
+          import json, os
+          # Metadata only: reject any old log and never follow a path symlink.
+          flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+          cwd = os.open(".", flags)
+          os.mkdir(".own-lint-file-state", dir_fd=cwd)
+          state = os.open(".own-lint-file-state", flags, dir_fd=cwd)
+          try:
+              os.mkdir(".lean-feedback", dir_fd=cwd)
+          except FileExistsError:
+              pass
+          feedback = os.open(".lean-feedback", flags, dir_fd=cwd)
+          log = os.open("lint.log", os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                        0o600, dir_fd=feedback)
+          def identity(fd):
+              s = os.fstat(fd)
+              return [s.st_dev, s.st_ino]
+          s = os.fstat(log)
+          baseline = {
+              "cwd": identity(cwd),
+              "feedback": identity(feedback),
+              "log": [s.st_dev, s.st_ino, s.st_mode, s.st_size, s.st_mtime_ns, s.st_ctime_ns],
+          }
+          record = os.open("baseline.json", os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                           0o600, dir_fd=state)
+          with os.fdopen(record, "w", encoding="utf-8") as output:
+              json.dump(baseline, output)
+          for fd in (log, feedback, state, cwd):
+              os.close(fd)
+          EOF
       - name: Lint the configured libraries
+        id: lint
         if: steps.reuse.outputs.reused != 'true'
         shell: bash
         run: |
@@ -307,3 +396,134 @@ jobs:
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 3
+      - name: Record own CI stage outcomes
+        id: own_stage_outcomes
+        if: always()
+        continue-on-error: true
+        env:
+          OWN_INPUTS_OUTCOME: ${{ steps.inputs.outcome }}
+          OWN_REUSE_OUTCOME: ${{ steps.reuse.outcome }}
+          OWN_BUILD_OUTCOME: ${{ steps.build.outcome }}
+          OWN_DIAGNOSTICS_OUTCOME: ${{ steps.own_diagnostics.outcome }}
+          OWN_LINT_TOOLS_OUTCOME: ${{ steps.lint_tools.outcome }}
+          OWN_LINT_OUTCOME: ${{ steps.lint.outcome }}
+          OWN_LINT_TOOLS_ACTUAL_SHA256: ${{ steps.lint_tools.outputs.actual_sha256 }}
+          OWN_LINT_TOOLS_EXPECTED_SHA256: ${{ steps.lint_tools.outputs.expected_sha256 }}
+          OWN_LINT_TOOLS_ACTUAL_SHAPE: ${{ steps.lint_tools.outputs.actual_shape }}
+          OWN_LINT_TOOLS_EXPECTED_SHAPE: ${{ steps.lint_tools.outputs.expected_shape }}
+          OWN_LINT_TOOLS_EQUALITY: ${{ steps.lint_tools.outputs.equality }}
+        run: |
+          python3 -X utf8 - <<'EOF'
+          import json, os, pathlib, re
+          # Fixed outcomes and validated public digests only; never read output/evidence files.
+          def outcome(name):
+              value = os.environ.get(name, "")
+              if value == "":
+                  return "missing"
+              if value not in ("success", "failure", "cancelled", "skipped"):
+                  raise ValueError("Unrecognized stage outcome.")
+              return value
+          outcomes = {
+              "inputs": outcome("OWN_INPUTS_OUTCOME"),
+              "reuse": outcome("OWN_REUSE_OUTCOME"),
+              "build": outcome("OWN_BUILD_OUTCOME"),
+              "own_diagnostics": outcome("OWN_DIAGNOSTICS_OUTCOME"),
+              "lint_tools": outcome("OWN_LINT_TOOLS_OUTCOME"),
+              "lint": outcome("OWN_LINT_OUTCOME"),
+          }
+          def digest_fields(value_name, shape_name):
+              value = os.environ.get(value_name, "")
+              shape = os.environ.get(shape_name, "")
+              if shape == "valid" and re.fullmatch(r"[0-9a-f]{64}", value):
+                  return value, "valid"
+              if (shape == "missing" and value == "missing") or (shape == value == ""):
+                  return "missing", "missing"
+              return "unknown", "invalid" if shape == "invalid" else "unknown"
+          actual, actual_shape = digest_fields("OWN_LINT_TOOLS_ACTUAL_SHA256", "OWN_LINT_TOOLS_ACTUAL_SHAPE")
+          expected, expected_shape = digest_fields("OWN_LINT_TOOLS_EXPECTED_SHA256", "OWN_LINT_TOOLS_EXPECTED_SHAPE")
+          equality = os.environ.get("OWN_LINT_TOOLS_EQUALITY", "")
+          if equality not in ("equal", "different", "unknown"):
+              equality = "missing" if equality == "" else "unknown"
+          if actual_shape == expected_shape == "valid":
+              if equality != ("equal" if actual == expected else "different"):
+                  equality = "unknown"
+          elif equality not in ("missing", "unknown"):
+              equality = "unknown"
+          outcomes["lint_tools_digest"] = {
+              "actual_sha256": actual,
+              "expected_sha256": expected,
+              "actual_shape": actual_shape,
+              "expected_shape": expected_shape,
+              "equality": equality,
+          }
+          root = pathlib.Path(".own-ci-stage-outcomes")
+          root.mkdir()  # Fail closed on any pre-existing directory, file or symlink.
+          with (root / "stage-outcomes.json").open("x", encoding="utf-8") as record:
+              json.dump(outcomes, record, sort_keys=True, indent=2)
+              record.write("\n")
+          EOF
+      - name: Preserve own CI stage outcomes
+        if: always() && steps.own_stage_outcomes.outcome == 'success'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: own-ci-stage-outcomes
+          path: .own-ci-stage-outcomes/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Validate current failed lint feedback paths
+        id: own_lint_file_check
+        if: >-
+          always() && steps.inputs.outcome == 'success' && steps.build.outcome == 'success' &&
+          steps.lint.outcome == 'failure' && steps.reuse.outputs.reused != 'true' &&
+          steps.own_lint_file_baseline.outcome == 'success' && steps.own_stage_outcomes.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 -X utf8 - <<'EOF'
+          import json, os, stat
+          flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+          files = os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW
+          cwd = os.open(".", flags)
+          state = os.open(".own-lint-file-state", flags, dir_fd=cwd)
+          def regular(name, parent):
+              fd = os.open(name, files, dir_fd=parent)
+              s = os.fstat(fd)
+              if not stat.S_ISREG(s.st_mode) or s.st_nlink != 1:
+                  raise ValueError("Expected a regular, unshared file")
+              return fd
+          record = regular("baseline.json", state)
+          with os.fdopen(record, "r", encoding="utf-8") as source:
+              baseline = json.load(source)
+          def identity(fd):
+              s = os.fstat(fd)
+              return [s.st_dev, s.st_ino]
+          feedback = os.open(".lean-feedback", flags, dir_fd=cwd)
+          if identity(cwd) != baseline["cwd"] or identity(feedback) != baseline["feedback"]:
+              raise ValueError("The source cwd or feedback ancestry changed")
+          log = regular("lint.log", feedback)
+          s = os.fstat(log)
+          current = [s.st_dev, s.st_ino, s.st_mode, s.st_size, s.st_mtime_ns, s.st_ctime_ns]
+          if current[:3] != baseline["log"][:3] or current[3:] == baseline["log"][3:]:
+              raise ValueError("The reserved log was replaced or was not touched by this lint step")
+          # Validate the existing fixed metadata file too; never read the raw lint stream.
+          outcomes = os.open(".own-ci-stage-outcomes", flags, dir_fd=cwd)
+          record = regular("stage-outcomes.json", outcomes)
+          for fd in (record, outcomes, log, feedback, state, cwd):
+              os.close(fd)
+          EOF
+      - name: Preserve current failed lint file and fixed stage metadata
+        if: >-
+          always() && steps.inputs.outcome == 'success' && steps.build.outcome == 'success' &&
+          steps.lint.outcome == 'failure' && steps.reuse.outputs.reused != 'true' &&
+          steps.own_stage_outcomes.outcome == 'success' && steps.own_lint_file_check.outcome == 'success'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: current-lint-file
+          path: |
+            .lean-feedback/lint.log
+            .own-ci-stage-outcomes/stage-outcomes.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30

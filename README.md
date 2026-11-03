@@ -11,6 +11,13 @@ topological fiber bundles.
 
 ## Headline results
 
+- Over a possibly incomplete nontrivially normed field, a family of existing continuous linear
+  maps between given seminormed norm-compatible vector spaces, with finite-dimensional original
+  domain, is continuous in the original operator-norm topology exactly when every original
+  fixed-vector evaluation is continuous
+  (`ContinuousLinearMap.continuous_iff_apply_of_finiteDimensional` in
+  [module](VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional.lean)).
+
 These families are proved here, with the original fiber and total-space topologies.
 The [catalogue](docs/HeadlineResults.md) gives the individual statements and variants;
 the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib constructions.
