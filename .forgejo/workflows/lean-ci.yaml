@@ -333,6 +333,29 @@ jobs:
           set -o pipefail
           mkdir -p .lean-feedback
           ff-lean-lint run 2>&1 | tee .lean-feedback/lint.log
+      - name: Record independent CI step outcomes
+        id: own_ci_step_outcomes
+        if: always() && steps.inputs.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 -X utf8 - <<'EOF'
+          import json, pathlib
+          outcomes = {
+              "inputs": "${{ steps.inputs.outcome }}",
+              "reuse": "${{ steps.reuse.outcome }}",
+              "own_setup_baseline": "${{ steps.own_setup_baseline.outcome }}",
+              "build": "${{ steps.build.outcome }}",
+              "own_diagnostics": "${{ steps.own_diagnostics.outcome }}",
+              "lint": "${{ steps.lint.outcome }}",
+          }
+          if any(value not in {"success", "failure", "cancelled", "skipped"}
+                 for value in outcomes.values()):
+              raise ValueError("Unexpected workflow step outcome")
+          root = pathlib.Path(".own-ci-step-diagnostics")
+          root.mkdir()  # Never upload a pre-existing metadata file.
+          (root / "stage-outcomes.json").write_text(
+              json.dumps(outcomes, indent=2) + "\n", encoding="utf-8")
+          EOF
       - name: Show the failed build or audit output
         if: failure()
         run: |
@@ -376,6 +399,18 @@ jobs:
           path: .lean-feedback/
           include-hidden-files: true
           if-no-files-found: ignore
+          retention-days: 30
+      - name: Preserve independent CI step diagnostics
+        if: always() && steps.inputs.outcome == 'success' && steps.own_ci_step_outcomes.outcome == 'success'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: own-ci-step-diagnostics
+          path: |
+            .lean-feedback/lint.log
+            .own-ci-step-diagnostics/stage-outcomes.json
+          include-hidden-files: true
+          if-no-files-found: error
           retention-days: 30
       - name: Preserve independent own Lean diagnostics
         if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.directory != ''

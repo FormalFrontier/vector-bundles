@@ -201,6 +201,17 @@ namespace FiniteRankAtlas
 variable {K P E}
 variable (A : FiniteRankAtlas K P E)
 
+/-- The base set of a chart in the atlas. -/
+def baseSet (i : A.Index) : Set B := (A.chart i).baseSet
+
+/-- The atlas base set is the base set of its chart. -/
+@[simp] theorem baseSet_apply (i : A.Index) :
+    A.baseSet i = (A.chart i).baseSet := rfl
+
+/-- Membership in an atlas base set is membership in its chart base set. -/
+theorem mem_baseSet (i : A.Index) (b : B) :
+    b ∈ A.baseSet i ↔ b ∈ (A.chart i).baseSet := Iff.rfl
+
 /-- A total-space point belongs to a chart source precisely when its base point
 belongs to the chart base set. -/
 @[simp] theorem mem_source_iff (i : A.Index) (p : TotalSpace P E) :
