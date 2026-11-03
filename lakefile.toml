@@ -12,6 +12,7 @@ weak.linter.style.header = false
 [[lean_lib]]
 name = "VectorBundles"
 globs = [
+  "VectorBundles.Topology.FiberBundle.Trivialization.CompHomeomorph",
   "VectorBundles.Analysis.Normed.Operator.Completion",
   "VectorBundles.Analysis.Normed.Module.Completion",
   "VectorBundles.Topology.Module.FiniteCoordinates.OperatorNorm",
