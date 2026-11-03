@@ -34,6 +34,11 @@ Together with Mathlib's uniform embedding of the pointwise-convergence space int
 function space, this identifies total boundedness for the operator-norm uniformity with total
 boundedness of every fixed-vector image.
 
+The same criterion holds for continuous semilinear maps along an isometric homomorphism
+of normed fields. Uniform convergence on a bounded family whose union algebraically spans
+the original domain also gives the operator-norm topology. The identity with this family
+topology is linear over the original target field; its action on the target is unchanged.
+
 ## References
 
 The finite-evaluation estimate follows Formal Frontier Agents, *Operator-norm continuity over
@@ -363,6 +368,222 @@ theorem continuous_iff_apply_of_finiteDimensional
 
 end ContinuousLinearMap
 
+universe uL
+
+namespace ContinuousLinearMap
+
+section SemilinearRestriction
+
+variable {K : Type uK} [kK : NontriviallyNormedField K]
+variable {L : Type uL} [kL : NontriviallyNormedField L]
+variable [NormedAlgebra K L] [RingHomIsometric (algebraMap K L)]
+variable {A : Type uA} [sA : SeminormedAddCommGroup A]
+variable [nA : @NormedSpace K A kK.toNormedField sA]
+variable {G : Type uG} [sG : SeminormedAddCommGroup G]
+variable [nG : @NormedSpace L G kL.toNormedField sG]
+
+/-- The same-function identification preserves the operator-norm topology. -/
+private def semilinearRestrictHomeomorph :
+    let S := @ContinuousLinearMap K L _ _ (algebraMap K L)
+      A sA.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+      sA.toAddCommGroup.toAddCommMonoid
+      G sG.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+      sG.toAddCommGroup.toAddCommMonoid nA.toModule nG.toModule
+    letI : NormedSpace K G := NormedSpace.restrictScalars K L G
+    S ≃ₜ (A →L[K] G) := by
+  -- Form the semilinear source with its original data before restricting the right-hand action.
+  let S := @ContinuousLinearMap K L _ _ (algebraMap K L)
+    A sA.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+    sA.toAddCommGroup.toAddCommMonoid
+    G sG.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+    sG.toAddCommGroup.toAddCommMonoid nA.toModule nG.toModule
+  letI : NormedSpace K G := NormedSpace.restrictScalars K L G
+  let e : S ≃+ (A →L[K] G) :=
+    { toFun T :=
+        { toFun := fun a => T a
+          map_add' := T.map_add
+          map_smul' := T.map_smulₛₗ
+          cont := T.continuous }
+      invFun T :=
+        { toFun := fun a => T a
+          map_add' := T.map_add
+          map_smul' := T.map_smul
+          cont := T.continuous }
+      left_inv T := by ext a; rfl
+      right_inv T := by ext a; rfl
+      map_add' T U := by ext a; rfl }
+  -- The operator norms are infima of exactly the same set of bounds.
+  have he (T : S) : ‖e T‖ = ‖T‖ := rfl
+  have he' (T : A →L[K] G) : ‖e.symm T‖ = ‖T‖ := rfl
+  exact
+    { toEquiv := e.toEquiv
+      continuous_toFun := (AddMonoidHomClass.isometry_of_norm e he).continuous
+      continuous_invFun := (AddMonoidHomClass.isometry_of_norm e.symm he').continuous }
+
+private theorem semilinearRestrictHomeomorph_apply (T : A →SL[algebraMap K L] G) (a : A) :
+    semilinearRestrictHomeomorph T a = T a := rfl
+
+end SemilinearRestriction
+
+/-- For an isometric scalar homomorphism and a finite-dimensional seminormed domain,
+continuity of a family of continuous semilinear maps is equivalent to continuity of every
+fixed-vector evaluation. The target retains its given scalar action. No completeness of the
+scalar fields or spaces, and no separation of the seminormed spaces, is assumed.
+
+The proof reuses `continuous_iff_apply_of_finiteDimensional` through same-function,
+norm-preserving restriction of the target scalars. -/
+theorem continuous_iff_apply_of_finiteDimensionalₛₗ
+    {K : Type uK} [kK : NontriviallyNormedField K]
+    {L : Type uL} [kL : NormedField L]
+    {σ : K →+* L} [RingHomIsometric σ]
+    {A : Type uA} [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    [hA : @FiniteDimensional K A (inferInstance : DivisionRing K)
+      sA.toAddCommGroup nA.toModule]
+    {G : Type uG} [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace L G kL sG]
+    {X : Type uX} [tX : TopologicalSpace X]
+    (f : X → A →SL[σ] G) :
+    Continuous f ↔ ∀ a : A, Continuous (fun x : X => f x a) := by
+  let : NontriviallyNormedField L :=
+    { toNormedField := kL
+      non_trivial := by
+        obtain ⟨c, hc⟩ := NormedField.exists_one_lt_norm K
+        exact ⟨σ c, by simpa only [RingHomIsometric.norm_map] using hc⟩ }
+  let : NormedAlgebra K L :=
+    { toAlgebra := σ.toAlgebra
+      norm_smul_le := fun c x => by
+        change ‖σ c * x‖ ≤ ‖c‖ * ‖x‖
+        rw [norm_mul, RingHomIsometric.norm_map] }
+  have : RingHomIsometric (algebraMap K L) :=
+    ⟨fun {c} => norm_algebraMap' L c⟩
+  let : NormedSpace K G := NormedSpace.restrictScalars K L G
+  let e := semilinearRestrictHomeomorph (K := K) (L := L) (nA := nA) (nG := nG)
+  constructor
+  · intro hf a
+    have h := (continuous_iff_apply_of_finiteDimensional
+      (fun x : X => e (f x))).1 (e.continuous.comp hf) a
+    simpa only [e, semilinearRestrictHomeomorph_apply] using h
+  · intro hf
+    have h : Continuous (fun x : X => e (f x)) :=
+      (continuous_iff_apply_of_finiteDimensional (fun x : X => e (f x))).2
+        (fun a => by simpa only [e, semilinearRestrictHomeomorph_apply] using hf a)
+    simpa only [Function.comp_def, Homeomorph.symm_apply_apply] using e.symm.continuous.comp h
+
+end ContinuousLinearMap
+
+namespace UniformConvergenceCLM
+
+/-- Continuous evaluations extend from a family union to its algebraic span. -/
+private theorem continuous_eval_of_mem_span
+    {K : Type uK} [NormedField K] {L : Type uL} [NormedField L]
+    {σ : K →+* L}
+    {A : Type uA} [AddCommGroup A] [Module K A] [TopologicalSpace A]
+    {G : Type uG} [AddCommGroup G] [Module L G] [TopologicalSpace G]
+    [IsTopologicalAddGroup G] [ContinuousConstSMul L G]
+    (𝔖 : Set (Set A)) {a : A} (ha : a ∈ Submodule.span K (⋃₀ 𝔖)) :
+    Continuous (fun T : UniformConvergenceCLM σ G 𝔖 => T a) := by
+  let P : Submodule K A :=
+    { carrier := {a | Continuous (fun T : UniformConvergenceCLM σ G 𝔖 => T a)}
+      zero_mem' := by
+        simpa only [Set.mem_ofPred_eq, map_zero] using
+          (continuous_const : Continuous (fun _ : UniformConvergenceCLM σ G 𝔖 => (0 : G)))
+      add_mem' := by
+        intro a b ha hb
+        change Continuous (fun T : UniformConvergenceCLM σ G 𝔖 => T (a + b))
+        have hfun : ((fun T : UniformConvergenceCLM σ G 𝔖 => T a) + fun T => T b) =
+            (fun T : UniformConvergenceCLM σ G 𝔖 => T (a + b)) := by
+          funext T
+          exact (map_add T a b).symm
+        exact hfun ▸ ha.add hb
+      smul_mem' := by
+        intro c a ha
+        change Continuous (fun T : UniformConvergenceCLM σ G 𝔖 => T (c • a))
+        have hfun : (σ c • fun T : UniformConvergenceCLM σ G 𝔖 => T a) =
+            (fun T : UniformConvergenceCLM σ G 𝔖 => T (c • a)) := by
+          funext T
+          exact (map_smulₛₗ T c a).symm
+        exact hfun ▸ ha.const_smul (σ c) }
+  have hP : ⋃₀ 𝔖 ⊆ P := by
+    intro a ha
+    let : UniformSpace G := IsTopologicalAddGroup.rightUniformSpace G
+    have : IsUniformAddGroup G := isUniformAddGroup_of_addCommGroup
+    exact (UniformOnFun.uniformContinuous_eval_of_mem_sUnion G 𝔖 ha).continuous.comp
+      (UniformConvergenceCLM.isEmbedding_coeFn σ G 𝔖).continuous
+  exact (Submodule.span_le.mpr hP) ha
+
+end UniformConvergenceCLM
+
+namespace ContinuousLinearEquiv
+
+/-- Uniform convergence on a bounded family whose union algebraically spans a
+finite-dimensional seminormed domain agrees with the operator-norm topology on continuous
+semilinear maps. The underlying linear equivalence is Mathlib's identity, over the target
+field. In particular this applies to bounded covers and to a family containing a finite
+algebraic basis. No completeness, separation or surjectivity of the scalar homomorphism
+is assumed. -/
+def toUniformConvergenceCLMOfFiniteDimensional
+    (K : Type uK) [kK : NontriviallyNormedField K]
+    (L : Type uL) [kL : NormedField L]
+    (σ : K →+* L) [RingHomIsometric σ]
+    (A : Type uA) [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    [hA : @FiniteDimensional K A (inferInstance : DivisionRing K)
+      sA.toAddCommGroup nA.toModule]
+    (G : Type uG) [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace L G kL sG]
+    (𝔖 : Set (Set A))
+    (hbounded : ∀ s ∈ 𝔖, Bornology.IsBounded s)
+    (hspan : Submodule.span K (⋃₀ 𝔖) = ⊤) :
+    (A →SL[σ] G) ≃L[L] UniformConvergenceCLM σ G 𝔖 :=
+  { toLinearEquiv := ContinuousLinearMap.toUniformConvergenceCLM σ G 𝔖
+    continuous_toFun := ContinuousLinearMap.toUniformConvergenceCLM_continuous σ G 𝔖
+      (fun s hs => NormedSpace.isVonNBounded_of_isBounded K (hbounded s hs))
+    continuous_invFun := by
+      apply (ContinuousLinearMap.continuous_iff_apply_of_finiteDimensionalₛₗ
+        ((ContinuousLinearMap.toUniformConvergenceCLM σ G 𝔖).symm :
+          UniformConvergenceCLM σ G 𝔖 → A →SL[σ] G)).2
+      intro a
+      have ha : a ∈ Submodule.span K (⋃₀ 𝔖) := by rw [hspan]; trivial
+      simpa only [ContinuousLinearMap.toUniformConvergenceCLM_symm_apply] using
+        UniformConvergenceCLM.continuous_eval_of_mem_span (σ := σ) 𝔖 ha }
+
+section UniformConvergence
+
+variable {K : Type uK} [kK : NontriviallyNormedField K]
+variable {L : Type uL} [kL : NormedField L]
+variable {σ : K →+* L} [RingHomIsometric σ]
+variable {A : Type uA} [sA : SeminormedAddCommGroup A]
+variable [nA : @NormedSpace K A kK.toNormedField sA]
+variable [hA : @FiniteDimensional K A (inferInstance : DivisionRing K)
+  sA.toAddCommGroup nA.toModule]
+variable {G : Type uG} [sG : SeminormedAddCommGroup G]
+variable [nG : @NormedSpace L G kL sG]
+variable (𝔖 : Set (Set A)) (hbounded : ∀ s ∈ 𝔖, Bornology.IsBounded s)
+variable (hspan : Submodule.span K (⋃₀ 𝔖) = ⊤)
+
+/-- The family-topology equivalence preserves each fixed-vector evaluation. -/
+@[simp]
+theorem toUniformConvergenceCLMOfFiniteDimensional_apply (T : A →SL[σ] G) (v : A) :
+    toUniformConvergenceCLMOfFiniteDimensional K L σ A G 𝔖 hbounded hspan T v = T v :=
+  ContinuousLinearMap.toUniformConvergenceCLM_apply
+
+/-- The inverse family-topology equivalence preserves each fixed-vector evaluation. -/
+@[simp]
+theorem toUniformConvergenceCLMOfFiniteDimensional_symm_apply
+    (T : UniformConvergenceCLM σ G 𝔖) (v : A) :
+    (toUniformConvergenceCLMOfFiniteDimensional K L σ A G 𝔖 hbounded hspan).symm T v = T v :=
+  ContinuousLinearMap.toUniformConvergenceCLM_symm_apply
+
+/-- Forgetting continuity gives Mathlib's same-function linear equivalence. -/
+theorem toUniformConvergenceCLMOfFiniteDimensional_toLinearEquiv :
+    (toUniformConvergenceCLMOfFiniteDimensional K L σ A G 𝔖 hbounded hspan).toLinearEquiv =
+      ContinuousLinearMap.toUniformConvergenceCLM σ G 𝔖 := rfl
+
+end UniformConvergence
+
+end ContinuousLinearEquiv
+
 open Filter
 open scoped Topology
 
@@ -381,19 +602,17 @@ def toPointwiseConvergenceCLMOfFiniteDimensional
     (G : Type uG) [sG : SeminormedAddCommGroup G]
     [nG : @NormedSpace K G kK.toNormedField sG] :
     (A →L[K] G) ≃L[K] (A →Lₚₜ[K] G) := by
-  exact
-    { toLinearEquiv :=
-        ContinuousLinearMap.toUniformConvergenceCLM (RingHom.id K) G {s : Set A | Finite s}
-      continuous_toFun :=
-        (ContinuousLinearMap.toPointwiseConvergenceCLM K (RingHom.id K) A G).continuous
-      continuous_invFun := by
-        apply (ContinuousLinearMap.continuous_iff_apply_of_finiteDimensional
-          ((ContinuousLinearMap.toUniformConvergenceCLM
-            (RingHom.id K) G {s : Set A | Finite s}).symm :
-            (A →Lₚₜ[K] G) → A →L[K] G)).2
-        intro v
-        simpa only [ContinuousLinearMap.toUniformConvergenceCLM_symm_apply] using
-          (continuous_eval_const v : Continuous (fun T : A →Lₚₜ[K] G => T v)) }
+  have hcover : ⋃₀ {s : Set A | Finite s} = Set.univ := by
+    ext a
+    constructor
+    · intro _; trivial
+    · intro _
+      exact Set.mem_sUnion.mpr
+        ⟨{a}, Set.finite_coe_iff.mpr (Set.finite_singleton a), by simp⟩
+  exact toUniformConvergenceCLMOfFiniteDimensional K K (RingHom.id K) A G
+    {s : Set A | Finite s}
+    (fun s hs => (Set.finite_coe_iff.mp hs).isBounded)
+    (by rw [hcover, Submodule.span_univ])
 
 variable {K : Type uK} [kK : NontriviallyNormedField K]
 variable {A : Type uA} [sA : SeminormedAddCommGroup A]

@@ -21,6 +21,15 @@ topological fiber bundles.
   linear equivalence (`ContinuousLinearEquiv.toPointwiseConvergenceCLMOfFiniteDimensional`);
   convergence along any filter is therefore equivalent to convergence at every fixed vector
   (`ContinuousLinearMap.tendsto_iff_apply_of_finiteDimensional`).
+  For an isometric field homomorphism `σ : K →+* L`, the same criterion holds for
+  continuous `σ`-semilinear maps with their original actions and seminorms
+  (`ContinuousLinearMap.continuous_iff_apply_of_finiteDimensionalₛₗ`). Here `K` is
+  nontrivially normed and `L` need only be a normed field. For any family of bounded sets
+  whose union algebraically spans the original domain, the identity to the space of uniform
+  convergence on that family is a continuous `L`-linear equivalence
+  (`ContinuousLinearEquiv.toUniformConvergenceCLMOfFiniteDimensional`). This includes bounded
+  covers and a singleton family containing a finite algebraic basis, without requiring
+  completeness, separation or surjectivity of `σ`.
 
 These families are proved here, with the original fiber and total-space topologies.
 The [catalogue](docs/HeadlineResults.md) gives the individual statements and variants;
