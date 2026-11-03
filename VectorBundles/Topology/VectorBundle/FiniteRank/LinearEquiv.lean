@@ -6,6 +6,8 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.Topology.LocallyConstant.Basic
+import VectorBundles.Topology.Module.Finrank
 public import VectorBundles.Topology.VectorBundle.FiniteRank
 
 /-!
@@ -19,6 +21,9 @@ coordinates. No fibre operations or topologies are changed.
 Atlas coverage and Mathlib's finite-module transport show that every original fibre
 is finitely generated over the scalar field. The chart ranks may vary without a
 global bound.
+
+The intrinsic fibre finrank is locally constant on the original base. In particular,
+fibres over points of a preconnected set have equal finrank.
 -/
 
 @[expose] public section
@@ -110,6 +115,43 @@ theorem finrank_eq_rank (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
     (i : A.Index) (b : B) (hb : b ∈ (A.chart i).baseSet) :
     Module.finrank K (E b) = A.rank i :=
   (A.coordLinearEquiv i hb).finrank_eq.trans (Module.finrank_fin_fun K)
+
+/-- The intrinsic fibre finrank of a finite-rank atlas is locally constant. -/
+theorem isLocallyConstant_finrank (A : FiniteRankAtlas.{_, _, _, _, uI} K P E) :
+    IsLocallyConstant (fun b => Module.finrank K (E b)) := by
+  refine Module.isLocallyConstant_finrank_of_linearEquiv_cover (K := K) E
+    (fun i : A.Index => Fin (A.rank i) → K) (fun i => (A.chart i).baseSet) ?_ ?_
+  · intro b
+    obtain ⟨i, hbi⟩ := A.exists_mem_baseSet b
+    exact ⟨i, by simpa only [(A.chart i).open_baseSet.interior_eq] using hbi⟩
+  · intro i b hb
+    exact ⟨A.coordLinearEquiv i hb⟩
+
+/-- Fibres over any two points of a preconnected subset have the same finrank. -/
+theorem finrank_eq_of_isPreconnected (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    {s : Set B} (hs : IsPreconnected s) {x y : B} (hx : x ∈ s) (hy : y ∈ s) :
+    Module.finrank K (E x) = Module.finrank K (E y) := by
+  classical
+  by_contra hxy
+  let f : B → ℕ := fun b => Module.finrank K (E b)
+  let U : Set B := f ⁻¹' {f x}
+  let V : Set B := f ⁻¹' ({f x}ᶜ)
+  have hU : IsOpen U := A.isLocallyConstant_finrank {f x}
+  have hV : IsOpen V := A.isLocallyConstant_finrank ({f x}ᶜ)
+  have hcover : s ⊆ U ∪ V := by
+    intro z _
+    by_cases h : f z = f x
+    · exact Or.inl h
+    · exact Or.inr h
+  obtain ⟨z, hz⟩ := hs U V hU hV hcover
+    ⟨x, hx, rfl⟩ ⟨y, hy, fun h => hxy h.symm⟩
+  simp [U, V] at hz
+
+/-- All fibres over a preconnected base have the same finrank. -/
+theorem finrank_eq (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
+    [PreconnectedSpace B] (x y : B) :
+    Module.finrank K (E x) = Module.finrank K (E y) := by
+  exact A.finrank_eq_of_isPreconnected isPreconnected_univ (Set.mem_univ x) (Set.mem_univ y)
 
 /-- In a constant-finrank family, a chart containing a base point has that finrank. -/
 theorem rank_eq_of_mem (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
