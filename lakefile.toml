@@ -169,6 +169,7 @@ globs = [
   "VectorBundles.Topology.VectorBundle.FiniteRank.Weights",
   "VectorBundles.Topology.VectorBundle.FiniteRank.FiberCoordinates",
   "VectorBundles.Topology.VectorBundle.FiniteRank.Embedding",
+  "VectorBundles.Topology.VectorBundle.ProjectorAtlas.SplitFamily",
 ]
 
 [[lean_lib]]
@@ -240,6 +241,7 @@ globs = [
   "VectorBundlesTest.Topology.VectorBundle.Frame",
   "VectorBundlesTest.Topology.VectorBundle.Range",
   "VectorBundlesTest.Topology.VectorBundle.SplitFamilyRangeAtlas",
+  "VectorBundlesTest.Topology.VectorBundle.ComplementaryRangeBundle",
   "VectorBundlesTest.Topology.VectorBundle.ScalarEnd",
   "VectorBundlesTest.Topology.VectorBundle.TrivialMetric",
 ]
