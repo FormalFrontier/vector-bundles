@@ -248,6 +248,7 @@ globs = [
   "VectorBundlesTest.Topology.VectorBundle.ComplementaryRangeBundle",
   "VectorBundlesTest.Topology.VectorBundle.ScalarEnd",
   "VectorBundlesTest.Topology.VectorBundle.TrivialMetric",
+  "VectorBundlesTest.Topology.FiberBundle.ProdCongrRight",
 ]
 
 [[require]]

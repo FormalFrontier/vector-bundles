@@ -8,7 +8,7 @@ public import Mathlib.Topology.FiberBundle.Constructions
 public import Mathlib.LinearAlgebra.Prod
 
 /-!
-# Symmetry and associativity of fiberwise products
+# Homeomorphisms of fiberwise-product total spaces
 
 The canonical swap and reassociation of fiberwise products are homeomorphisms of total spaces.
 Both sides carry their existing product topologies, induced by the diagonal maps into products of
@@ -25,6 +25,12 @@ source base and both fiber coordinates. Its two total spaces carry, respectively
 pullback-of-product and product-of-pullbacks topologies. Only a topology on the source base and
 the two original total-space topologies are needed. This is a total-space comparison, not a claim
 of local triviality for arbitrary base maps or a bundled vector-bundle isomorphism.
+
+A base-preserving homeomorphism of the right original total space induces a homeomorphism of
+fiberwise-product total spaces. It fixes the complete first original total-space point in both
+directions. The two sides use the stock product topologies formed from the same first topology
+and the respective original right topologies; no topology or continuity of projections on the
+base is needed. The construction restricts an ordinary product homeomorphism to equal-base pairs.
 
 ## References
 
@@ -392,5 +398,228 @@ theorem homeomorphEqualBase_mk_snd_symm_apply
   exact TotalSpace.mk_cast (F := F₂) w.property.symm w.1.2.snd
 
 end EqualBase
+
+end FiberBundle.Prod
+
+
+namespace FiberBundle.Prod
+
+section TotalSpaceFactors
+
+variable {B : Type uB}
+  (F₁ : Type uF₁) (E₁ : B → Type uE₁) (F₂ : Type uF₂) (E₂ : B → Type uE₂)
+
+/-- The first original total-space point of a fiberwise-product total-space point. -/
+def totalSpaceFst (p : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) : TotalSpace F₁ E₁ :=
+  ⟨p.proj, p.snd.1⟩
+
+/-- The second original total-space point of a fiberwise-product total-space point. -/
+def totalSpaceSnd (p : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) : TotalSpace F₂ E₂ :=
+  ⟨p.proj, p.snd.2⟩
+
+/-- The first total-space factor retains the base and first fiber value. -/
+@[simp]
+theorem totalSpaceFst_mk (b : B) (e₁ : E₁ b) (e₂ : E₂ b) :
+    totalSpaceFst F₁ E₁ F₂ E₂ (TotalSpace.mk' (F₁ × F₂) b (e₁, e₂)) =
+      TotalSpace.mk' F₁ b e₁ := rfl
+
+/-- The second total-space factor retains the base and second fiber value. -/
+@[simp]
+theorem totalSpaceSnd_mk (b : B) (e₁ : E₁ b) (e₂ : E₂ b) :
+    totalSpaceSnd F₁ E₁ F₂ E₂ (TotalSpace.mk' (F₁ × F₂) b (e₁, e₂)) =
+      TotalSpace.mk' F₂ b e₂ := rfl
+
+/-- The two original total-space factors jointly determine a fiberwise-product point. -/
+theorem totalSpace_ext {p q : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
+    (h₁ : totalSpaceFst F₁ E₁ F₂ E₂ p = totalSpaceFst F₁ E₁ F₂ E₂ q)
+    (h₂ : totalSpaceSnd F₁ E₁ F₂ E₂ p = totalSpaceSnd F₁ E₁ F₂ E₂ q) : p = q := by
+  rcases p with ⟨b, e₁, e₂⟩
+  rcases q with ⟨c, f₁, f₂⟩
+  have hbase : b = c := congrArg TotalSpace.proj h₁
+  cases hbase
+  have hfirst : e₁ = f₁ := by injection h₁
+  have hsecond : e₂ = f₂ := by injection h₂
+  cases hfirst
+  cases hsecond
+  rfl
+
+end TotalSpaceFactors
+
+end FiberBundle.Prod
+
+
+namespace FiberBundle.Prod
+
+section CongrRight
+
+variable {B : Type uB}
+  (F₁ : Type uF₁) (E₁ : B → Type uE₁) (F₂ : Type uF₂) (E₂ : B → Type uE₂)
+  (F₃ : Type uF₃) (E₃ : B → Type uE₃)
+  [t₁ : TopologicalSpace (TotalSpace F₁ E₁)] [t₂ : TopologicalSpace (TotalSpace F₂ E₂)]
+  [t₃ : TopologicalSpace (TotalSpace F₃ E₃)]
+  (H : @Homeomorph (TotalSpace F₂ E₂) (TotalSpace F₃ E₃) t₂ t₃)
+  (hH : ∀ s, (H s).proj = s.proj)
+
+include hH in
+private theorem symm_proj_of_proj (t : TotalSpace F₃ E₃) :
+    (@Homeomorph.symm _ _ t₂ t₃ H t).proj = t.proj := by
+  simpa only [Homeomorph.apply_symm_apply] using
+    (hH (@Homeomorph.symm _ _ t₂ t₃ H t)).symm
+
+/-- A base-preserving homeomorphism of the right original total space induces a homeomorphism
+of fiberwise-product total spaces, fixing the first original total-space point.
+
+The source and target carry the stock product topologies formed from the same original first
+topology and the respective original right topologies. No topology on the base or model tags,
+continuity of the projections, local triviality, or algebraic structure is required. -/
+def homeomorphCongrRight :
+    @Homeomorph (TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂))
+      (TotalSpace (F₁ × F₃) (E₁ ×ᵇ E₃))
+      (@FiberBundle.Prod.topologicalSpace B F₁ E₁ F₂ E₂ t₁ t₂)
+      (@FiberBundle.Prod.topologicalSpace B F₁ E₁ F₃ E₃ t₁ t₃) :=
+  let hProd : @Homeomorph
+      (TotalSpace F₁ E₁ × TotalSpace F₂ E₂) (TotalSpace F₁ E₁ × TotalSpace F₃ E₃)
+      (@instTopologicalSpaceProd _ _ t₁ t₂) (@instTopologicalSpaceProd _ _ t₁ t₃) :=
+    @Homeomorph.prodCongr (TotalSpace F₁ E₁) (TotalSpace F₂ E₂) t₁ t₂
+      (TotalSpace F₁ E₁) (TotalSpace F₃ E₃) t₁ t₃
+      (@Homeomorph.refl (TotalSpace F₁ E₁) t₁) H
+  (@homeomorphEqualBase B F₁ E₁ F₂ E₂ t₁ t₂).trans
+    ((hProd.subtype
+      (p := fun w : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ ↦ w.1.proj = w.2.proj)
+      (q := fun w : TotalSpace F₁ E₁ × TotalSpace F₃ E₃ ↦ w.1.proj = w.2.proj)
+      (by
+        intro w
+        change w.1.proj = w.2.proj ↔ w.1.proj = (H w.2).proj
+        rw [hH w.2])).trans
+      (@Homeomorph.symm _ _ _ _ (@homeomorphEqualBase B F₁ E₁ F₃ E₃ t₁ t₃)))
+
+/-- The induced homeomorphism fixes the complete first original total-space point. -/
+@[simp]
+theorem totalSpaceFst_homeomorphCongrRight (p : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) :
+    totalSpaceFst F₁ E₁ F₃ E₃
+      (@homeomorphCongrRight B F₁ E₁ F₂ E₂ F₃ E₃ t₁ t₂ t₃ H hH p) =
+        totalSpaceFst F₁ E₁ F₂ E₂ p := by
+  exact @homeomorphEqualBase_mk_fst_symm_apply B F₁ E₁ F₃ E₃ t₁ t₃
+    ⟨(totalSpaceFst F₁ E₁ F₂ E₂ p, H (totalSpaceSnd F₁ E₁ F₂ E₂ p)),
+      (hH (totalSpaceSnd F₁ E₁ F₂ E₂ p)).symm⟩
+
+/-- The second original total-space factor is transformed by the given homeomorphism. -/
+@[simp]
+theorem totalSpaceSnd_homeomorphCongrRight (p : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) :
+    totalSpaceSnd F₁ E₁ F₃ E₃
+      (@homeomorphCongrRight B F₁ E₁ F₂ E₂ F₃ E₃ t₁ t₂ t₃ H hH p) =
+        H (totalSpaceSnd F₁ E₁ F₂ E₂ p) := by
+  exact @homeomorphEqualBase_mk_snd_symm_apply B F₁ E₁ F₃ E₃ t₁ t₃
+    ⟨(totalSpaceFst F₁ E₁ F₂ E₂ p, H (totalSpaceSnd F₁ E₁ F₂ E₂ p)),
+      (hH (totalSpaceSnd F₁ E₁ F₂ E₂ p)).symm⟩
+
+/-- The inverse induced homeomorphism fixes the complete first original total-space point. -/
+@[simp]
+theorem totalSpaceFst_homeomorphCongrRight_symm
+    (p : TotalSpace (F₁ × F₃) (E₁ ×ᵇ E₃)) :
+    totalSpaceFst F₁ E₁ F₂ E₂
+      (@Homeomorph.symm _ _
+        (@FiberBundle.Prod.topologicalSpace B F₁ E₁ F₂ E₂ t₁ t₂)
+        (@FiberBundle.Prod.topologicalSpace B F₁ E₁ F₃ E₃ t₁ t₃)
+        (@homeomorphCongrRight B F₁ E₁ F₂ E₂ F₃ E₃ t₁ t₂ t₃ H hH) p) =
+          totalSpaceFst F₁ E₁ F₃ E₃ p := by
+  exact @homeomorphEqualBase_mk_fst_symm_apply B F₁ E₁ F₂ E₂ t₁ t₂
+    ⟨(totalSpaceFst F₁ E₁ F₃ E₃ p,
+      @Homeomorph.symm _ _ t₂ t₃ H (totalSpaceSnd F₁ E₁ F₃ E₃ p)),
+      (@symm_proj_of_proj B F₂ E₂ F₃ E₃ t₂ t₃ H hH (totalSpaceSnd F₁ E₁ F₃ E₃ p)).symm⟩
+
+/-- The inverse second total-space factor is transformed by the original inverse homeomorphism. -/
+@[simp]
+theorem totalSpaceSnd_homeomorphCongrRight_symm
+    (p : TotalSpace (F₁ × F₃) (E₁ ×ᵇ E₃)) :
+    totalSpaceSnd F₁ E₁ F₂ E₂
+      (@Homeomorph.symm _ _
+        (@FiberBundle.Prod.topologicalSpace B F₁ E₁ F₂ E₂ t₁ t₂)
+        (@FiberBundle.Prod.topologicalSpace B F₁ E₁ F₃ E₃ t₁ t₃)
+        (@homeomorphCongrRight B F₁ E₁ F₂ E₂ F₃ E₃ t₁ t₂ t₃ H hH) p) =
+          @Homeomorph.symm _ _ t₂ t₃ H (totalSpaceSnd F₁ E₁ F₃ E₃ p) := by
+  exact @homeomorphEqualBase_mk_snd_symm_apply B F₁ E₁ F₂ E₂ t₁ t₂
+    ⟨(totalSpaceFst F₁ E₁ F₃ E₃ p,
+      @Homeomorph.symm _ _ t₂ t₃ H (totalSpaceSnd F₁ E₁ F₃ E₃ p)),
+      (@symm_proj_of_proj B F₂ E₂ F₃ E₃ t₂ t₃ H hH (totalSpaceSnd F₁ E₁ F₃ E₃ p)).symm⟩
+
+end CongrRight
+
+end FiberBundle.Prod
+
+
+namespace FiberBundle.Prod
+
+section CongrRightLaws
+
+variable {B : Type uB}
+  (F₁ : Type uF₁) (E₁ : B → Type uE₁) (F₂ : Type uF₂) (E₂ : B → Type uE₂)
+  (F₃ : Type uF₃) (E₃ : B → Type uE₃)
+  [t₁ : TopologicalSpace (TotalSpace F₁ E₁)] [t₂ : TopologicalSpace (TotalSpace F₂ E₂)]
+  [t₃ : TopologicalSpace (TotalSpace F₃ E₃)]
+
+/-- The two forward total-space factor laws uniquely characterize the right-factor
+homeomorphism. -/
+theorem homeomorphCongrRight_unique
+    (H : @Homeomorph (TotalSpace F₂ E₂) (TotalSpace F₃ E₃) t₂ t₃)
+    (hH : ∀ s, (H s).proj = s.proj)
+    (J : @Homeomorph (TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂))
+      (TotalSpace (F₁ × F₃) (E₁ ×ᵇ E₃))
+      (@FiberBundle.Prod.topologicalSpace B F₁ E₁ F₂ E₂ t₁ t₂)
+      (@FiberBundle.Prod.topologicalSpace B F₁ E₁ F₃ E₃ t₁ t₃))
+    (hfst : ∀ p, totalSpaceFst F₁ E₁ F₃ E₃ (J p) = totalSpaceFst F₁ E₁ F₂ E₂ p)
+    (hsnd : ∀ p, totalSpaceSnd F₁ E₁ F₃ E₃ (J p) = H (totalSpaceSnd F₁ E₁ F₂ E₂ p)) :
+    J = @homeomorphCongrRight B F₁ E₁ F₂ E₂ F₃ E₃ t₁ t₂ t₃ H hH := by
+  apply Homeomorph.ext
+  intro p
+  apply totalSpace_ext F₁ E₁ F₃ E₃
+  · exact (hfst p).trans
+      (@totalSpaceFst_homeomorphCongrRight B F₁ E₁ F₂ E₂ F₃ E₃ t₁ t₂ t₃ H hH p).symm
+  · exact (hsnd p).trans
+      (@totalSpaceSnd_homeomorphCongrRight B F₁ E₁ F₂ E₂ F₃ E₃ t₁ t₂ t₃ H hH p).symm
+
+/-- Applying the identity to the right original total space gives the identity on the
+fiberwise-product total space. -/
+@[simp]
+theorem homeomorphCongrRight_refl :
+    @homeomorphCongrRight B F₁ E₁ F₂ E₂ F₂ E₂ t₁ t₂ t₂
+      (@Homeomorph.refl (TotalSpace F₂ E₂) t₂) (fun _ ↦ rfl) =
+        @Homeomorph.refl (TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂))
+          (@FiberBundle.Prod.topologicalSpace B F₁ E₁ F₂ E₂ t₁ t₂) := by
+  symm
+  apply @homeomorphCongrRight_unique B F₁ E₁ F₂ E₂ F₂ E₂ t₁ t₂ t₂
+    (@Homeomorph.refl (TotalSpace F₂ E₂) t₂) (fun _ ↦ rfl)
+  · intro p; rfl
+  · intro p; rfl
+
+universe uF₄ uE₄
+
+variable (F₄ : Type uF₄) (E₄ : B → Type uE₄)
+  [t₄ : TopologicalSpace (TotalSpace F₄ E₄)]
+
+/-- Right-factor homeomorphisms respect composition, with the same original middle
+total-space topology used by both given homeomorphisms. -/
+theorem homeomorphCongrRight_trans
+    (H : @Homeomorph (TotalSpace F₂ E₂) (TotalSpace F₃ E₃) t₂ t₃)
+    (hH : ∀ s, (H s).proj = s.proj)
+    (K : @Homeomorph (TotalSpace F₃ E₃) (TotalSpace F₄ E₄) t₃ t₄)
+    (hK : ∀ t, (K t).proj = t.proj) :
+    (@homeomorphCongrRight B F₁ E₁ F₂ E₂ F₃ E₃ t₁ t₂ t₃ H hH).trans
+      (@homeomorphCongrRight B F₁ E₁ F₃ E₃ F₄ E₄ t₁ t₃ t₄ K hK) =
+        @homeomorphCongrRight B F₁ E₁ F₂ E₂ F₄ E₄ t₁ t₂ t₄ (H.trans K)
+          (fun s ↦ (hK (H s)).trans (hH s)) := by
+  apply @homeomorphCongrRight_unique B F₁ E₁ F₂ E₂ F₄ E₄ t₁ t₂ t₄ (H.trans K)
+    (fun s ↦ (hK (H s)).trans (hH s))
+  · intro p
+    exact (@totalSpaceFst_homeomorphCongrRight B F₁ E₁ F₃ E₃ F₄ E₄ t₁ t₃ t₄ K hK
+      (@homeomorphCongrRight B F₁ E₁ F₂ E₂ F₃ E₃ t₁ t₂ t₃ H hH p)).trans
+        (@totalSpaceFst_homeomorphCongrRight B F₁ E₁ F₂ E₂ F₃ E₃ t₁ t₂ t₃ H hH p)
+  · intro p
+    exact (@totalSpaceSnd_homeomorphCongrRight B F₁ E₁ F₃ E₃ F₄ E₄ t₁ t₃ t₄ K hK
+      (@homeomorphCongrRight B F₁ E₁ F₂ E₂ F₃ E₃ t₁ t₂ t₃ H hH p)).trans
+        (congrArg K
+          (@totalSpaceSnd_homeomorphCongrRight B F₁ E₁ F₂ E₂ F₃ E₃ t₁ t₂ t₃ H hH p))
+
+end CongrRightLaws
 
 end FiberBundle.Prod
