@@ -589,3 +589,22 @@ equivalence with Mathlib's complete-field `ContinuousLinearEquiv.piRing` at the 
 target, and index type. These supplied-coordinate and module-topology hypotheses are
 sufficient inputs, not a necessity assertion for every normed finite-dimensional operator
 criterion.
+
+
+## Semilinear operator families
+
+Let σ : K →+* L be isometric, with K a nontrivially normed field and L a normed
+field. Let A be a finite-dimensional seminormed K-module and G a seminormed L-module.
+The fields and spaces may lie in independent universes; σ need not be surjective.
+
+* `ContinuousLinearMap.totallyBounded_iff_apply_of_finiteDimensionalₛₗ` characterizes
+  total boundedness of a family by total boundedness of every fixed-vector image.
+  Its linear specialization is `totallyBounded_iff_apply_of_finiteDimensional`.
+* Import `VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Compactness`
+  for `ContinuousLinearMap.isCompact_iff_forall_isBounded_image_apply_of_isClosed`.
+  When G is proper, a closed family is compact exactly when each fixed-vector image
+  is metrically bounded. Closedness remains an explicit hypothesis.
+
+These criteria use the topology and uniformity of uniform convergence on bounded sets
+on the original space of maps. No operator metric, complete scalar field or separated
+space is required; the original L-action and pseudometric on G are retained.

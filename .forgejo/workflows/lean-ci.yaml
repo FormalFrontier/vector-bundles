@@ -112,6 +112,7 @@ jobs:
               "VectorBundlesTest/Topology/VectorBundle/ComplementaryRangeBundle",
               "VectorBundles/Analysis/Normed/Module/JointEvaluation",
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Basic",
+              "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Compactness",
               "VectorBundlesTest/JointEvaluation",
           )
           states = {}
@@ -210,6 +211,7 @@ jobs:
               "VectorBundlesTest/Topology/VectorBundle/ComplementaryRangeBundle",
               "VectorBundles/Analysis/Normed/Module/JointEvaluation",
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Basic",
+              "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Compactness",
               "VectorBundlesTest/JointEvaluation",
           )
           for module in modules:

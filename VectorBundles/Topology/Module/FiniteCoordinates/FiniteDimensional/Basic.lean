@@ -674,6 +674,44 @@ theorem tendsto_iff_apply_of_finiteDimensional
   rw [htransport, PointwiseConvergenceCLM.tendsto_iff_forall_tendsto]
   simp only [e, ContinuousLinearEquiv.toPointwiseConvergenceCLMOfFiniteDimensional_apply]
 
+/-- A set of continuous semilinear maps on a finite-dimensional seminormed domain
+is totally bounded for the original bounded-convergence uniformity if and only if its image
+under every fixed-vector evaluation is totally bounded. The target field is only assumed
+normed. The scalar homomorphism is isometric but need not be surjective, and the target retains
+its given scalar action. Neither scalar field nor either space needs to be complete, and the
+spaces need not be separated. -/
+theorem totallyBounded_iff_apply_of_finiteDimensionalₛₗ
+    {K : Type uK} [kK : NontriviallyNormedField K]
+    {L : Type uL} [kL : NormedField L]
+    {σ : K →+* L} [RingHomIsometric σ]
+    {A : Type uA} [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    [hA : @FiniteDimensional K A (inferInstance : DivisionRing K)
+      sA.toAddCommGroup nA.toModule]
+    {G : Type uG} [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace L G kL sG]
+    (s : Set (A →SL[σ] G)) :
+    TotallyBounded s ↔
+      ∀ v : A, TotallyBounded ((fun T : A →SL[σ] G => T v) '' s) := by
+  let e : (A →SL[σ] G) ≃L[L] (A →SLₚₜ[σ] G) :=
+    ContinuousLinearEquiv.toUniformConvergenceCLMOfFiniteDimensional K L σ A G
+      {s : Set A | Finite s}
+      (fun s hs => (Set.finite_coe_iff.mp hs).isBounded)
+      (by
+        have hcover : ⋃₀ {s : Set A | Finite s} = Set.univ :=
+          Set.sUnion_finite_eq_univ
+        rw [hcover, Submodule.span_univ])
+  calc
+    TotallyBounded s ↔ TotallyBounded (e '' s) :=
+      (totallyBounded_image_iff e.isUniformEmbedding.isUniformInducing).symm
+    _ ↔ TotallyBounded (((↑) : (A →SLₚₜ[σ] G) → A → G) '' (e '' s)) :=
+      (totallyBounded_image_iff
+        (PointwiseConvergenceCLM.isUniformEmbedding_coeFn σ A G).isUniformInducing).symm
+    _ ↔ ∀ v : A, TotallyBounded ((fun T : A →SL[σ] G => T v) '' s) := by
+      rw [totallyBounded_pi_iff]
+      simp only [Set.image_image, e,
+        ContinuousLinearEquiv.toUniformConvergenceCLMOfFiniteDimensional_apply]
+
 /-- A set of continuous linear maps on a finite-dimensional seminormed domain
 is totally bounded for the operator-norm uniformity if and only if its image
 under every fixed-vector evaluation is totally bounded. The scalar field may
@@ -689,17 +727,7 @@ theorem totallyBounded_iff_apply_of_finiteDimensional
     (s : Set (A →L[K] G)) :
     TotallyBounded s ↔
       ∀ v : A, TotallyBounded ((fun T : A →L[K] G => T v) '' s) := by
-  let e := ContinuousLinearEquiv.toPointwiseConvergenceCLMOfFiniteDimensional K A G
-  calc
-    TotallyBounded s ↔ TotallyBounded (e '' s) :=
-      (totallyBounded_image_iff e.isUniformEmbedding.isUniformInducing).symm
-    _ ↔ TotallyBounded (((↑) : (A →Lₚₜ[K] G) → A → G) '' (e '' s)) :=
-      (totallyBounded_image_iff
-        (PointwiseConvergenceCLM.isUniformEmbedding_coeFn
-          (RingHom.id K) A G).isUniformInducing).symm
-    _ ↔ ∀ v : A, TotallyBounded ((fun T : A →L[K] G => T v) '' s) := by
-      rw [totallyBounded_pi_iff]
-      simp only [Set.image_image, e,
-        ContinuousLinearEquiv.toPointwiseConvergenceCLMOfFiniteDimensional_apply]
+  exact totallyBounded_iff_apply_of_finiteDimensionalₛₗ
+    (K := K) (L := K) (σ := RingHom.id K) s
 
 end ContinuousLinearMap
