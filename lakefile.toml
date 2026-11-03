@@ -232,6 +232,7 @@ globs = [
   "VectorBundlesTest.Topology.VectorBundle.FiniteEmbedding",
   "VectorBundlesTest.Topology.VectorBundle.Frame",
   "VectorBundlesTest.Topology.VectorBundle.Range",
+  "VectorBundlesTest.Topology.VectorBundle.SplitFamilyRangeAtlas",
   "VectorBundlesTest.Topology.VectorBundle.ScalarEnd",
   "VectorBundlesTest.Topology.VectorBundle.TrivialMetric",
 ]
