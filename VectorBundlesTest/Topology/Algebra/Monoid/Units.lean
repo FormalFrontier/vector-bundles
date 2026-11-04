@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 Authors: Formal Frontier Agents
 -/
 
+import VectorBundles.Algebra.Ring.Units
 import VectorBundles.Topology.Algebra.Monoid.Units
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.TrivSqZeroExt.Basic
@@ -103,18 +104,24 @@ example :
   have hsq : ∀ z w : TrivSqZeroExt ℝ ℝ, z.fst = 0 → w.fst = 0 → z * w = 0 := by
     intro z w hz hw
     ext <;> simp [hz, hw]
+  have hnil : ∀ z : TrivSqZeroExt ℝ ℝ,
+      (TrivSqZeroExt.fstHom ℝ ℝ ℝ) z = 0 → IsNilpotent z := by
+    intro z hz
+    refine ⟨2, ?_⟩
+    rw [pow_two]
+    exact hsq z z hz hz
+  have hlocal : IsLocalHom (TrivSqZeroExt.fstHom ℝ ℝ ℝ) :=
+    IsLocalHom.of_surjective_of_isNilpotent_ker
+      (TrivSqZeroExt.fstHom ℝ ℝ ℝ) hsurj hnil
   have hreflect : ∀ z : TrivSqZeroExt ℝ ℝ,
       IsUnit ((TrivSqZeroExt.fstHom ℝ ℝ ℝ) z) → IsUnit z := by
+    have := hlocal
     intro z hz
-    exact TrivSqZeroExt.isUnit_iff_isUnit_fst.mpr hz
-  have hlocal : IsLocalHom (TrivSqZeroExt.fstHom ℝ ℝ ℝ) := by
-    classical
-    constructor
-    intro z
-    simpa only [not_imp_not] using hreflect z
+    exact (isUnit_map_iff (TrivSqZeroExt.fstHom ℝ ℝ ℝ) z).mp hz
   have hcoords : ∀ z : TrivSqZeroExt ℝ ℝ, IsUnit z ↔ z.fst ≠ 0 := by
     intro z
-    exact TrivSqZeroExt.isUnit_iff_isUnit_fst.trans isUnit_iff_ne_zero
+    exact ⟨fun hz => (hz.map (TrivSqZeroExt.fstHom ℝ ℝ ℝ)).ne_zero,
+      fun hz => hreflect z (isUnit_iff_ne_zero.mpr hz)⟩
   have hpre : {z : TrivSqZeroExt ℝ ℝ | IsUnit z} =
       (TrivSqZeroExt.fstHom ℝ ℝ ℝ) ⁻¹' {r : ℝ | IsUnit r} := by
     ext z
