@@ -9,9 +9,11 @@ public import Mathlib.Topology.ContinuousMap.Algebra
 public import VectorBundles.Topology.VectorBundle.FiniteSum
 public import VectorBundles.Topology.VectorBundle.Section
 public import VectorBundles.Topology.Bornology.Bounded
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
-# Addition and positive rescaling of supplied Hermitian metrics
+# Addition, positive rescaling and finite averages of supplied Hermitian metrics
 
 `Bundle.HermitianMetric.add` and `Bundle.HermitianMetric.rescale` operate on supplied
 metrics on the same indexed family of topological modules. The weights for rescaling
@@ -24,6 +26,12 @@ weights and requires pointwise positivity, not a uniform positive lower bound.
 Continuity is continuity of the iterated Hom-bundle section, not only of scalar evaluations.
 No zero metric or unrestricted scalar action on metrics is introduced.
 
+The finite nonempty averages use an arbitrary input as the seed of a commutative
+`Finset.fold`, then rescale by the reciprocal cardinality. Their pointwise formulas
+are independent of the seed and enumeration, as for Mathlib's `Finset.expect`.
+The continuous average uses the same fiberwise average and continuity of finite
+sums of sections of the iterated Hom bundle.
+
 ## References
 
 * Allen Hatcher, *Vector Bundles and K-Theory*, version 2.2, Proposition 1.2 and its
@@ -31,13 +39,15 @@ No zero metric or unrestricted scalar action on metrics is introduced.
 * Sébastien Gouëzel, Mathlib's `Topology.VectorBundle.Riemannian`, for the metric data.
 * Heather Macbeth and Floris van Doorn, Mathlib's Hom-bundle topology.
 * Moritz Doll, Mathlib's von Neumann boundedness and small-sets characterization.
+* Mario Carneiro, Mathlib's `Finset.fold`, and Yaël Dillies and Bhavik Mehta,
+  Mathlib's finite expectations, for finite averaging.
 -/
 
 @[expose] public section
 
 namespace Bundle
 
-universe uκ uB uE uF uA
+universe uκ uB uE uF uA uι uι'
 
 section Fiberwise
 
@@ -164,6 +174,92 @@ theorem HermitianMetric.rescale_add (g h : HermitianMetric κ E)
   apply HermitianMetric.ext
   intro b v w
   simp only [HermitianMetric.rescale_inner_apply, HermitianMetric.add_inner_apply, mul_add]
+
+
+private instance : Std.Commutative (HermitianMetric.add (κ := κ) (E := E)) :=
+  ⟨HermitianMetric.add_comm⟩
+
+private instance : Std.Associative (HermitianMetric.add (κ := κ) (E := E)) :=
+  ⟨HermitianMetric.add_assoc⟩
+
+private theorem hermitianMetric_fold_inner_apply {ι : Type uι} (s : Finset ι)
+    (h : HermitianMetric κ E) (g : ι → HermitianMetric κ E) (b : B) (v w : E b) :
+    (s.fold HermitianMetric.add h g).inner b v w =
+      (∑ i ∈ s, (g i).inner b v w) + h.inner b v w := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp only [Finset.fold_empty, Finset.sum_empty, zero_add]
+  | @insert i s hi ih =>
+    simp only [Finset.fold_insert hi, HermitianMetric.add_inner_apply, ih,
+      Finset.sum_insert hi, _root_.add_assoc]
+
+variable {ι : Type uι} [Finite ι] [Nonempty ι]
+
+/-- The uniform average of a finite nonempty family of supplied Hermitian metrics.
+The original fiber topologies and scalar actions are unchanged. -/
+noncomputable def HermitianMetric.average (g : ι → HermitianMetric κ E) :
+    HermitianMetric κ E := by
+  classical
+  letI := Fintype.ofFinite ι
+  letI : Std.Commutative (HermitianMetric.add (κ := κ) (E := E)) :=
+    ⟨HermitianMetric.add_comm⟩
+  letI : Std.Associative (HermitianMetric.add (κ := κ) (E := E)) :=
+    ⟨HermitianMetric.add_assoc⟩
+  let i₀ : ι := Classical.choice ‹Nonempty ι›
+  exact ((Finset.univ.erase i₀).fold HermitianMetric.add (g i₀) g).rescale
+    (fun _ ↦ (Nat.card ι : ℝ)⁻¹)
+    (fun _ ↦ inv_pos.mpr (Nat.cast_pos.mpr (Nat.card_pos : 0 < Nat.card ι)))
+
+/-- Evaluation of a finite average is the normalized finite sum of the pairings. -/
+theorem HermitianMetric.average_inner_apply (g : ι → HermitianMetric κ E)
+    (b : B) (v w : E b) :
+    (HermitianMetric.average g).inner b v w =
+      ((Nat.card ι : ℝ)⁻¹ : κ) * ∑ᶠ i, (g i).inner b v w := by
+  classical
+  let _ := Fintype.ofFinite ι
+  rw [HermitianMetric.average, HermitianMetric.rescale_inner_apply,
+    hermitianMetric_fold_inner_apply,
+    Finset.sum_erase_add _ _ (Finset.mem_univ _), finsum_eq_sum_of_fintype,
+    RCLike.ofReal_inv]
+
+/-- The inner form of a finite average is the normalized sum of the inner forms. -/
+theorem HermitianMetric.average_inner (g : ι → HermitianMetric κ E) (b : B) :
+    (HermitianMetric.average g).inner b = ((Nat.card ι : ℝ)⁻¹ : κ) • ∑ᶠ i, (g i).inner b := by
+  classical
+  let _ := Fintype.ofFinite ι
+  ext v w
+  simp [HermitianMetric.average_inner_apply, finsum_eq_sum_of_fintype, smul_eq_mul]
+
+/-- Averaging a constant family leaves its metric unchanged. -/
+@[simp]
+theorem HermitianMetric.average_const (g : HermitianMetric κ E) :
+    HermitianMetric.average (fun _ : ι ↦ g) = g := by
+  classical
+  let _ := Fintype.ofFinite ι
+  have hc : (Nat.card ι : κ) ≠ 0 :=
+    Nat.cast_ne_zero.mpr (Nat.card_pos.ne' : Nat.card ι ≠ 0)
+  apply HermitianMetric.ext
+  intro b v w
+  rw [HermitianMetric.average_inner_apply, finsum_eq_sum_of_fintype]
+  simp only [Finset.sum_const, Finset.card_univ, nsmul_eq_mul,
+    ← Nat.card_eq_fintype_card, RCLike.ofReal_natCast,
+    ← mul_assoc, inv_mul_cancel₀ hc, one_mul]
+
+/-- Pointwise equal metric families have equal averages. -/
+theorem HermitianMetric.average_congr {g h : ι → HermitianMetric κ E}
+    (hgh : ∀ i, g i = h i) :
+    HermitianMetric.average g = HermitianMetric.average h := by
+  rw [funext hgh]
+
+/-- A finite average is unchanged by equivalence reindexing. -/
+theorem HermitianMetric.average_comp_equiv {ι' : Type uι'} [Finite ι'] [Nonempty ι']
+    (g : ι' → HermitianMetric κ E) (e : ι ≃ ι') :
+    HermitianMetric.average (g ∘ e) = HermitianMetric.average g := by
+  apply HermitianMetric.ext
+  intro b v w
+  simp only [HermitianMetric.average_inner_apply, Function.comp_apply, Nat.card_congr e]
+  congr 1
+  exact finsum_comp_equiv e (f := fun i ↦ (g i).inner b v w)
 
 end Fiberwise
 
@@ -296,6 +392,80 @@ theorem ContinuousHermitianMetric.rescale_add (g h : ContinuousHermitianMetric �
   intro b v w
   simp only [ContinuousHermitianMetric.rescale_inner_apply,
     ContinuousHermitianMetric.add_inner_apply, mul_add]
+
+
+variable {ι : Type uι} [Finite ι] [Nonempty ι]
+
+/-- The uniform average of a finite nonempty family of supplied continuous metrics.
+Continuity is in the original iterated Hom bundle. -/
+noncomputable def ContinuousHermitianMetric.average
+    (g : ι → ContinuousHermitianMetric κ F E) : ContinuousHermitianMetric κ F E where
+  inner := (HermitianMetric.average (fun i ↦ (g i).toHermitianMetric)).inner
+  symm := (HermitianMetric.average (fun i ↦ (g i).toHermitianMetric)).symm
+  pos := (HermitianMetric.average (fun i ↦ (g i).toHermitianMetric)).pos
+  isVonNBounded := (HermitianMetric.average (fun i ↦ (g i).toHermitianMetric)).isVonNBounded
+  continuous := by
+    simp_rw [HermitianMetric.average_inner]
+    exact VectorBundle.continuous_smul_section (κ := κ)
+      (F := F →L⋆[κ] F →L[κ] κ) continuous_const
+      (VectorBundle.continuous_finsum_section κ
+        (F := F →L⋆[κ] F →L[κ] κ) (s := fun i b ↦ (g i).inner b)
+        (fun i ↦ (g i).continuous) (locallyFinite_of_finite _))
+
+/-- Evaluation of a continuous average is the normalized sum of the pairings. -/
+theorem ContinuousHermitianMetric.average_inner_apply
+    (g : ι → ContinuousHermitianMetric κ F E) (b : B) (v w : E b) :
+    (ContinuousHermitianMetric.average g).inner b v w =
+      ((Nat.card ι : ℝ)⁻¹ : κ) * ∑ᶠ i, (g i).inner b v w :=
+  HermitianMetric.average_inner_apply (fun i ↦ (g i).toHermitianMetric) b v w
+
+/-- The inner form of a continuous average is the normalized sum of the inner forms. -/
+theorem ContinuousHermitianMetric.average_inner
+    (g : ι → ContinuousHermitianMetric κ F E) (b : B) :
+    (ContinuousHermitianMetric.average g).inner b =
+      ((Nat.card ι : ℝ)⁻¹ : κ) • ∑ᶠ i, (g i).inner b :=
+  HermitianMetric.average_inner (fun i ↦ (g i).toHermitianMetric) b
+
+/-- Forgetting base continuity commutes with finite averaging. -/
+@[simp]
+theorem ContinuousHermitianMetric.toHermitianMetric_average
+    (g : ι → ContinuousHermitianMetric κ F E) :
+    (ContinuousHermitianMetric.average g).toHermitianMetric =
+      HermitianMetric.average (fun i ↦ (g i).toHermitianMetric) := by
+  apply HermitianMetric.ext
+  intro b v w
+  rfl
+
+private theorem continuousHermitianMetric_toHermitianMetric_injective :
+    Function.Injective (fun g : ContinuousHermitianMetric κ F E ↦ g.toHermitianMetric) := by
+  intro g h hgh
+  apply ContinuousHermitianMetric.ext
+  intro b v w
+  exact congrArg (fun m : HermitianMetric κ E ↦ m.inner b v w) hgh
+
+/-- Averaging a constant continuous metric family leaves the metric unchanged. -/
+@[simp]
+theorem ContinuousHermitianMetric.average_const (g : ContinuousHermitianMetric κ F E) :
+    ContinuousHermitianMetric.average (fun _ : ι ↦ g) = g := by
+  apply continuousHermitianMetric_toHermitianMetric_injective
+  simpa only [ContinuousHermitianMetric.toHermitianMetric_average] using
+    (HermitianMetric.average_const (ι := ι) g.toHermitianMetric)
+
+/-- Pointwise equal continuous metric families have equal averages. -/
+theorem ContinuousHermitianMetric.average_congr
+    {g h : ι → ContinuousHermitianMetric κ F E} (hgh : ∀ i, g i = h i) :
+    ContinuousHermitianMetric.average g = ContinuousHermitianMetric.average h := by
+  rw [funext hgh]
+
+/-- A continuous finite average is unchanged by equivalence reindexing. -/
+theorem ContinuousHermitianMetric.average_comp_equiv
+    {ι' : Type uι'} [Finite ι'] [Nonempty ι']
+    (g : ι' → ContinuousHermitianMetric κ F E) (e : ι ≃ ι') :
+    ContinuousHermitianMetric.average (g ∘ e) =
+      ContinuousHermitianMetric.average g := by
+  apply continuousHermitianMetric_toHermitianMetric_injective
+  simpa only [ContinuousHermitianMetric.toHermitianMetric_average, Function.comp_def] using
+    HermitianMetric.average_comp_equiv (fun i ↦ (g i).toHermitianMetric) e
 
 end Continuous
 

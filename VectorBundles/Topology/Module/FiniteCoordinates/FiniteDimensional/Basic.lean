@@ -43,7 +43,8 @@ such a controlling test set also gives the operator-norm topology, even if the w
 union has infinite-dimensional span. The identity with this family topology is linear
 over the original target field; its action on the target is unchanged. Dense span need
 not be algebraically the whole domain, and restriction to a dense subspace need not be
-injective when the target is not separated.
+injective when the target is not separated. Total boundedness is likewise detected by
+all evaluations on a dense finite-dimensional submodule, with an arbitrary seminormed target.
 
 ## References
 
@@ -848,13 +849,8 @@ theorem tendsto_iff_apply_of_finiteDimensional
   rw [htransport, PointwiseConvergenceCLM.tendsto_iff_forall_tendsto]
   simp only [e, ContinuousLinearEquiv.toPointwiseConvergenceCLMOfFiniteDimensional_apply]
 
-/-- A set of continuous semilinear maps on a finite-dimensional seminormed domain
-is totally bounded for the original bounded-convergence uniformity if and only if its image
-under every fixed-vector evaluation is totally bounded. The target field is only assumed
-normed. The scalar homomorphism is isometric but need not be surjective, and the target retains
-its given scalar action. Neither scalar field nor either space needs to be complete, and the
-spaces need not be separated. -/
-theorem totallyBounded_iff_apply_of_finiteDimensionalₛₗ
+/-- The finite-source total-boundedness calculation, used after dense restriction. -/
+private theorem totallyBounded_iff_apply_of_finiteDimensionalₛₗ_core
     {K : Type uK} [kK : NontriviallyNormedField K]
     {L : Type uL} [kL : NormedField L]
     {σ : K →+* L} [RingHomIsometric σ]
@@ -886,6 +882,57 @@ theorem totallyBounded_iff_apply_of_finiteDimensionalₛₗ
       simp only [Set.image_image, e,
         ContinuousLinearEquiv.toUniformConvergenceCLMOfFiniteDimensional_apply]
 
+/-- A family of continuous semilinear maps is totally bounded if and only if its evaluation
+image at every vector of a dense finite-dimensional submodule is totally bounded. The ambient
+source need not be finite-dimensional, the fields and spaces need not be complete, and the
+spaces need not be separated. -/
+theorem totallyBounded_iff_apply_of_dense_finiteDimensionalₛₗ
+    {K : Type uK} [kK : NontriviallyNormedField K]
+    {L : Type uL} [kL : NormedField L]
+    {σ : K →+* L} [RingHomIsometric σ]
+    {A : Type uA} [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    {G : Type uG} [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace L G kL sG]
+    (P : Submodule K A) [FiniteDimensional K P]
+    (hP : Dense (P : Set A)) (s : Set (A →SL[σ] G)) :
+    TotallyBounded s ↔
+      ∀ p : P, TotallyBounded ((fun T : A →SL[σ] G => T (p : A)) '' s) := by
+  calc
+    TotallyBounded s ↔
+        TotallyBounded ((fun T : A →SL[σ] G => T.domRestrict P) '' s) :=
+      (totallyBounded_image_iff
+        (isUniformInducing_domRestrict_of_dense (σ := σ) (G := G) P hP)).symm
+    _ ↔ ∀ p : P, TotallyBounded ((fun T : A →SL[σ] G => T (p : A)) '' s) := by
+      simpa only [Set.image_image, ContinuousLinearMap.coe_domRestrict,
+        Set.domRestrict_apply] using
+        (totallyBounded_iff_apply_of_finiteDimensionalₛₗ_core
+          ((fun T : A →SL[σ] G => T.domRestrict P) '' s))
+
+/-- A set of continuous semilinear maps on a finite-dimensional seminormed domain
+is totally bounded for the original bounded-convergence uniformity if and only if its image
+under every fixed-vector evaluation is totally bounded. The target field is only assumed
+normed. The scalar homomorphism is isometric but need not be surjective, and the target retains
+its given scalar action. Neither scalar field nor either space needs to be complete, and the
+spaces need not be separated. -/
+theorem totallyBounded_iff_apply_of_finiteDimensionalₛₗ
+    {K : Type uK} [kK : NontriviallyNormedField K]
+    {L : Type uL} [kL : NormedField L]
+    {σ : K →+* L} [RingHomIsometric σ]
+    {A : Type uA} [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    [hA : @FiniteDimensional K A (inferInstance : DivisionRing K)
+      sA.toAddCommGroup nA.toModule]
+    {G : Type uG} [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace L G kL sG]
+    (s : Set (A →SL[σ] G)) :
+    TotallyBounded s ↔
+      ∀ v : A, TotallyBounded ((fun T : A →SL[σ] G => T v) '' s) := by
+  simpa only [Subtype.forall, Submodule.mem_top, forall_true_left] using
+    (totallyBounded_iff_apply_of_dense_finiteDimensionalₛₗ
+      (σ := σ) (⊤ : Submodule K A)
+      (by simp) s)
+
 /-- A set of continuous linear maps on a finite-dimensional seminormed domain
 is totally bounded for the operator-norm uniformity if and only if its image
 under every fixed-vector evaluation is totally bounded. The scalar field may
@@ -901,7 +948,9 @@ theorem totallyBounded_iff_apply_of_finiteDimensional
     (s : Set (A →L[K] G)) :
     TotallyBounded s ↔
       ∀ v : A, TotallyBounded ((fun T : A →L[K] G => T v) '' s) := by
-  exact totallyBounded_iff_apply_of_finiteDimensionalₛₗ
-    (K := K) (L := K) (σ := RingHom.id K) s
+  simpa only [Subtype.forall, Submodule.mem_top, forall_true_left] using
+    (totallyBounded_iff_apply_of_dense_finiteDimensionalₛₗ
+      (σ := RingHom.id K) (⊤ : Submodule K A)
+      (by simp) s)
 
 end ContinuousLinearMap

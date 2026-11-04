@@ -53,10 +53,17 @@ topological fiber bundles.
   `Q·1` is proper and dense. The equivalence acts on the same full maps, not on their
   restrictions; dense restriction need not be injective for a nonseparated target.
 
-- **Proper semilinear operator spaces.** Let `σ : K →+* L` be isometric, with `K`
-  nontrivially normed and `L` a normed field. For seminormed `K`- and `L`-spaces `A`
-  and `G`, with `G` proper, the full space `A →SL[σ] G` is proper for its canonical
-  operator seminorm whenever `A` contains a dense finite-dimensional `K`-submodule
+- **Pointwise total boundedness, compactness and properness.** Let `σ : K →+* L` be
+  isometric, with `K` nontrivially normed and `L` a normed field. Let `A` and `G` be
+  seminormed spaces over `K` and `L`, and let `P` be a dense finite-dimensional
+  `K`-submodule of `A`. A family in the full space `A →SL[σ] G` is totally bounded
+  exactly when every evaluation image on `P` is totally bounded
+  (`ContinuousLinearMap.totallyBounded_iff_apply_of_dense_finiteDimensionalₛₗ`).
+  If `G` is complete, a closed family is compact exactly under this pointwise condition
+  (`ContinuousLinearMap.isCompact_iff_forall_totallyBounded_image_apply_of_isClosed_of_dense`).
+  For proper `G`, the evaluation images need only be metrically bounded
+  (`ContinuousLinearMap.isCompact_iff_forall_isBounded_image_apply_of_isClosed_of_dense`),
+  and the full map space is proper for its canonical operator seminorm
   (`ContinuousLinearMap.properSpace_of_dense_finiteDimensionalₛₗ` in
   [module](VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Compactness.lean)).
   The ambient domain need not be finite-dimensional. No completeness of either field
@@ -638,14 +645,19 @@ Let σ : K →+* L be isometric, with K a nontrivially normed field and L a norm
 field. Let A be a seminormed K-module and G a seminormed L-module.
 The fields and spaces may lie in independent universes; σ need not be surjective.
 
-* For finite-dimensional A,
-  `ContinuousLinearMap.totallyBounded_iff_apply_of_finiteDimensionalₛₗ` characterizes
-  total boundedness of a family by total boundedness of every fixed-vector image.
-  Its linear specialization is `totallyBounded_iff_apply_of_finiteDimensional`.
+* If P is a dense finite-dimensional K-submodule of A,
+  `ContinuousLinearMap.totallyBounded_iff_apply_of_dense_finiteDimensionalₛₗ`
+  characterizes total boundedness of a family by total boundedness of every evaluation
+  image on P. No completeness of G is required. The finite-dimensional-source APIs
+  `totallyBounded_iff_apply_of_finiteDimensionalₛₗ` and its linear specialization
+  `totallyBounded_iff_apply_of_finiteDimensional` are the P = ⊤ cases.
 * Import `VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Compactness`
-  for `ContinuousLinearMap.isCompact_iff_forall_isBounded_image_apply_of_isClosed`.
-  For finite-dimensional A and proper G, a closed family is compact exactly when
-  each fixed-vector image is metrically bounded. Closedness remains an explicit hypothesis.
+  for `ContinuousLinearMap.isCompact_iff_forall_totallyBounded_image_apply_of_isClosed_of_dense`:
+  with complete G, a closed family is compact exactly when every evaluation image on P
+  is totally bounded. With proper G, these images need only be metrically bounded
+  (`isCompact_iff_forall_isBounded_image_apply_of_isClosed_of_dense`). Closedness remains
+  explicit, including for nonseparated targets. The finite-dimensional-source API
+  `isCompact_iff_forall_isBounded_image_apply_of_isClosed` is the P = ⊤ specialization.
   For a finite-dimensional domain and proper codomain, the canonical operator-seminorm
   space is proper (`ContinuousLinearMap.properSpace_of_finiteDimensionalₛₗ`); this is
   also available by typeclass inference.

@@ -13,15 +13,17 @@ public import Mathlib.Topology.MetricSpace.Bounded
 /-!
 # Compact families of continuous semilinear maps
 
-For a finite-dimensional seminormed domain and a proper seminormed target, a closed family
-of continuous semilinear maps is compact if and only if every fixed-vector image is
-metrically bounded. The scalar field of the domain may be incomplete, and the isometric
-scalar homomorphism need not be surjective.
+If a seminormed domain contains a dense finite-dimensional submodule, a closed family of
+continuous semilinear maps to a complete seminormed target is compact if and only if every
+evaluation image on that submodule is totally bounded. For a proper target, total boundedness
+of these images is equivalent to metric boundedness. The finite-dimensional-domain criterion
+is the specialization to the top submodule. The scalar fields and the source may be incomplete,
+and the isometric scalar homomorphism need not be surjective.
 
-The closed-family criterion uses the topology of uniform convergence on bounded sets.
-With its canonical operator seminorm, the space of maps is proper more generally when
-the domain contains a dense finite-dimensional submodule. The target may be nonseparated,
-so closedness of a family remains an explicit assumption.
+The closed-family criteria use the topology of uniform convergence on bounded sets and
+completeness of the original map space. With its canonical operator seminorm, the space of
+maps is proper when the domain contains a dense finite-dimensional submodule and the target
+is proper. The target may be nonseparated, so closedness of a family remains explicit.
 -/
 
 @[expose] public section
@@ -29,6 +31,46 @@ so closedness of a family remains an explicit assumption.
 universe uK uL uA uG
 
 namespace ContinuousLinearMap
+
+/-- A closed family of continuous semilinear maps to a complete seminormed space is compact
+if and only if its evaluation image at every vector of a dense finite-dimensional submodule
+is totally bounded. The ambient source need not be finite-dimensional, neither scalar field
+nor the source needs to be complete, and the spaces need not be separated. -/
+theorem isCompact_iff_forall_totallyBounded_image_apply_of_isClosed_of_dense
+    {K : Type uK} [kK : NontriviallyNormedField K]
+    {L : Type uL} [kL : NormedField L]
+    {σ : K →+* L} [RingHomIsometric σ]
+    {A : Type uA} [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    {G : Type uG} [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace L G kL sG] [CompleteSpace G]
+    (P : Submodule K A) [FiniteDimensional K P]
+    (hP : Dense (P : Set A)) (s : Set (A →SL[σ] G)) (hs : IsClosed s) :
+    IsCompact s ↔
+      ∀ p : P, TotallyBounded ((fun T : A →SL[σ] G => T (p : A)) '' s) := by
+  rw [← totallyBounded_iff_apply_of_dense_finiteDimensionalₛₗ P hP s]
+  exact ⟨fun h => h.totallyBounded, fun h => h.isCompact_of_isClosed hs⟩
+
+/-- A closed family of continuous semilinear maps to a proper seminormed space is compact
+if and only if its evaluation image at every vector of a dense finite-dimensional submodule
+is bounded. The ambient source need not be finite-dimensional, neither scalar field nor the
+source needs to be complete, and the spaces need not be separated. -/
+theorem isCompact_iff_forall_isBounded_image_apply_of_isClosed_of_dense
+    {K : Type uK} [kK : NontriviallyNormedField K]
+    {L : Type uL} [kL : NormedField L]
+    {σ : K →+* L} [RingHomIsometric σ]
+    {A : Type uA} [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    {G : Type uG} [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace L G kL sG] [ProperSpace G]
+    (P : Submodule K A) [FiniteDimensional K P]
+    (hP : Dense (P : Set A)) (s : Set (A →SL[σ] G)) (hs : IsClosed s) :
+    IsCompact s ↔
+      ∀ p : P, Bornology.IsBounded ((fun T : A →SL[σ] G => T (p : A)) '' s) := by
+  rw [isCompact_iff_forall_totallyBounded_image_apply_of_isClosed_of_dense P hP s hs]
+  exact forall_congr' fun _ =>
+    ⟨fun h => h.isBounded,
+      fun h => h.isCompact_closure.totallyBounded.subset subset_closure⟩
 
 /-- A closed family of continuous semilinear maps from a finite-dimensional seminormed
 space to a proper seminormed space is compact exactly when each fixed-vector image is
@@ -47,14 +89,10 @@ theorem isCompact_iff_forall_isBounded_image_apply_of_isClosed
     (s : Set (A →SL[σ] G)) (hs : IsClosed s) :
     IsCompact s ↔
       ∀ v : A, Bornology.IsBounded ((fun T : A →SL[σ] G => T v) '' s) := by
-  constructor
-  · intro h v
-    exact (h.image (continuous_eval_const v)).isBounded
-  · intro h
-    have ht : TotallyBounded s :=
-      (totallyBounded_iff_apply_of_finiteDimensionalₛₗ s).2 fun v =>
-        (h v).isCompact_closure.totallyBounded.subset subset_closure
-    exact ht.isCompact_of_isClosed hs
+  simpa only [Subtype.forall, Submodule.mem_top, forall_true_left] using
+    (isCompact_iff_forall_isBounded_image_apply_of_isClosed_of_dense
+      (σ := σ) (⊤ : Submodule K A)
+      (by simp) s hs)
 
 section ProperOperatorSpace
 
