@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import VectorBundlesTest.Topology.Algebra.Monoid.Units
 public import VectorBundlesTest.OpenMap
 public import VectorBundlesTest.OrthogonalRetraction
 public import VectorBundlesTest.WeightedExtension

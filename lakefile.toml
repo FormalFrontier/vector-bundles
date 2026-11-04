@@ -12,6 +12,7 @@ weak.linter.style.header = false
 [[lean_lib]]
 name = "VectorBundles"
 globs = [
+  "VectorBundles.Topology.Algebra.Monoid.Units",
   "VectorBundles.Topology.FiberBundle.Trivialization.CompHomeomorph",
   "VectorBundles.Analysis.Normed.Algebra.Units",
   "VectorBundles.Analysis.Normed.Algebra.OperatorFamilies",
@@ -187,6 +188,7 @@ globs = [
 [[lean_lib]]
 name = "VectorBundlesTest"
 globs = [
+  "VectorBundlesTest.Topology.Algebra.Monoid.Units",
   "VectorBundlesTest.CompactRank",
   "VectorBundlesTest.JointEvaluation",
   "VectorBundlesTest.AdjointPair",
