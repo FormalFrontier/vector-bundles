@@ -11,6 +11,14 @@ topological fiber bundles.
 
 ## Headline results
 
+- In a normed ring finite dimensional over an arbitrary field, every element `a`
+  with `‖1 - a‖ < 1` is a unit, and the unit locus is open. No scalar norm or
+  completeness is required. The same conclusions hold in left-Artinian normed
+  rings ([module](VectorBundles/Analysis/Normed/Algebra/Units.lean)). A
+  pointwise-continuous family of continuous endomorphisms of a finite-dimensional
+  normed space consequently has an open invertible locus, even over an incomplete
+  nontrivially normed field
+  ([module](VectorBundles/Analysis/Normed/Algebra/OperatorFamilies.lean)).
 - Over a possibly incomplete nontrivially normed field, a family of existing continuous linear
   maps between given seminormed norm-compatible vector spaces, with finite-dimensional original
   domain, is continuous in the original operator-norm topology exactly when every original

@@ -5,6 +5,8 @@
     {
       "path": ".",
       "targets": [
+        "+VectorBundles.Analysis.Normed.Algebra.Units",
+        "+VectorBundles.Analysis.Normed.Algebra.OperatorFamilies",
         "+VectorBundles.Analysis.Normed.Operator.GramCoordinates",
         "+VectorBundles.Analysis.InnerProductSpace.GramNaturality",
         "+VectorBundles.Topology.Module.Finrank",
