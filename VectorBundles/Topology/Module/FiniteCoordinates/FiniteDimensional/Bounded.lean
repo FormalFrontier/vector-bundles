@@ -6,6 +6,7 @@ module
 
 public import VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Basic
 public import VectorBundles.Analysis.Normed.Operator.Basic
+public import VectorBundles.Analysis.Normed.Operator.Restrict
 public import VectorBundles.Topology.Bornology.LinearMap
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Group.Bounded
@@ -13,14 +14,18 @@ public import Mathlib.Analysis.Normed.Group.Bounded
 /-!
 # Pointwise bounded sets of continuous semilinear maps
 
-For a finite-dimensional seminormed domain, a set of continuous semilinear maps is
-bounded in operator seminorm exactly when every fixed-vector evaluation has bounded
-image. The scalar homomorphism need only be isometric; its target field need only be
-normed. Neither the fields nor the spaces need be complete, and the spaces need not
-be separated.
+For a seminormed domain containing a dense finite-dimensional submodule, a set of
+continuous semilinear maps is bounded in operator seminorm exactly when its evaluation
+image at every vector of that submodule is bounded. The finite-dimensional whole-source
+criterion is included as well. The scalar homomorphism need only be isometric; its target
+field need only be normed. Neither the fields nor the spaces need be complete, and the
+spaces need not be separated.
 
-The proof uses the finite-dimensional equivalence with pointwise convergence,
+The finite-source criterion uses the equivalence with pointwise convergence,
 von Neumann boundedness, and its reflection along the inducing evaluation map.
+Restriction to a dense submodule is isometric for the inherited operator seminorms.
+The finite-source criterion therefore applies to the restricted family to give the
+dense-test criterion.
 -/
 
 @[expose] public section
@@ -113,6 +118,47 @@ theorem isBounded_iff_forall_isBounded_image_applyₛₗ
           he.image e.symm.toContinuousLinearMap
         simpa only [ContinuousLinearEquiv.symm_image_image] using hpre
       exact (NormedSpace.isVonNBounded_iff L (s := s)).1 hs'
+
+/-- A family of continuous semilinear maps is bounded if and only if evaluation at every
+vector of a dense finite-dimensional submodule has bounded image. The ambient source need
+not be finite-dimensional. The scalar homomorphism is isometric but need not be surjective;
+neither field nor either seminormed space is required to be complete or separated. -/
+theorem isBounded_iff_forall_isBounded_image_applyₛₗ_of_dense
+    {K : Type uK} [kK : NontriviallyNormedField K]
+    {L : Type uL} [hL : NormedField L]
+    {A : Type uA} [sA : SeminormedAddCommGroup A] [nA : NormedSpace K A]
+    {G : Type uG} [sG : SeminormedAddCommGroup G] [nG : NormedSpace L G]
+    {σ : K →+* L} [RingHomIsometric σ]
+    (P : Submodule K A) [FiniteDimensional K P]
+    (hP : Dense (P : Set A)) (s : Set (A →SL[σ] G)) :
+    Bornology.IsBounded s ↔
+      ∀ p : P, Bornology.IsBounded
+        ((fun T : A →SL[σ] G => T (p : A)) '' s) :=
+  letI : NontriviallyNormedField L :=
+    { toNormedField := hL
+      non_trivial := by
+        obtain ⟨x, hx⟩ := NormedField.exists_one_lt_norm K
+        refine ⟨σ x, ?_⟩
+        simpa only [RingHomIsometric.norm_map] using hx }
+  by
+    let r : (A →SL[σ] G) → (P →SL[σ] G) := fun T => T.domRestrict P
+    have hr : Isometry r := isometry_domRestrict_of_dense P hP
+    have hbounded :
+        Bornology.IsBounded s ↔ Bornology.IsBounded (r '' s) := by
+      constructor
+      · exact hr.lipschitzWith.isBounded_image
+      · intro hs
+        exact (hr.antilipschitzWith.isBounded_preimage hs).subset (by
+          intro T hT
+          exact ⟨T, hT, rfl⟩)
+    have heval (p : P) :
+        (fun T : P →SL[σ] G => T p) '' (r '' s) =
+          (fun T : A →SL[σ] G => T (p : A)) '' s := by
+      simp only [Set.image_image, r, domRestrict_apply]
+    exact hbounded.trans
+      ((isBounded_iff_forall_isBounded_image_applyₛₗ
+        (K := K) (L := L) (σ := σ) (r '' s)).trans (by
+          simp only [heval]))
 
 /-- A set of continuous linear maps from a finite-dimensional seminormed space is bounded
 if and only if its image under evaluation at each vector is bounded. The scalar field may
