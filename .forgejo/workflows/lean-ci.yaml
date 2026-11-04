@@ -93,6 +93,7 @@ jobs:
               finally:
                   os.close(fd)
           modules = (
+              "VectorBundles/Topology/Algebra/Module/Splitting",
               "VectorBundles/Topology/FiberBundle/SumRange",
               "VectorBundles/Topology/FiberBundle/SumRangeTrivialization",
               "VectorBundles/Topology/UniformSpace/Pi",
@@ -196,6 +197,7 @@ jobs:
               baseline = {}
           # Static whitelist, priority order; no discovery or dependency-module execution.
           modules = (
+              "VectorBundles/Topology/Algebra/Module/Splitting",
               "VectorBundles/Topology/FiberBundle/SumRange",
               "VectorBundles/Topology/FiberBundle/SumRangeTrivialization",
               "VectorBundles/Topology/UniformSpace/Pi",
@@ -492,6 +494,19 @@ jobs:
           name: finite-coordinate-compactness-lean-diagnostics
           path: |
             .own-lean-diagnostics/VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Compactness
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Preserve independent module splitting Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.directory != ''
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: semiring-splitting-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/VectorBundles/Topology/Algebra/Module/Splitting/stdout.jsonl
+            .own-lean-diagnostics/VectorBundles/Topology/Algebra/Module/Splitting/stderr.log
+            .own-lean-diagnostics/VectorBundles/Topology/Algebra/Module/Splitting/exit-code.txt
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 30

@@ -33,6 +33,7 @@ public import VectorBundles.Analysis.Normed.Ring.Units
 public import VectorBundles.Topology.Algebra.GroupWithZero
 public import VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator
 public import VectorBundles.Topology.Algebra.Module.OpenMap
+public import VectorBundles.Topology.Algebra.Module.Splitting
 public import VectorBundles.Topology.ContinuousMap.Algebra
 public import VectorBundles.Topology.ContinuousMap.FiniteWeights
 public import VectorBundles.Topology.ContinuousMap.PairingExtension

@@ -11,6 +11,15 @@ topological fiber bundles.
 
 ## Headline results
 
+- **Semiring kernel-product splittings.** For a semiring `R`, an additive commutative
+  group `E` with a topological additive-group structure, and an additive commutative
+  monoid `F` with a topology, a continuous `R`-linear map `f : E →L[R] F` with a given
+  continuous linear right inverse `s` gives `E ≃L[R] F × f.ker`, with coordinates
+  `(f x, x - s (f x))` and inverse `(y, k) ↦ s y + k`
+  ([module](VectorBundles/Topology/Algebra/Module/Splitting.lean)). When `R` is a ring
+  and `F` an additive group, both bundled constructions agree with Mathlib's on the
+  same data. No scalar topology, separation or completeness is assumed.
+
 - In a normed ring finite dimensional over an arbitrary field, every element `a`
   with `‖1 - a‖ < 1` is a unit, and the unit locus is open. No scalar norm or
   completeness is required. The same conclusions hold in left-Artinian normed
@@ -468,6 +477,7 @@ identifies analysis modules and examples requiring direct imports.
 | [`Topology.Algebra.GroupWithZero`](VectorBundles/Topology/Algebra/GroupWithZero.lean) | Continuity of reciprocal selected finite sums of real squares under pointwise nonzero coverage |
 | [`Topology.ContinuousMap.FiniteWeights`](VectorBundles/Topology/ContinuousMap/FiniteWeights.lean) | Finite partitions of unity on normal spaces, with all-index closed-cozero subordination and no further separation assumptions |
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
+| [`Topology.Algebra.Module.Splitting`](VectorBundles/Topology/Algebra/Module/Splitting.lean) | Continuous residual projections and kernel-product splittings over semirings, with Ring compatibility |
 | [`Topology.Bornology.Inducing`](VectorBundles/Topology/Bornology/Inducing.lean) | `IsVonNBounded.preimage_of_isInducing` over a general `NormedDivisionRing`, without injectivity or topological vector-space hypotheses |
 | [`Topology.Compactness.CountablyCompact`](VectorBundles/Topology/Compactness/CountablyCompact.lean) | Countably compact preimages under proper maps exactly when the target subset intersected with the range is countably compact |
 | [`Topology.Compactness.Lindelof`](VectorBundles/Topology/Compactness/Lindelof.lean) | Lindelöf inverse images under proper maps and products with compact or σ-compact sets, without separation assumptions |

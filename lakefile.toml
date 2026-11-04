@@ -74,6 +74,7 @@ globs = [
   "VectorBundles.Topology.Algebra.GroupWithZero",
   "VectorBundles.Topology.Algebra.Module.FiniteDimensionalOperator",
   "VectorBundles.Topology.Algebra.Module.OpenMap",
+  "VectorBundles.Topology.Algebra.Module.Splitting",
   "VectorBundles.Topology.Compactness.CountablyCompact",
   "VectorBundles.Topology.Compactness.Lindelof",
   "VectorBundles.Topology.Compactness.Paracompact",
