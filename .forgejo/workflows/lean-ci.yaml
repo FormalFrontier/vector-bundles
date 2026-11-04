@@ -104,6 +104,8 @@ jobs:
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional",
               "VectorBundles/Data/Bundle",
               "VectorBundles/Topology/FiberBundle/Prod",
+              "VectorBundles/Topology/VectorBundle/HermitianMetric",
+              "VectorBundles/Topology/VectorBundle/OrthonormalTrivialization",
               "VectorBundlesTest/Topology/FiberBundle/ProdCongrRight",
               "VectorBundles/Topology/VectorBundle/FiniteRank/Weights",
               "VectorBundles/Topology/VectorBundle/FiniteRank/FiberCoordinates",
@@ -203,6 +205,8 @@ jobs:
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional",
               "VectorBundles/Data/Bundle",
               "VectorBundles/Topology/FiberBundle/Prod",
+              "VectorBundles/Topology/VectorBundle/HermitianMetric",
+              "VectorBundles/Topology/VectorBundle/OrthonormalTrivialization",
               "VectorBundlesTest/Topology/FiberBundle/ProdCongrRight",
               "VectorBundles/Topology/VectorBundle/FiniteRank/Weights",
               "VectorBundles/Topology/VectorBundle/FiniteRank/FiberCoordinates",
@@ -439,6 +443,18 @@ jobs:
         with:
           name: own-lean-diagnostics
           path: ${{ steps.own_diagnostics.outputs.directory }}
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Preserve independent Hermitian metric Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.directory != ''
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: hermitian-metric-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/VectorBundles/Topology/VectorBundle/HermitianMetric
+            .own-lean-diagnostics/VectorBundles/Topology/VectorBundle/OrthonormalTrivialization
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 30
