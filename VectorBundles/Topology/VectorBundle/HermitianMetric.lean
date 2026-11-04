@@ -8,6 +8,12 @@ module
 
 public import Mathlib.Topology.VectorBundle.Riemannian
 public import VectorBundles.Topology.VectorBundle.SemilinearEvaluation
+public import VectorBundles.Topology.FiberBundle.Prod
+public import Mathlib.Algebra.Module.LinearMap.Star
+public import Mathlib.Topology.VectorBundle.FiniteDimensional
+import Mathlib.LinearAlgebra.BilinearMap
+import VectorBundles.Analysis.InnerProductSpace.PositiveForm
+import VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Basic
 
 /-!
 # Hermitian fiber metrics
@@ -293,6 +299,251 @@ theorem ContinuousHermitianMetric.continuous_inner (g : ContinuousHermitianMetri
   exact fun x ↦ g.continuousAt_inner hv.continuousAt hw.continuousAt
 
 end Continuous
+
+namespace ContinuousHermitianMetric
+
+section ModelPairing
+
+universe uK uF uX
+
+variable {K : Type uK} [RCLike K]
+  {F : Type uF} [NormedAddCommGroup F] [NormedSpace K F]
+  [FiniteDimensional K F]
+  {X : Type uX} [TopologicalSpace X]
+
+/-- Package a jointly continuous algebraic pairing on the normed model.
+The first argument remains conjugate-linear; no Hermitian laws are needed. -/
+private noncomputable def pairingModel
+    (p : F →ₗ⋆[K] F →ₗ[K] K)
+    (hp : Continuous (fun vw : F × F => p vw.1 vw.2)) :
+    F →L⋆[K] F →L[K] K := by
+  let inner : F → F →L[K] K := fun v =>
+    { toLinearMap := p v
+      cont := hp.comp (continuous_const.prodMk continuous_id) }
+  let outer : F →ₗ⋆[K] F →L[K] K :=
+    { toFun := inner
+      map_add' := by
+        intro v v'
+        ext w
+        exact congrArg (fun l : F →ₗ[K] K => l w) (p.map_add' v v')
+      map_smul' := by
+        intro c v
+        ext w
+        exact congrArg (fun l : F →ₗ[K] K => l w) (p.map_smul' c v) }
+  refine { toLinearMap := outer, cont := ?_ }
+  exact
+    (ContinuousLinearMap.continuous_iff_apply_of_finiteDimensionalₛₗ
+      (K := K) (L := K) (σ := RingHom.id K)
+      (A := F) (G := K) (X := F) inner).2
+      (fun w => hp.comp (continuous_id.prodMk continuous_const))
+
+@[simp] private theorem pairingModel_apply
+    (p : F →ₗ⋆[K] F →ₗ[K] K)
+    (hp : Continuous (fun vw : F × F => p vw.1 vw.2))
+    (v w : F) : pairingModel p hp v w = p v w := rfl
+
+/-- Joint scalar continuity implies continuity of the model-operator family.
+Pointwise joint continuity is derived in the conclusion, not supplied as data. -/
+private theorem continuous_pairingModel
+    (p : X → F →ₗ⋆[K] F →ₗ[K] K)
+    (hcont : Continuous (fun z : X × (F × F) => p z.1 z.2.1 z.2.2)) :
+    Continuous (fun x : X => pairingModel (p x)
+      (hcont.comp
+        ((continuous_const : Continuous (fun _ : F × F => x)).prodMk
+          continuous_id))) := by
+  apply (ContinuousLinearMap.continuous_iff_apply_of_finiteDimensionalₛₗ
+    (K := K) (L := K) (σ := starRingEnd K)
+    (A := F) (G := F →L[K] K) (X := X) _).2
+  intro v
+  apply (ContinuousLinearMap.continuous_iff_apply_of_finiteDimensionalₛₗ
+    (K := K) (L := K) (σ := RingHom.id K)
+    (A := F) (G := K) (X := X) _).2
+  intro w
+  change Continuous (fun x : X => p x v w)
+  exact hcont.comp
+    (continuous_id.prodMk (continuous_const.prodMk continuous_const))
+
+
+end ModelPairing
+
+section PairingLift
+
+variable {𝕜 : Type*} [RCLike 𝕜] {B : Type*} {F : Type*} {E : B → Type*}
+  [tE : TopologicalSpace (TotalSpace F E)]
+  [∀ b, AddCommGroup (E b)] [∀ b, Module 𝕜 (E b)]
+
+private theorem continuous_pairing_lift
+    (p : (b : B) → E b →ₗ⋆[𝕜] E b →ₗ[𝕜] 𝕜)
+    (hp : @Continuous (TotalSpace (F × F) (E ×ᵇ E)) 𝕜
+      (@FiberBundle.Prod.topologicalSpace B F E F E tE tE)
+      (inferInstance : TopologicalSpace 𝕜) (fun q ↦ p q.proj q.snd.1 q.snd.2))
+    {X : Type*} [TopologicalSpace X] {b : X → B} {v w : ∀ x, E (b x)}
+    (hv : Continuous (fun x ↦ TotalSpace.mk' F (b x) (v x)))
+    (hw : Continuous (fun x ↦ TotalSpace.mk' F (b x) (w x))) :
+    Continuous (fun x ↦ p (b x) (v x) (w x)) := by
+  have hpair : Continuous (fun x ↦
+      (⟨b x, (v x, w x)⟩ : TotalSpace (F × F) (E ×ᵇ E))) :=
+    (FiberBundle.Prod.isInducing_diag F E F E).continuous_iff.mpr (hv.prodMk hw)
+  exact hp.comp hpair
+
+end PairingLift
+
+section OfContinuousPairing
+
+universe u𝕜 uB uF uE
+
+variable {𝕜 : Type u𝕜} [RCLike 𝕜] {B : Type uB} [TopologicalSpace B]
+  {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [FiniteDimensional 𝕜 F]
+  {E : B → Type uE} [tE : TopologicalSpace (TotalSpace F E)]
+  [∀ b, TopologicalSpace (E b)] [∀ b, AddCommGroup (E b)] [∀ b, Module 𝕜 (E b)]
+  [FiberBundle F E] [VectorBundle 𝕜 F E]
+
+omit [FiniteDimensional 𝕜 F] [VectorBundle 𝕜 F E] in
+private theorem continuous_chartPairing
+    (p : (b : B) → E b →ₗ⋆[𝕜] E b →ₗ[𝕜] 𝕜)
+    (hp : @Continuous (TotalSpace (F × F) (E ×ᵇ E)) 𝕜
+      (@FiberBundle.Prod.topologicalSpace B F E F E tE tE)
+      (inferInstance : TopologicalSpace 𝕜) (fun q ↦ p q.proj q.snd.1 q.snd.2))
+    (e : Trivialization F (π F E)) [e.IsLinear 𝕜] :
+    Continuous (fun z : e.baseSet × (F × F) ↦
+      p z.1.1
+        ((e.continuousLinearEquivAt 𝕜 z.1.1 z.1.2).symm z.2.1)
+        ((e.continuousLinearEquivAt 𝕜 z.1.1 z.1.2).symm z.2.2)) := by
+  have hinv : Continuous (fun z : e.baseSet × F ↦
+      TotalSpace.mk' F z.1.1
+        ((e.continuousLinearEquivAt 𝕜 z.1.1 z.1.2).symm z.2)) := by
+    have h := e.toOpenPartialHomeomorph.continuousOn_symm.comp_continuous
+      ((continuous_subtype_val.comp continuous_fst).prodMk continuous_snd)
+      (fun z ↦ e.mem_target.mpr z.1.2)
+    exact h.congr (fun z ↦ (e.mk_symm z.1.2 z.2).symm)
+  exact continuous_pairing_lift p hp
+    (hinv.comp (continuous_fst.prodMk (continuous_fst.comp continuous_snd)))
+    (hinv.comp (continuous_fst.prodMk (continuous_snd.comp continuous_snd)))
+
+private noncomputable def pairingInner
+    (p : (b : B) → E b →ₗ⋆[𝕜] E b →ₗ[𝕜] 𝕜)
+    (hp : @Continuous (TotalSpace (F × F) (E ×ᵇ E)) 𝕜
+      (@FiberBundle.Prod.topologicalSpace B F E F E tE tE)
+      (inferInstance : TopologicalSpace 𝕜) (fun q ↦ p q.proj q.snd.1 q.snd.2))
+    (b : B) : E b →L⋆[𝕜] E b →L[𝕜] 𝕜 := by
+  let e := trivializationAt F E b
+  have hb : b ∈ e.baseSet := FiberBundle.mem_baseSet_trivializationAt' b
+  let eb : E b ≃L[𝕜] F := e.continuousLinearEquivAt 𝕜 b hb
+  let pm : F →ₗ⋆[𝕜] F →ₗ[𝕜] 𝕜 :=
+    ((p b).comp eb.symm.toLinearEquiv.toLinearMap).compl₂ eb.symm.toLinearEquiv.toLinearMap
+  have hpm : Continuous (fun vw : F × F ↦ pm vw.1 vw.2) := by
+    exact (continuous_chartPairing p hp e).comp
+      (continuous_const (y := (⟨b, hb⟩ : e.baseSet)).prodMk continuous_id)
+  exact (eb.arrowCongrSL (eb.arrowCongr (ContinuousLinearEquiv.refl 𝕜 𝕜))).symm
+    (pairingModel pm hpm)
+
+@[simp]
+private theorem pairingInner_apply
+    (p : (b : B) → E b →ₗ⋆[𝕜] E b →ₗ[𝕜] 𝕜)
+    (hp : @Continuous (TotalSpace (F × F) (E ×ᵇ E)) 𝕜
+      (@FiberBundle.Prod.topologicalSpace B F E F E tE tE)
+      (inferInstance : TopologicalSpace 𝕜) (fun q ↦ p q.proj q.snd.1 q.snd.2))
+    (b : B) (v w : E b) : pairingInner p hp b v w = p b v w := by
+  have hb : b ∈ (trivializationAt F E b).baseSet :=
+    FiberBundle.mem_baseSet_trivializationAt' b
+  simp [pairingInner, ContinuousLinearEquiv.arrowCongr,
+    (trivializationAt F E b).symm_apply_apply_mk hb v,
+    (trivializationAt F E b).symm_apply_apply_mk hb w]
+
+private theorem continuous_pairingInner
+    (p : (b : B) → E b →ₗ⋆[𝕜] E b →ₗ[𝕜] 𝕜)
+    (hp : @Continuous (TotalSpace (F × F) (E ×ᵇ E)) 𝕜
+      (@FiberBundle.Prod.topologicalSpace B F E F E tE tE)
+      (inferInstance : TopologicalSpace 𝕜) (fun q ↦ p q.proj q.snd.1 q.snd.2)) :
+    Continuous (fun b : B ↦
+      TotalSpace.mk' (F →L⋆[𝕜] F →L[𝕜] 𝕜) b (pairingInner p hp b)) := by
+  rw [continuous_iff_continuousAt]
+  intro b₀
+  rw [continuousAt_hom_bundle]
+  refine ⟨continuousAt_id, ?_⟩
+  let e := trivializationAt F E b₀
+  have hb₀ : b₀ ∈ e.baseSet := FiberBundle.mem_baseSet_trivializationAt' b₀
+  let pm : e.baseSet → F →ₗ⋆[𝕜] F →ₗ[𝕜] 𝕜 := fun b ↦
+    ((p b.1).comp (e.continuousLinearEquivAt 𝕜 b.1 b.2).symm.toLinearEquiv.toLinearMap).compl₂
+      (e.continuousLinearEquivAt 𝕜 b.1 b.2).symm.toLinearEquiv.toLinearMap
+  have hpm : Continuous (fun z : e.baseSet × (F × F) ↦ pm z.1 z.2.1 z.2.2) :=
+    continuous_chartPairing p hp e
+  have hc : Continuous (fun b : e.baseSet ↦
+      ContinuousLinearMap.inCoordinates F E (F →L[𝕜] 𝕜)
+        (fun b ↦ E b →L[𝕜] 𝕜) b₀ b.1 b₀ b.1 (pairingInner p hp b.1)) := by
+    convert continuous_pairingModel pm hpm using 1
+    funext b
+    ext v w
+    have hs : b.1 ∈ (trivializationAt 𝕜 (fun _ : B ↦ 𝕜) b₀).baseSet := by simp
+    have hi : b.1 ∈ (trivializationAt (F →L[𝕜] 𝕜)
+        (fun b ↦ E b →L[𝕜] 𝕜) b₀).baseSet := by
+      simpa only [hom_trivializationAt_baseSet, Set.mem_inter_iff] using And.intro b.2 hs
+    simp [ContinuousLinearMap.inCoordinates_eq b.2 hi,
+      ContinuousLinearMap.inCoordinates_eq b.2 hs, hom_trivializationAt_apply,
+      pm, e]
+  have hc' : ContinuousOn
+      (fun b ↦ ContinuousLinearMap.inCoordinates F E (F →L[𝕜] 𝕜)
+        (fun b ↦ E b →L[𝕜] 𝕜) b₀ b b₀ b (pairingInner p hp b)) e.baseSet :=
+    continuousOn_iff_continuous_domRestrict.mpr hc
+  exact hc'.continuousAt (e.open_baseSet.mem_nhds hb₀)
+
+/-- Construct a continuous Hermitian metric from an algebraic Hermitian pairing whose scalar
+values are jointly continuous on the canonical same-base product of the original total spaces.
+No norm, inner product, or replacement topology on any fiber is chosen. -/
+@[no_expose]
+noncomputable def ofContinuousPairing
+    (p : (b : B) → E b →ₗ⋆[𝕜] E b →ₗ[𝕜] 𝕜)
+    (hsymm : ∀ (b : B) (v w : E b), conj (p b w v) = p b v w)
+    (hpos : ∀ (b : B) (v : E b), v ≠ 0 → 0 < RCLike.re (p b v v))
+    (hcont : @Continuous (TotalSpace (F × F) (E ×ᵇ E)) 𝕜
+      (@FiberBundle.Prod.topologicalSpace B F E F E tE tE)
+      (inferInstance : TopologicalSpace 𝕜)
+      (fun q ↦ p q.proj q.snd.1 q.snd.2)) : ContinuousHermitianMetric 𝕜 F E where
+  inner := pairingInner p hcont
+  symm b v w := by simpa using hsymm b v w
+  pos b v hv := by simpa using hpos b v hv
+  isVonNBounded b := by
+    let e : E b ≃L[𝕜] F := (trivializationAt F E b).continuousLinearEquivAt 𝕜 b
+      (FiberBundle.mem_baseSet_trivializationAt' b)
+    exact ContinuousLinearMap.isVonNBounded_re_unit_sublevel_of_equiv
+      (pairingInner p hcont b) (fun v w ↦ by simpa using hsymm b v w)
+      (fun v hv ↦ by simpa using hpos b v hv) e.symm
+  continuous := continuous_pairingInner p hcont
+
+variable (p : (b : B) → E b →ₗ⋆[𝕜] E b →ₗ[𝕜] 𝕜)
+  (hsymm : ∀ (b : B) (v w : E b), conj (p b w v) = p b v w)
+  (hpos : ∀ (b : B) (v : E b), v ≠ 0 → 0 < RCLike.re (p b v v))
+  (hcont : @Continuous (TotalSpace (F × F) (E ×ᵇ E)) 𝕜
+    (@FiberBundle.Prod.topologicalSpace B F E F E tE tE)
+    (inferInstance : TopologicalSpace 𝕜) (fun q ↦ p q.proj q.snd.1 q.snd.2))
+
+@[simp]
+theorem ofContinuousPairing_inner_apply (b : B) (v w : E b) :
+    (ofContinuousPairing p hsymm hpos hcont).inner b v w = p b v w :=
+  pairingInner_apply p hcont b v w
+
+theorem ofContinuousPairing_coe_inner (b : B) :
+    (fun v w : E b ↦ (ofContinuousPairing p hsymm hpos hcont).inner b v w) =
+      (fun v w : E b ↦ p b v w) := by
+  funext v w
+  exact ofContinuousPairing_inner_apply p hsymm hpos hcont b v w
+
+theorem ofContinuousPairing_toHermitianMetric_inner (b : B) (v w : E b) :
+    (ofContinuousPairing p hsymm hpos hcont).toHermitianMetric.inner b v w = p b v w := by
+  simp
+
+theorem ofContinuousPairing_eq_iff (g : ContinuousHermitianMetric 𝕜 F E) :
+    ofContinuousPairing p hsymm hpos hcont = g ↔
+      ∀ (b : B) (v w : E b), p b v w = g.inner b v w := by
+  constructor
+  · intro h b v w
+    rw [← ofContinuousPairing_inner_apply p hsymm hpos hcont b v w, h]
+  · intro h
+    exact ContinuousHermitianMetric.ext (fun b v w ↦ by simpa using h b v w)
+
+end OfContinuousPairing
+
+end ContinuousHermitianMetric
 
 section RealContinuous
 

@@ -50,7 +50,7 @@ Heather Macbeth, and the Hermitian metric API extending Sébastien Gouëzel's Ri
 @[expose] public section
 
 open Bundle
-open scoped ComplexOrder
+open scoped ComplexOrder ComplexConjugate
 
 universe u𝕜 uB uF uE
 
@@ -441,5 +441,78 @@ theorem exists_orthonormalTrivialization (g : ContinuousHermitianMetric 𝕜 F E
   · intro b hb v w
     exact g.orthonormalizeTrivialization_inner e
       (by simpa only [orthonormalizeTrivialization_baseSet] using hb) v w
+
+section OfContinuousPairing
+
+variable (p : (b : B) → E b →ₗ⋆[𝕜] E b →ₗ[𝕜] 𝕜)
+  (hsymm : ∀ (b : B) (v w : E b), conj (p b w v) = p b v w)
+  (hpos : ∀ (b : B) (v : E b), v ≠ 0 → 0 < RCLike.re (p b v v))
+  (hcont : @Continuous (TotalSpace (F × F) (E ×ᵇ E)) 𝕜
+    (@FiberBundle.Prod.topologicalSpace B F E F E inferInstance inferInstance)
+    (inferInstance : TopologicalSpace 𝕜) (fun q ↦ p q.proj q.snd.1 q.snd.2))
+
+/-- Normalizing an original linear chart for an ordinary jointly continuous pairing preserves
+that exact pairing, rather than selecting a different metric on the bundle. -/
+theorem ofContinuousPairing_orthonormalizeTrivialization_inner
+    (e : Trivialization F (π F E)) [e.IsLinear 𝕜]
+    {b : B} (hb : b ∈ e.baseSet) (v w : E b) :
+    let c := (ofContinuousPairing p hsymm hpos hcont).orthonormalizeTrivialization e
+    Inner.inner 𝕜 (c (TotalSpace.mk' F b v)).2
+      (c (TotalSpace.mk' F b w)).2 = p b v w := by
+  simpa only [ofContinuousPairing_inner_apply] using
+    (ofContinuousPairing p hsymm hpos hcont).orthonormalizeTrivialization_inner e hb v w
+
+/-- A fixed Euclidean vector pulls back to a continuous section of the original total space on
+the normalized chart domain. In particular, this applies to the standard Euclidean vectors. -/
+theorem ofContinuousPairing_inverse_continuous
+    (e : Trivialization F (π F E)) [e.IsLinear 𝕜]
+    (u : EuclideanSpace 𝕜 (Fin (Module.finrank 𝕜 F))) :
+    let c := (ofContinuousPairing p hsymm hpos hcont).orthonormalizeTrivialization e
+    Continuous (fun b : c.baseSet ↦ c.toOpenPartialHomeomorph.symm (b.1, u)) := by
+  dsimp only
+  let c := (ofContinuousPairing p hsymm hpos hcont).orthonormalizeTrivialization e
+  exact c.continuousOn_symm_prodMk_left.comp_continuous
+    continuous_subtype_val (fun b ↦ b.2)
+
+/-- Raw inverse-chart vectors, transported only along the chart's projection equation, recover
+the supplied pairing on the original fibers. Applying this to the standard Euclidean vectors
+gives the local orthonormal frame, including the empty frame in rank zero. -/
+theorem ofContinuousPairing_inverse_inner
+    (e : Trivialization F (π F E)) [e.IsLinear 𝕜] {b : B}
+    (hb : b ∈
+      ((ofContinuousPairing p hsymm hpos hcont).orthonormalizeTrivialization e).baseSet)
+    (u v : EuclideanSpace 𝕜 (Fin (Module.finrank 𝕜 F))) :
+    let c := (ofContinuousPairing p hsymm hpos hcont).orthonormalizeTrivialization e
+    p b
+      (cast (congrArg E (c.proj_symm_apply' (x := u) hb))
+        (c.toOpenPartialHomeomorph.symm (b, u)).snd)
+      (cast (congrArg E (c.proj_symm_apply' (x := v) hb))
+        (c.toOpenPartialHomeomorph.symm (b, v)).snd) = Inner.inner 𝕜 u v := by
+  dsimp only
+  let c := (ofContinuousPairing p hsymm hpos hcont).orthonormalizeTrivialization e
+  let xu := c.toOpenPartialHomeomorph.symm (b, u)
+  let xv := c.toOpenPartialHomeomorph.symm (b, v)
+  have hu : xu.proj = b := c.proj_symm_apply' (x := u) hb
+  have hv : xv.proj = b := c.proj_symm_apply' (x := v) hb
+  let ru : E b := cast (congrArg E hu) xu.snd
+  let rv : E b := cast (congrArg E hv) xv.snd
+  change p b ru rv = Inner.inner 𝕜 u v
+  have hmku : TotalSpace.mk' F b ru = xu := TotalSpace.mk_cast hu xu.snd
+  have hmkv : TotalSpace.mk' F b rv = xv := TotalSpace.mk_cast hv xv.snd
+  have hcu : (c (TotalSpace.mk' F b ru)).2 = u := by
+    rw [hmku]
+    exact congrArg Prod.snd (c.apply_symm_apply' (x := u) hb)
+  have hcv : (c (TotalSpace.mk' F b rv)).2 = v := by
+    rw [hmkv]
+    exact congrArg Prod.snd (c.apply_symm_apply' (x := v) hb)
+  have he : b ∈ e.baseSet := by
+    simpa only [orthonormalizeTrivialization_baseSet] using hb
+  have hpair := ofContinuousPairing_orthonormalizeTrivialization_inner
+    p hsymm hpos hcont e he ru rv
+  change Inner.inner 𝕜 (c (TotalSpace.mk' F b ru)).2
+    (c (TotalSpace.mk' F b rv)).2 = p b ru rv at hpair
+  simpa only [hcu, hcv] using hpair.symm
+
+end OfContinuousPairing
 
 end Bundle.ContinuousHermitianMetric
