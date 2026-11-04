@@ -187,7 +187,7 @@ theorem patchTrivialization_apply (i : A.Index)
   A.patchProductHomeomorph_fst i p
 
 /-- The second coordinate of the patched chart is the original coordinate function. -/
-@[simp] theorem patchTrivialization_mk_snd (i : A.Index)
+theorem patchTrivialization_mk_snd (i : A.Index)
     (b : (A.chart i).baseSet) (v : E b.1) :
     (A.patchTrivialization i (TotalSpace.mk b v)).2 = A.coord i b.1 v := by
   rw [A.patchTrivialization_mk]

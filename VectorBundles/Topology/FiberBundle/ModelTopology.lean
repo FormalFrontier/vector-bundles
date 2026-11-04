@@ -212,7 +212,6 @@ theorem changeModelTopology_trans (R : Type uR)
 
 /-- Changing a model tag to itself acts as the identity on the total space. Together with
 `changeModelTopology_self`, this identifies the homeomorphism with the identity homeomorphism. -/
-@[simp]
 theorem changeModelHomeomorph_self_apply (tP : TopologicalSpace (TotalSpace P E))
     (z : TotalSpace P E) :
     (@Homeomorph.toEquiv _ _ (changeModelTopology P P E tP) tP

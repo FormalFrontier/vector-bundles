@@ -8,6 +8,7 @@ public import VectorBundles.Analysis.Normed.Operator.Completion
 public import VectorBundles.Analysis.Normed.Module.Completion
 public import VectorBundles.Topology.Module.FiniteCoordinates.OperatorNorm
 public import VectorBundles.Topology.VectorBundle.FiniteRank.Embedding
+public import VectorBundles.Topology.VectorBundle.FiniteRank.StableComplement
 
 public import VectorBundles.Topology.Maps.FiniteChartReconstruction
 public import VectorBundles.Topology.Maps.FiniteChartReconstructionContinuity
@@ -113,6 +114,7 @@ public import VectorBundles.Topology.VectorBundle.KernelProjection
 public import VectorBundles.Topology.VectorBundle.ProjectorAtlas
 public import VectorBundles.Topology.VectorBundle.ProjectorAtlas.FiniteAmbient
 public import VectorBundles.Topology.VectorBundle.ProjectorAtlas.Kernel
+public import VectorBundles.Topology.VectorBundle.ProjectorAtlas.SplitFamilySum
 public import VectorBundles.Topology.VectorBundle.Range
 public import VectorBundles.Topology.VectorBundle.TrivialMetric
 

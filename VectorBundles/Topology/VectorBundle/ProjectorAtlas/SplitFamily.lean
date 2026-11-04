@@ -337,28 +337,32 @@ theorem complementaryRangeHomeomorph_eq :
 
 /-- The forward change of range model tag preserves the base point. -/
 @[simp] theorem complementaryRangeHomeomorph_proj (z : Bundle.TotalSpace P S) :
-    ((@Homeomorph.toEquiv _ _ tP tW
-      (complementaryRangeHomeomorph K B A P F E e β ρ hρβ hβTotal hρTotal)) z).proj = z.proj :=
+    ((complementaryRangeHomeomorph K B A P F E e β ρ hρβ hβTotal hρTotal :
+      @Homeomorph _ _ tP tW) z).proj = z.proj :=
   (r).2.2.2.2.2.2.2.1 z
 
 /-- The forward change of range model tag preserves the ambient vector in `A`. -/
 @[simp] theorem complementaryRangeHomeomorph_snd (z : Bundle.TotalSpace P S) :
-    (((@Homeomorph.toEquiv _ _ tP tW
-      (complementaryRangeHomeomorph K B A P F E e β ρ hρβ hβTotal hρTotal)) z).snd : A) =
+    (((complementaryRangeHomeomorph K B A P F E e β ρ hρβ hβTotal hρTotal :
+      @Homeomorph _ _ tP tW) z).snd : A) =
       (z.snd : A) :=
   (r).2.2.2.2.2.2.2.2.1 z
 
 /-- The inverse change of range model tag preserves the base point. -/
 @[simp] theorem complementaryRangeHomeomorph_symm_proj (z : Bundle.TotalSpace W S) :
-    ((@Homeomorph.toEquiv _ _ tP tW
-      (complementaryRangeHomeomorph K B A P F E e β ρ hρβ hβTotal hρTotal)).symm z).proj =
+    (@DFunLike.coe (@Homeomorph _ _ tW tP) _ _ _
+      (@Homeomorph.symm _ _ tP tW
+        (complementaryRangeHomeomorph K B A P F E e β ρ hρβ hβTotal hρTotal :
+          @Homeomorph _ _ tP tW)) z).proj =
       z.proj :=
   (r).2.2.2.2.2.2.2.2.2.1 z
 
 /-- The inverse change of range model tag preserves the ambient vector in `A`. -/
 @[simp] theorem complementaryRangeHomeomorph_symm_snd (z : Bundle.TotalSpace W S) :
-    (((@Homeomorph.toEquiv _ _ tP tW
-      (complementaryRangeHomeomorph K B A P F E e β ρ hρβ hβTotal hρTotal)).symm z).snd : A) =
+    ((@DFunLike.coe (@Homeomorph _ _ tW tP) _ _ _
+      (@Homeomorph.symm _ _ tP tW
+        (complementaryRangeHomeomorph K B A P F E e β ρ hρβ hβTotal hρTotal :
+          @Homeomorph _ _ tP tW)) z).snd : A) =
       (z.snd : A) :=
   (r).2.2.2.2.2.2.2.2.2.2.1 z
 

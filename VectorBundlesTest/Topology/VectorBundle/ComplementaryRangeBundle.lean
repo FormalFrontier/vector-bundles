@@ -117,12 +117,12 @@ private theorem vertical_rank_and_coordinates :
       (H (Bundle.TotalSpace.mk 2 vertical)).proj)
         (H (Bundle.TotalSpace.mk 2 vertical)).snd ≠ 0 := by
   have hnonzero : ((H (Bundle.TotalSpace.mk 2 vertical)).snd : Plane) ≠ 0 := by
-    rw [VectorBundle.complementaryRangeHomeomorph_snd]
+    rw [VectorBundle.complementaryRangeHomeomorph_mk]
     intro h
     exact vertical_ne_zero (Subtype.ext h)
   refine ⟨vertical_range_finrank, ?_, ?_, hnonzero, ?_⟩
-  · simp only [VectorBundle.complementaryRangeHomeomorph_proj]
-  · simp only [VectorBundle.complementaryRangeHomeomorph_snd]
+  · simp only [VectorBundle.complementaryRangeHomeomorph_mk]
+  · rw [VectorBundle.complementaryRangeHomeomorph_mk]
     rfl
   · intro h
     have hzero : (H (Bundle.TotalSpace.mk 2 vertical)).snd = 0 :=

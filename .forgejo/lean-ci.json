@@ -18,6 +18,8 @@
         "+VectorBundles.Analysis.Normed.Module.JointEvaluation",
         "+VectorBundles.Analysis.InnerProductSpace.FiberEmbedding",
         "+VectorBundles.Analysis.InnerProductSpace.WeightedFiberEmbedding",
+        "+VectorBundles.Topology.VectorBundle.FiniteRank.StableComplement",
+        "+VectorBundles.Topology.VectorBundle.ProjectorAtlas.SplitFamilySum",
         "VectorBundles",
         "VectorBundlesTest",
         "VectorBundles.Algebra.Ring.Idempotent",

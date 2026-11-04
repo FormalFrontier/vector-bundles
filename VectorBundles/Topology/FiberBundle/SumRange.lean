@@ -161,7 +161,6 @@ theorem sumRangeHomeomorph_apply_mk (b : B) (e : E b)
   sumRangeHomeomorph_apply β ρ hρβ hβTotal hρTotal _
 
 /-- The sum coordinates preserve the base point. -/
-@[simp]
 theorem sumRangeHomeomorph_apply_fst
     (c : TotalSpace (F × G)
       (fun b => E b × (LinearMap.id - (β b).comp (ρ b)).range)) :

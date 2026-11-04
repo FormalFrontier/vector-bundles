@@ -176,7 +176,9 @@ globs = [
   "VectorBundles.Topology.VectorBundle.FiniteRank.Weights",
   "VectorBundles.Topology.VectorBundle.FiniteRank.FiberCoordinates",
   "VectorBundles.Topology.VectorBundle.FiniteRank.Embedding",
+  "VectorBundles.Topology.VectorBundle.FiniteRank.StableComplement",
   "VectorBundles.Topology.VectorBundle.ProjectorAtlas.SplitFamily",
+  "VectorBundles.Topology.VectorBundle.ProjectorAtlas.SplitFamilySum",
 ]
 
 [[lean_lib]]

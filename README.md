@@ -312,6 +312,16 @@ the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib co
   and its zero section is an embedding. Further separation and countability results use the corresponding
   base and exact chart-coordinate hypotheses, not continuous scalar operations or a global fixed model.
 
+- **Stable complements.** Over a compact normal base, a finite-rank atlas over real or complex scalars has a
+  [defined stable complement](VectorBundles/Topology/VectorBundle/FiniteRank/StableComplement.lean)
+  in the finite coordinate space of its specified trivial embedding. The complement has its range-graph
+  finite-rank atlas, and its sum with the original family has a full-base trivialization in that coordinate
+  space. The ranks may vary; their pointwise sum is the ambient dimension. The original total-space topology
+  is unchanged. Separately, algebraic split families in a finite-dimensional normed space over a complete
+  nontrivially normed field, with continuous original-total embedding and retraction, have a
+  [fixed-model sum chart](VectorBundles/Topology/VectorBundle/ProjectorAtlas/SplitFamilySum.lean)
+  over an arbitrary topological base, without topologies on the original fibres or their common model.
+
 - **Sharp projection criteria.** A fiber-bundle projection is an [open embedding](VectorBundles/Topology/FiberBundle/Projection.lean)
   exactly when every original fiber is subsingleton, and [proper](VectorBundles/Topology/FiberBundle/Proper.lean)
   exactly when each fiber is compact. Its total space is [second-countable](VectorBundles/Topology/FiberBundle/Countability.lean)
@@ -618,7 +628,12 @@ The fields and spaces may lie in independent universes; σ need not be surjectiv
   for `ContinuousLinearMap.isCompact_iff_forall_isBounded_image_apply_of_isClosed`.
   When G is proper, a closed family is compact exactly when each fixed-vector image
   is metrically bounded. Closedness remains an explicit hypothesis.
+  For a finite-dimensional domain and proper codomain, the canonical operator-seminorm
+  space is proper (`ContinuousLinearMap.properSpace_of_finiteDimensionalₛₗ`); this is
+  also available by typeclass inference.
 
-These criteria use the topology and uniformity of uniform convergence on bounded sets
-on the original space of maps. No operator metric, complete scalar field or separated
-space is required; the original L-action and pseudometric on G are retained.
+The pointwise criteria use the topology and uniformity of uniform convergence on bounded
+sets on the original space of maps, without requiring an operator metric. The properness
+statement uses the canonical operator seminorm. Neither completeness of a scalar field
+nor separation of the target is required; the original L-action and pseudometric on G
+are retained.
