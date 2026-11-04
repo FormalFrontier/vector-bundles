@@ -65,6 +65,10 @@ theorem opNorm_le_iff_ofNormedField {f : A →SL[σ] G} {M : ℝ} (hM : 0 ≤ M)
         exact exists_one_lt_norm_of_isometric (hL := hL) σ }
   ContinuousLinearMap.opNorm_le_iff (f := f) (σ₁₂ := σ) hM
 
+/-- The operator seminorm bounds every evaluation of a continuous semilinear map. -/
+theorem le_opNorm_ofNormedField (f : A →SL[σ] G) (x : A) : ‖f x‖ ≤ ‖f‖ * ‖x‖ :=
+  (opNorm_le_iff_ofNormedField (f := f) (M := ‖f‖) (norm_nonneg f)).mp le_rfl x
+
 end NormedField
 
 section NontriviallyNormedField
