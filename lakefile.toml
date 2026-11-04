@@ -16,6 +16,7 @@ globs = [
   "VectorBundles.Analysis.Normed.Algebra.Units",
   "VectorBundles.Analysis.Normed.Algebra.OperatorFamilies",
   "VectorBundles.Analysis.Normed.Operator.Completion",
+  "VectorBundles.Analysis.Normed.Operator.Projective",
   "VectorBundles.Analysis.Normed.Operator.Restrict",
   "VectorBundles.Analysis.Normed.Module.Completion",
   "VectorBundles.Topology.Module.FiniteCoordinates.OperatorNorm",

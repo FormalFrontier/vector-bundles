@@ -7,6 +7,7 @@ module
 public import VectorBundles.Analysis.Normed.Algebra.Units
 public import VectorBundles.Analysis.Normed.Algebra.OperatorFamilies
 public import VectorBundles.Analysis.Normed.Operator.Completion
+public import VectorBundles.Analysis.Normed.Operator.Projective
 public import VectorBundles.Analysis.Normed.Module.Completion
 public import VectorBundles.Topology.Module.FiniteCoordinates.OperatorNorm
 public import VectorBundles.Topology.VectorBundle.FiniteRank.Embedding
