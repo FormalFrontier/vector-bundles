@@ -93,6 +93,7 @@ jobs:
               finally:
                   os.close(fd)
           modules = (
+              "VectorBundlesTest/Topology/VectorBundle/HermitianMetric/Invariant",
               "VectorBundles/Topology/Algebra/Module/Splitting",
               "VectorBundles/Topology/FiberBundle/SumRange",
               "VectorBundles/Topology/FiberBundle/SumRangeTrivialization",
@@ -197,6 +198,7 @@ jobs:
               baseline = {}
           # Static whitelist, priority order; no discovery or dependency-module execution.
           modules = (
+              "VectorBundlesTest/Topology/VectorBundle/HermitianMetric/Invariant",
               "VectorBundles/Topology/Algebra/Module/Splitting",
               "VectorBundles/Topology/FiberBundle/SumRange",
               "VectorBundles/Topology/FiberBundle/SumRangeTrivialization",
@@ -502,11 +504,11 @@ jobs:
         continue-on-error: true
         uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
         with:
-          name: semiring-splitting-lean-diagnostics
+          name: moving-base-hermitian-metric-lean-diagnostics
           path: |
-            .own-lean-diagnostics/VectorBundles/Topology/Algebra/Module/Splitting/stdout.jsonl
-            .own-lean-diagnostics/VectorBundles/Topology/Algebra/Module/Splitting/stderr.log
-            .own-lean-diagnostics/VectorBundles/Topology/Algebra/Module/Splitting/exit-code.txt
+            .own-lean-diagnostics/VectorBundlesTest/Topology/VectorBundle/HermitianMetric/Invariant/stdout.jsonl
+            .own-lean-diagnostics/VectorBundlesTest/Topology/VectorBundle/HermitianMetric/Invariant/stderr.log
+            .own-lean-diagnostics/VectorBundlesTest/Topology/VectorBundle/HermitianMetric/Invariant/exit-code.txt
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 30
