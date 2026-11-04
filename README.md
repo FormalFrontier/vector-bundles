@@ -53,6 +53,15 @@ topological fiber bundles.
   `Q·1` is proper and dense. The equivalence acts on the same full maps, not on their
   restrictions; dense restriction need not be injective for a nonseparated target.
 
+- **Proper semilinear operator spaces.** Let `σ : K →+* L` be isometric, with `K`
+  nontrivially normed and `L` a normed field. For seminormed `K`- and `L`-spaces `A`
+  and `G`, with `G` proper, the full space `A →SL[σ] G` is proper for its canonical
+  operator seminorm whenever `A` contains a dense finite-dimensional `K`-submodule
+  (`ContinuousLinearMap.properSpace_of_dense_finiteDimensionalₛₗ` in
+  [module](VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Compactness.lean)).
+  The ambient domain need not be finite-dimensional. No completeness of either field
+  or of `A`, separation, or surjectivity of `σ` is required.
+
 These families are proved here, with the original fiber and total-space topologies.
 The [catalogue](docs/HeadlineResults.md) gives the individual statements and variants;
 the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib constructions.
@@ -626,22 +635,33 @@ criterion.
 ## Semilinear operator families
 
 Let σ : K →+* L be isometric, with K a nontrivially normed field and L a normed
-field. Let A be a finite-dimensional seminormed K-module and G a seminormed L-module.
+field. Let A be a seminormed K-module and G a seminormed L-module.
 The fields and spaces may lie in independent universes; σ need not be surjective.
 
-* `ContinuousLinearMap.totallyBounded_iff_apply_of_finiteDimensionalₛₗ` characterizes
+* For finite-dimensional A,
+  `ContinuousLinearMap.totallyBounded_iff_apply_of_finiteDimensionalₛₗ` characterizes
   total boundedness of a family by total boundedness of every fixed-vector image.
   Its linear specialization is `totallyBounded_iff_apply_of_finiteDimensional`.
 * Import `VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Compactness`
   for `ContinuousLinearMap.isCompact_iff_forall_isBounded_image_apply_of_isClosed`.
-  When G is proper, a closed family is compact exactly when each fixed-vector image
-  is metrically bounded. Closedness remains an explicit hypothesis.
+  For finite-dimensional A and proper G, a closed family is compact exactly when
+  each fixed-vector image is metrically bounded. Closedness remains an explicit hypothesis.
   For a finite-dimensional domain and proper codomain, the canonical operator-seminorm
   space is proper (`ContinuousLinearMap.properSpace_of_finiteDimensionalₛₗ`); this is
   also available by typeclass inference.
+* More generally, a dense finite-dimensional submodule P of A suffices for properness
+  (`ContinuousLinearMap.properSpace_of_dense_finiteDimensionalₛₗ`). Only P, not A, must
+  be finite-dimensional. The theorem reuses the finite-dimensional-source result through
+  restriction to P; it does not require restriction to be injective.
 
 The pointwise criteria use the topology and uniformity of uniform convergence on bounded
 sets on the original space of maps, without requiring an operator metric. The properness
-statement uses the canonical operator seminorm. Neither completeness of a scalar field
+statements use the canonical operator seminorm. Neither completeness of a scalar field
 nor separation of the target is required; the original L-action and pseudometric on G
 are retained.
+
+For example, take K = Q, L = R, A = G = R and P = Q·1, with the usual norms and
+scalar actions. Then P is dense and one-dimensional over Q although A is infinite-dimensional
+over Q. Every continuous semilinear map is multiplication by its value at 1, and its
+operator norm is the absolute value of that coefficient. Thus the map space is isometric
+to R: it is nonzero, unbounded and proper, even though K is incomplete and σ is not surjective.

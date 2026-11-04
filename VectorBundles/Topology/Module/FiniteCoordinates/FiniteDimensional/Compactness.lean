@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import VectorBundles.Analysis.Normed.Operator.Basic
+public import VectorBundles.Analysis.Normed.Operator.Restrict
 public import VectorBundles.Topology.Module.FiniteCoordinates.FiniteDimensional.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Topology.MetricSpace.Bounded
@@ -18,8 +19,9 @@ metrically bounded. The scalar field of the domain may be incomplete, and the is
 scalar homomorphism need not be surjective.
 
 The closed-family criterion uses the topology of uniform convergence on bounded sets.
-With its canonical operator seminorm, the space of maps is proper. The target may be
-nonseparated, so closedness of a family remains an explicit assumption.
+With its canonical operator seminorm, the space of maps is proper more generally when
+the domain contains a dense finite-dimensional submodule. The target may be nonseparated,
+so closedness of a family remains an explicit assumption.
 -/
 
 @[expose] public section
@@ -92,5 +94,34 @@ instance (priority := 100) instProperSpaceOfIsometricRingHom : ProperSpace (A �
   properSpace_of_finiteDimensionalₛₗ
 
 end ProperOperatorSpace
+
+/-- The canonical operator space of continuous semilinear maps to a proper seminormed space
+is proper when the domain contains a dense finite-dimensional submodule. Neither scalar field
+is required to be complete, the target need not be separated, and the scalar homomorphism
+need not be surjective. -/
+theorem properSpace_of_dense_finiteDimensionalₛₗ
+    {K : Type uK} [kK : NontriviallyNormedField K]
+    {L : Type uL} [kL : NormedField L]
+    {σ : K →+* L} [RingHomIsometric σ]
+    {A : Type uA} [sA : SeminormedAddCommGroup A]
+    [nA : @NormedSpace K A kK.toNormedField sA]
+    {G : Type uG} [sG : SeminormedAddCommGroup G]
+    [nG : @NormedSpace L G kL sG] [ProperSpace G]
+    (P : Submodule K A) [FiniteDimensional K P]
+    (hP : Dense (P : Set A)) : ProperSpace (A →SL[σ] G) := by
+  have hR : Isometry (fun T : A →SL[σ] G => T.domRestrict P) := by
+    let : NontriviallyNormedField L :=
+      { toNormedField := kL
+        non_trivial := by
+          obtain ⟨c, hc⟩ := NormedField.exists_one_lt_norm K
+          exact ⟨σ c, by simpa only [RingHomIsometric.norm_map] using hc⟩ }
+    exact isometry_domRestrict_of_dense (σ := σ) (G := G) P hP
+  let : ProperSpace (P →SL[σ] G) :=
+    properSpace_of_finiteDimensionalₛₗ (K := K) (L := L) (σ := σ)
+  refine ⟨fun T r => ?_⟩
+  have ht := totallyBounded_preimage hR.isUniformInducing
+    (isCompact_closedBall (T.domRestrict P) r).totallyBounded
+  rw [hR.preimage_closedBall T r] at ht
+  exact ht.isCompact_of_isClosed Metric.isClosed_closedBall
 
 end ContinuousLinearMap
