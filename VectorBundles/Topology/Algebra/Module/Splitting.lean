@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib.Topology.Algebra.Module.Equiv
+public import ProjectiveModules.Topology.Splitting
 
 /-!
 # Kernel-product splittings over semirings
@@ -18,8 +19,12 @@ additive group; the codomain and the kernel factor use their additive commutativ
 
 ## References
 
-The constructions generalize Mathlib's `ContinuousLinearMap.projKerOfRightInverse` and
-`ContinuousLinearEquiv.equivOfRightInverse` from rings to semirings.
+The splitting and its Ring comparison reuse
+`ContinuousLinearMap.equivProdKerOfRightInverse` from
+`ProjectiveModules.Topology.Splitting`. This module extracts its continuous kernel
+projection and retains the kernel-product API for compatibility. The canonical
+construction generalizes Mathlib's `ContinuousLinearEquiv.equivOfRightInverse`; the
+projection agrees with Mathlib's `ContinuousLinearMap.projKerOfRightInverse` over rings.
 -/
 
 @[expose] public section
@@ -35,20 +40,12 @@ variable {R : Type uR} [Semiring R]
   {F : Type uF} [AddCommMonoid F] [TopologicalSpace F] [Module R F]
 
 /-- The continuous linear projection onto the kernel of `f` along the range of a right
-inverse `s`, sending `x` to `x - s (f x)`. -/
+inverse `s`, sending `x` to `x - s (f x)`. This is the second projection of
+`equivProdKerOfRightInverse`. -/
 def kerProjectionOfRightInverse [hE : IsTopologicalAddGroup E] (f : E →L[R] F) (s : F →L[R] E)
-    (h : Function.RightInverse s f) : E →L[R] f.ker := by
-  let p : E →L[R] E :=
-    { toLinearMap := LinearMap.id - s.toLinearMap.comp f.toLinearMap
-      cont := continuous_id.sub (s.cont.comp f.cont) }
-  exact p.codRestrict f.ker fun x => by
-    change f (p x) = 0
-    apply h.injective
-    calc
-      s (f (p x)) = (s.toLinearMap.comp f.toLinearMap) (x - s (f x)) := rfl
-      _ = s (f x) - s (f (s (f x))) :=
-        (s.toLinearMap.comp f.toLinearMap).map_sub _ _
-      _ = s 0 := by rw [h (f x), sub_self, map_zero]
+    (h : Function.RightInverse s f) : E →L[R] f.ker :=
+  (ContinuousLinearMap.snd R F f.ker).comp
+    (f.equivProdKerOfRightInverse s h).toContinuousLinearMap
 
 variable [IsTopologicalAddGroup E]
 
@@ -90,23 +87,11 @@ variable {R : Type uR} [Semiring R]
   {F : Type uF} [AddCommMonoid F] [TopologicalSpace F] [Module R F]
 
 /-- The continuous linear equivalence splitting the domain of `f` into its codomain and
-kernel using a right inverse `s`. Its coordinates are `f x` and `x - s (f x)`. -/
+kernel using a right inverse `s`. Its coordinates are `f x` and `x - s (f x)`.
+This compatibility definition is `ContinuousLinearMap.equivProdKerOfRightInverse`. -/
 def prodKerOfRightInverse [hE : IsTopologicalAddGroup E] (f : E →L[R] F) (s : F →L[R] E)
-    (h : Function.RightInverse s f) : E ≃L[R] (F × f.ker) := by
-  refine equivOfInverse (f.prod (f.kerProjectionOfRightInverse s h))
-    (s.coprod f.ker.subtypeL) ?_ ?_
-  · intro x
-    simp
-  · rintro ⟨y, k⟩
-    have hk : f (k : E) = 0 := k.property
-    have hf : f (s y + (k : E)) = y := by rw [f.map_add, h y, hk, add_zero]
-    apply Prod.ext
-    · simpa only [ContinuousLinearMap.prod_apply, ContinuousLinearMap.coprod_apply,
-        Submodule.subtypeL_apply] using hf
-    · apply Subtype.ext
-      simp only [ContinuousLinearMap.prod_apply, ContinuousLinearMap.coprod_apply,
-        Submodule.subtypeL_apply, ContinuousLinearMap.coe_kerProjectionOfRightInverse_apply, hf]
-      simp
+    (h : Function.RightInverse s f) : E ≃L[R] (F × f.ker) :=
+  f.equivProdKerOfRightInverse s h
 
 variable [IsTopologicalAddGroup E]
 
@@ -129,7 +114,8 @@ theorem snd_prodKerOfRightInverse (f : E →L[R] F) (s : F →L[R] E)
 theorem prodKerOfRightInverse_symm_apply (f : E →L[R] F) (s : F →L[R] E)
     (h : Function.RightInverse s f) (y : F × f.ker) :
     (prodKerOfRightInverse f s h).symm y = s y.1 + (y.2 : E) := by
-  rfl
+  exact (ContinuousLinearMap.equivProdKerOfRightInverse_symm_apply f s h y).trans
+    (add_comm _ _)
 
 end Semiring
 
@@ -144,13 +130,19 @@ variable {R : Type uR} [Ring R]
 theorem prodKerOfRightInverse_eq_equivOfRightInverse
     (f : E →L[R] F) (s : F →L[R] E) (h : Function.RightInverse s f) :
     prodKerOfRightInverse f s h = equivOfRightInverse f s h := by
-  apply ContinuousLinearEquiv.ext
-  funext x
-  apply Prod.ext
-  · rw [fst_prodKerOfRightInverse, fst_equivOfRightInverse]
-  · apply Subtype.ext
-    rw [snd_prodKerOfRightInverse, snd_equivOfRightInverse]
+  exact ContinuousLinearMap.equivProdKerOfRightInverse_eq_equivOfRightInverse f s h
 
 end Ring
+
+attribute [deprecated ContinuousLinearMap.equivProdKerOfRightInverse (since := "2026-11-04")]
+  prodKerOfRightInverse
+attribute [deprecated ContinuousLinearMap.fst_equivProdKerOfRightInverse (since := "2026-11-04")]
+  fst_prodKerOfRightInverse
+attribute [deprecated ContinuousLinearMap.coe_snd_equivProdKerOfRightInverse
+  (since := "2026-11-04")] snd_prodKerOfRightInverse
+attribute [deprecated ContinuousLinearMap.equivProdKerOfRightInverse_symm_apply
+  (since := "2026-11-04")] prodKerOfRightInverse_symm_apply
+attribute [deprecated ContinuousLinearMap.equivProdKerOfRightInverse_eq_equivOfRightInverse
+  (since := "2026-11-04")] prodKerOfRightInverse_eq_equivOfRightInverse
 
 end ContinuousLinearEquiv

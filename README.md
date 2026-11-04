@@ -11,7 +11,14 @@ topological fiber bundles.
 
 ## Headline results
 
-- **Semiring kernel-product splittings.** For a semiring `R`, an additive commutative
+- **Semiring kernel projections and splitting compatibility.** The equivalence
+  `ContinuousLinearMap.equivProdKerOfRightInverse` is provided by
+  [ProjectiveModules](https://github.com/FormalFrontier/projective-modules/blob/77a601ffd885a18a7c0fd90e311b7f530ac4762b/ProjectiveModules/Topology/Splitting.lean).
+  This library extracts its continuous kernel projection and preserves its existing
+  kernel-product API by transparent reuse. Prefer the canonical ProjectiveModules
+  equivalence and its coordinate and Ring-agreement theorems; the corresponding
+  VectorBundles names remain as deprecated compatibility API. The extracted kernel
+  projection is not deprecated. For a semiring `R`, an additive commutative
   group `E` with a topological additive-group structure, and an additive commutative
   monoid `F` with a topology, a continuous `R`-linear map `f : E →L[R] F` with a given
   continuous linear right inverse `s` gives `E ≃L[R] F × f.ker`, with coordinates
@@ -477,7 +484,7 @@ identifies analysis modules and examples requiring direct imports.
 | [`Topology.Algebra.GroupWithZero`](VectorBundles/Topology/Algebra/GroupWithZero.lean) | Continuity of reciprocal selected finite sums of real squares under pointwise nonzero coverage |
 | [`Topology.ContinuousMap.FiniteWeights`](VectorBundles/Topology/ContinuousMap/FiniteWeights.lean) | Finite partitions of unity on normal spaces, with all-index closed-cozero subordination and no further separation assumptions |
 | [`Topology.Algebra.Module.FiniteDimensionalOperator`](VectorBundles/Topology/Algebra/Module/FiniteDimensionalOperator.lean) | Pointwise versus bounded-convergence operator criteria |
-| [`Topology.Algebra.Module.Splitting`](VectorBundles/Topology/Algebra/Module/Splitting.lean) | Continuous residual projections and kernel-product splittings over semirings, with Ring compatibility |
+| [`Topology.Algebra.Module.Splitting`](VectorBundles/Topology/Algebra/Module/Splitting.lean) | Continuous kernel projection and compatibility API for ProjectiveModules' semiring splitting, with Ring agreement |
 | [`Topology.Bornology.Inducing`](VectorBundles/Topology/Bornology/Inducing.lean) | `IsVonNBounded.preimage_of_isInducing` over a general `NormedDivisionRing`, without injectivity or topological vector-space hypotheses |
 | [`Topology.Compactness.CountablyCompact`](VectorBundles/Topology/Compactness/CountablyCompact.lean) | Countably compact preimages under proper maps exactly when the target subset intersected with the range is countably compact |
 | [`Topology.Compactness.Lindelof`](VectorBundles/Topology/Compactness/Lindelof.lean) | Lindelöf inverse images under proper maps and products with compact or σ-compact sets, without separation assumptions |
@@ -596,7 +603,10 @@ over an incomplete field.
   Individual modules identify the particular APIs and contributors followed.
 
 - ProjectiveModules' `ContinuousLinearMap.equivProdKerOfRightInverse` provides the
-  pointwise continuous-linear splitting used for additive sum–kernel coordinates.
+  semiring continuous-linear splitting and its Ring agreement with Mathlib. The
+  kernel projection and compatibility API in
+  [`Topology.Algebra.Module.Splitting`](VectorBundles/Topology/Algebra/Module/Splitting.lean)
+  reuse this canonical construction, also used for additive sum–kernel coordinates.
   Mathlib's injective commutativity transport and canonical natural-number modules
   give its scalar-free application here.
 - The prescribed projection family composes the two total maps to obtain joint
