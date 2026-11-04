@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import VectorBundles.Algebra.Ring.Units
 public import VectorBundles.Analysis.Normed.Algebra.Units
 public import VectorBundles.Analysis.Normed.Algebra.OperatorFamilies
 public import VectorBundles.Analysis.Normed.Operator.Completion
