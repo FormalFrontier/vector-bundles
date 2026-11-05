@@ -7,8 +7,11 @@ public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.Analysis.Normed.Operator.Bilinear
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import VectorBundles.Analysis.Normed.Ring.Units
+import VectorBundles.Analysis.Normed.Algebra.Units
 import Mathlib.Topology.Algebra.Group.Units
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
@@ -31,11 +34,8 @@ variable {A : Type uA} [NormedAddCommGroup A] [NormedSpace K A]
 variable (P Q : A →L[K] A)
 
 /-- The fixed operator with its inherited range norm. -/
-def fixedRangeComponent : A →L[K] (LinearMap.range (P : A →ₗ[K] A)) where
-  toFun a := ⟨P a, ⟨a, rfl⟩⟩
-  map_add' := by intro a b; apply Subtype.ext; exact P.map_add a b
-  map_smul' := by intro c a; apply Subtype.ext; exact P.map_smul c a
-  cont := P.continuous.subtype_mk (fun a => ⟨a, rfl⟩)
+def fixedRangeComponent : A →L[K] (LinearMap.range (P : A →ₗ[K] A)) :=
+  P.rangeRestrict
 
 /-- Compression to the original range of the fixed operator. -/
 def fixedRangeCompression :
@@ -53,11 +53,9 @@ def fixedRangeCompression :
     (fixedRangeCompression P Q e : A) = P (Q e) := rfl
 
 private theorem fixedRange_fixed (hP : IsIdempotentElem P) (e : (LinearMap.range (P : A →ₗ[K] A))) :
-    P (e : A) = e := by
-  obtain ⟨a, ha⟩ := e.property
-  rw [← ha]
-  change P * P = P at hP
-  exact congrArg (fun T : A →L[K] A => T a) hP
+    P (e : A) = e :=
+  (LinearMap.IsIdempotentElem.mem_range_iff
+    (ContinuousLinearMap.IsIdempotentElem.toLinearMap hP)).mp e.property
 
 /-- The error of compression on the fixed range is quadratic. -/
 theorem sub_fixedRangeCompression_eq_square
@@ -108,17 +106,15 @@ private theorem compressionGap_pos (h : ‖Q - P‖ < 1) :
 theorem fixedRangeCompression_injective
     (hP : IsIdempotentElem P) (hQ : IsIdempotentElem Q)
     (h : ‖Q - P‖ < 1) : Function.Injective (fixedRangeCompression P Q) := by
-  intro e f hef
-  have hb := one_sub_sq_mul_norm_le_norm_compression P Q hP hQ (e - f)
-  have hz : fixedRangeCompression P Q (e - f) = 0 := by
-    rw [map_sub, hef, sub_self]
-  rw [hz, norm_zero] at hb
-  have hp := compressionGap_pos P Q h
-  have hn := norm_nonneg (e - f)
-  have hz' : ‖e - f‖ ≤ 0 :=
-    (mul_le_mul_iff_right₀ hp).mp (by simpa only [mul_comm, zero_mul] using hb)
-  have he : ‖e - f‖ = 0 := le_antisymm hz' hn
-  exact sub_eq_zero.mp (norm_eq_zero.mp he)
+  let t : ℝ := 1 - ‖Q - P‖ ^ 2
+  have ht : 0 < t := compressionGap_pos P Q h
+  have hb (e : LinearMap.range (P : A →ₗ[K] A)) :
+      ‖e‖ ≤ (⟨t⁻¹, inv_nonneg.mpr ht.le⟩ : NNReal) * ‖fixedRangeCompression P Q e‖ := by
+    change ‖e‖ ≤ t⁻¹ * ‖fixedRangeCompression P Q e‖
+    rw [← div_eq_inv_mul]
+    exact (le_div_iff₀ ht).2 (by
+      simpa only [mul_comm] using one_sub_sq_mul_norm_le_norm_compression P Q hP hQ e)
+  exact (AddMonoidHomClass.antilipschitz_of_bound (fixedRangeCompression P Q) hb).injective
 
 /-- Algebraic finite dimension turns injectivity into surjectivity. -/
 theorem fixedRangeCompression_surjective [FiniteDimensional K (LinearMap.range (P : A →ₗ[K] A))]
@@ -131,99 +127,66 @@ section Inverse
 variable [FiniteDimensional K (LinearMap.range (P : A →ₗ[K] A))]
 variable (hP : IsIdempotentElem P) (hQ : IsIdempotentElem Q) (h : ‖Q - P‖ < 1)
 
-private noncomputable def compressionPreimage
-    (e : (LinearMap.range (P : A →ₗ[K] A))) : (LinearMap.range (P : A →ₗ[K] A)) :=
-  Classical.choose (fixedRangeCompression_surjective P Q hP hQ h e)
-
-private theorem compressionPreimage_spec (e : (LinearMap.range (P : A →ₗ[K] A))) :
-    fixedRangeCompression P Q (compressionPreimage P Q hP hQ h e) = e :=
-  Classical.choose_spec (fixedRangeCompression_surjective P Q hP hQ h e)
-
-private theorem compressionPreimage_add (e f : (LinearMap.range (P : A →ₗ[K] A))) :
-    compressionPreimage P Q hP hQ h (e + f) =
-      compressionPreimage P Q hP hQ h e + compressionPreimage P Q hP hQ h f := by
-  apply fixedRangeCompression_injective P Q hP hQ h
-  rw [map_add, compressionPreimage_spec, compressionPreimage_spec,
-    compressionPreimage_spec]
-
-private theorem compressionPreimage_smul (c : K) (e : (LinearMap.range (P : A →ₗ[K] A))) :
-    compressionPreimage P Q hP hQ h (c • e) =
-      c • compressionPreimage P Q hP hQ h e := by
-  apply fixedRangeCompression_injective P Q hP hQ h
-  rw [map_smul, compressionPreimage_spec, compressionPreimage_spec]
-
-private theorem compressionPreimage_bound (e : (LinearMap.range (P : A →ₗ[K] A))) :
-    ‖compressionPreimage P Q hP hQ h e‖ ≤ (1 - ‖Q - P‖ ^ 2)⁻¹ * ‖e‖ := by
+include hP hQ h in
+/-- Each nearby idempotent induces an invertible compression on the fixed range. -/
+theorem isUnit_fixedRangeCompression : IsUnit (fixedRangeCompression P Q) := by
+  let R := LinearMap.range (P : A →ₗ[K] A)
+  let : FiniteDimensional K (R →L[K] R) :=
+    FiniteDimensional.of_injective
+      (ContinuousLinearMap.coeLM K : (R →L[K] R) →ₗ[K] (R →ₗ[K] R))
+      ContinuousLinearMap.coe_injective
+  apply FiniteDimensional.isUnit_of_norm_one_sub_lt_one K
+  have hb : ‖1 - fixedRangeCompression P Q‖ ≤ ‖Q - P‖ ^ 2 := by
+    apply ContinuousLinearMap.opNorm_le_bound _ (sq_nonneg _)
+    intro e
+    exact norm_sub_fixedRangeCompression_le P Q hP hQ e
   have hp := compressionGap_pos P Q h
-  have hb := one_sub_sq_mul_norm_le_norm_compression P Q hP hQ
-    (compressionPreimage P Q hP hQ h e)
-  rw [compressionPreimage_spec] at hb
-  calc
-    ‖compressionPreimage P Q hP hQ h e‖ ≤ ‖e‖ / (1 - ‖Q - P‖ ^ 2) :=
-      (le_div_iff₀ hp).2 (by simpa only [mul_comm] using hb)
-    _ = (1 - ‖Q - P‖ ^ 2)⁻¹ * ‖e‖ := by rw [div_eq_mul_inv, mul_comm]
-
-private noncomputable def compressionPreimageLinear :
-    (LinearMap.range (P : A →ₗ[K] A)) →ₗ[K] (LinearMap.range (P : A →ₗ[K] A)) where
-  toFun := compressionPreimage P Q hP hQ h
-  map_add' := compressionPreimage_add P Q hP hQ h
-  map_smul' := compressionPreimage_smul P Q hP hQ h
-
-private theorem continuous_compressionPreimage :
-    Continuous (compressionPreimage P Q hP hQ h) :=
-  ((compressionPreimageLinear P Q hP hQ h).mkContinuous
-    (1 - ‖Q - P‖ ^ 2)⁻¹ (compressionPreimage_bound P Q hP hQ h)).continuous
-
-/-- The inverse is continuous by its explicit reciprocal-gap bound. -/
-noncomputable def fixedRangeCompressionInverse :
-    (LinearMap.range (P : A →ₗ[K] A)) →L[K] (LinearMap.range (P : A →ₗ[K] A)) where
-  toFun e := Classical.choose (fixedRangeCompression_surjective P Q hP hQ h e)
-  map_add' := by exact compressionPreimage_add P Q hP hQ h
-  map_smul' := by exact compressionPreimage_smul P Q hP hQ h
-  cont := by exact continuous_compressionPreimage P Q hP hQ h
-
-@[simp] theorem compression_fixedRangeCompressionInverse (e : (LinearMap.range (P : A →ₗ[K] A))) :
-    fixedRangeCompression P Q (fixedRangeCompressionInverse P Q hP hQ h e) = e :=
-  compressionPreimage_spec P Q hP hQ h e
-
-@[simp] theorem fixedRangeCompressionInverse_compression (e : (LinearMap.range (P : A →ₗ[K] A))) :
-    fixedRangeCompressionInverse P Q hP hQ h (fixedRangeCompression P Q e) = e := by
-  apply fixedRangeCompression_injective P Q hP hQ h
-  exact compression_fixedRangeCompressionInverse P Q hP hQ h
-    (fixedRangeCompression P Q e)
-
-/-- The inverse operator norm is controlled by the squared gap. -/
-theorem norm_fixedRangeCompressionInverse_le :
-    ‖fixedRangeCompressionInverse P Q hP hQ h‖ ≤ (1 - ‖Q - P‖ ^ 2)⁻¹ := by
-  apply ContinuousLinearMap.opNorm_le_bound _
-    (inv_nonneg.mpr (le_of_lt (compressionGap_pos P Q h)))
-  intro e
-  exact compressionPreimage_bound P Q hP hQ h e
+  linarith
 
 /-- Compression is a unit in the bounded endomorphism algebra of the fixed range. -/
 noncomputable def fixedRangeCompressionUnit :
-    ((LinearMap.range (P : A →ₗ[K] A)) →L[K] (LinearMap.range (P : A →ₗ[K] A)))ˣ where
-  val := fixedRangeCompression P Q
-  inv := fixedRangeCompressionInverse P Q hP hQ h
-  val_inv := by
-    ext e : 1
-    exact compression_fixedRangeCompressionInverse P Q hP hQ h e
-  inv_val := by
-    ext e : 1
-    exact fixedRangeCompressionInverse_compression P Q hP hQ h e
-
-include hP hQ h in
-/-- Each nearby idempotent induces an invertible compression on the fixed range. -/
-theorem isUnit_fixedRangeCompression : IsUnit (fixedRangeCompression P Q) :=
-  ⟨fixedRangeCompressionUnit P Q hP hQ h, rfl⟩
+    ((LinearMap.range (P : A →ₗ[K] A)) →L[K] (LinearMap.range (P : A →ₗ[K] A)))ˣ :=
+  (isUnit_fixedRangeCompression P Q hP hQ h).unit
 
 @[simp] theorem fixedRangeCompressionUnit_val :
-    (fixedRangeCompressionUnit P Q hP hQ h).val = fixedRangeCompression P Q := rfl
+    (fixedRangeCompressionUnit P Q hP hQ h).val = fixedRangeCompression P Q :=
+  (isUnit_fixedRangeCompression P Q hP hQ h).unit_spec
+
+/-- The inverse is continuous and has an explicit reciprocal-gap bound. -/
+noncomputable def fixedRangeCompressionInverse :
+    (LinearMap.range (P : A →ₗ[K] A)) →L[K] (LinearMap.range (P : A →ₗ[K] A)) :=
+  ↑((fixedRangeCompressionUnit P Q hP hQ h)⁻¹)
 
 @[simp] theorem fixedRangeCompressionUnit_inv :
     (↑((fixedRangeCompressionUnit P Q hP hQ h)⁻¹) :
       (LinearMap.range (P : A →ₗ[K] A)) →L[K] (LinearMap.range (P : A →ₗ[K] A))) =
       fixedRangeCompressionInverse P Q hP hQ h := rfl
+
+@[simp] theorem compression_fixedRangeCompressionInverse (e : (LinearMap.range (P : A →ₗ[K] A))) :
+    fixedRangeCompression P Q (fixedRangeCompressionInverse P Q hP hQ h e) = e := by
+  exact congrArg (fun T : (LinearMap.range (P : A →ₗ[K] A)) →L[K]
+    (LinearMap.range (P : A →ₗ[K] A)) => T e)
+      (isUnit_fixedRangeCompression P Q hP hQ h).mul_val_inv
+
+@[simp] theorem fixedRangeCompressionInverse_compression (e : (LinearMap.range (P : A →ₗ[K] A))) :
+    fixedRangeCompressionInverse P Q hP hQ h (fixedRangeCompression P Q e) = e := by
+  exact congrArg (fun T : (LinearMap.range (P : A →ₗ[K] A)) →L[K]
+    (LinearMap.range (P : A →ₗ[K] A)) => T e)
+      (isUnit_fixedRangeCompression P Q hP hQ h).val_inv_mul
+
+/-- The inverse operator norm is controlled by the squared gap. -/
+theorem norm_fixedRangeCompressionInverse_le :
+    ‖fixedRangeCompressionInverse P Q hP hQ h‖ ≤ (1 - ‖Q - P‖ ^ 2)⁻¹ := by
+  have hp := compressionGap_pos P Q h
+  apply ContinuousLinearMap.opNorm_le_bound _ (inv_nonneg.mpr hp.le)
+  intro e
+  have hb := one_sub_sq_mul_norm_le_norm_compression P Q hP hQ
+    (fixedRangeCompressionInverse P Q hP hQ h e)
+  rw [compression_fixedRangeCompressionInverse] at hb
+  calc
+    ‖fixedRangeCompressionInverse P Q hP hQ h e‖ ≤ ‖e‖ / (1 - ‖Q - P‖ ^ 2) :=
+      (le_div_iff₀ hp).2 (by simpa only [mul_comm] using hb)
+    _ = (1 - ‖Q - P‖ ^ 2)⁻¹ * ‖e‖ := by rw [div_eq_mul_inv, mul_comm]
 
 end Inverse
 end ContinuousLinearMap
@@ -236,17 +199,11 @@ variable (P Q : A →L[K] A)
 private theorem eq_zero_of_fixed_of_norm_sub_lt_one (w : A)
     (hQw : Q w = w) (hPw : P w = 0)
     (hgap : ‖P - Q‖ < 1) : w = 0 := by
-  by_cases hw : w = 0
-  · exact hw
-  · have hwpos : 0 < ‖w‖ := norm_pos_iff.mpr hw
-    have hbound := (P - Q).le_opNorm w
-    have heq : (P - Q) w = -w := by
-      change P w - Q w = -w
-      rw [hPw, hQw, zero_sub]
-    rw [heq, norm_neg] at hbound
-    have hsmall : ‖P - Q‖ * ‖w‖ < ‖w‖ := by
-      simpa only [one_mul] using mul_lt_mul_of_pos_right hgap hwpos
-    exact False.elim ((not_le_of_gt hsmall) hbound)
+  have hi := (AntilipschitzWith.id : AntilipschitzWith 1 (id : A → A)).add_lipschitzWith
+    (P - Q).lipschitzWith (by simpa using (show ‖P - Q‖₊ < 1 from NNReal.coe_lt_coe.mp hgap))
+  apply hi.injective
+  change w + (P - Q) w = 0 + (P - Q) 0
+  simp only [_root_.sub_apply, hPw, hQw, zero_sub, add_neg_cancel, map_zero, add_zero]
 
 private theorem apply_sub_eq_zero (v c : A)
     (hPQ : P (Q c) = P (Q v))
@@ -479,34 +436,8 @@ private theorem continuous_operator_application
     [NormedAddCommGroup V] [NormedSpace K V]
     [NormedAddCommGroup W] [NormedSpace K W] [TopologicalSpace Y]
     (T : Y → V →L[K] W) (v : Y → V) (hT : Continuous T) (hv : Continuous v) :
-    Continuous (fun y => T y (v y)) := by
-  apply continuous_iff_continuousAt.mpr
-  intro y
-  apply tendsto_iff_norm_sub_tendsto_zero.mpr
-  have hb (z : Y) :
-      ‖T z (v z) - T y (v y)‖ ≤
-        ‖T z‖ * ‖v z - v y‖ + ‖T z - T y‖ * ‖v y‖ := by
-    calc
-      ‖T z (v z) - T y (v y)‖ =
-          ‖T z (v z - v y) + (T z - T y) (v y)‖ := by
-        congr 1
-        simp only [map_sub, _root_.sub_apply]
-        abel
-      _ ≤ ‖T z (v z - v y)‖ + ‖(T z - T y) (v y)‖ := norm_add_le _ _
-      _ ≤ ‖T z‖ * ‖v z - v y‖ + ‖T z - T y‖ * ‖v y‖ :=
-        add_le_add ((T z).le_opNorm _) ((T z - T y).le_opNorm _)
-  have hc : Continuous (fun z : Y =>
-      ‖T z‖ * ‖v z - v y‖ + ‖T z - T y‖ * ‖v y‖) :=
-    (hT.norm.mul ((hv.sub continuous_const).norm)).add
-      (((hT.sub continuous_const).norm).mul continuous_const)
-  have hl : Filter.Tendsto (fun z : Y =>
-      ‖T z‖ * ‖v z - v y‖ + ‖T z - T y‖ * ‖v y‖) (nhds y) (nhds 0) := by
-    have ht : Filter.Tendsto (fun z : Y =>
-        ‖T z‖ * ‖v z - v y‖ + ‖T z - T y‖ * ‖v y‖) (nhds y)
-        (nhds (‖T y‖ * ‖v y - v y‖ + ‖T y - T y‖ * ‖v y‖)) :=
-      hc.continuousAt
-    simpa only [sub_self, norm_zero, mul_zero, zero_mul, add_zero] using ht
-  exact squeeze_zero (fun z => norm_nonneg _) hb hl
+    Continuous (fun y => T y (v y)) :=
+  hT.clm_apply hv
 
 /-- The compression inverse depends continuously on the base point. -/
 theorem continuous_fixedRangeCompressionInverse

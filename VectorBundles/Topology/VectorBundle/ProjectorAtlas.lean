@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -250,19 +251,8 @@ noncomputable def finiteRankRangeAtlas (F : Type uE)
       have hg : Topology.IsEmbedding
           (fun p : Bundle.TotalSpace F E => (p.proj, (p.2 : A))) :=
         VectorBundle.rangeInclusion_isEmbedding (fun y => (Q y).toLinearMap)
-      have hf : Topology.IsEmbedding (fun a : E x => (x, (a : A))) := by
-        let f : E x → X × A := fun a => (x, (a : A))
-        have hc : Continuous f := continuous_const.prodMk continuous_subtype_val
-        have hd : @Continuous (E x) A (TopologicalSpace.induced f inferInstance)
-            inferInstance (fun a : E x => (a : A)) := by
-          let : TopologicalSpace (E x) := TopologicalSpace.induced f inferInstance
-          exact (continuous_snd : Continuous (Prod.snd : X × A → A)).comp
-            (continuous_induced_dom : @Continuous (E x) (X × A)
-              (TopologicalSpace.induced f inferInstance) inferInstance f)
-        refine ⟨⟨le_antisymm (continuous_iff_le_induced.mp hc) ?_⟩, ?_⟩
-        · exact continuous_iff_le_induced.mp hd
-        · intro a b h
-          exact Subtype.ext (congrArg Prod.snd h)
+      have hf : Topology.IsEmbedding (fun a : E x => (x, (a : A))) :=
+        (isEmbedding_prodMkRight (Y := A) x).comp Topology.IsEmbedding.subtypeVal
       exact hg.of_comp_iff.mp hf
     exact hf.isInducing
 
@@ -302,9 +292,8 @@ theorem finiteRankRangeAtlas_anchor_transport (c x : X) (hx : ‖Q x - Q c‖ < 
     rw [(nearbyRangeEquiv (Q c) (Q c) (hid c) (hid c) hcc).apply_symm_apply]
     apply Subtype.ext
     simp only [nearbyRangeEquiv_apply]
-    rcases z.property with ⟨y, hy⟩
-    rw [← hy]
-    exact (congrArg (fun f : A →L[K] A => f y) (hid c)).symm
+    exact ((LinearMap.IsIdempotentElem.mem_range_iff
+      (ContinuousLinearMap.IsIdempotentElem.toLinearMap (hid c))).mp z.property).symm
   change (rangeAnchorChart F (Q c) Q (hid c) hid hQ b ⟨x, a⟩).2 =
     (rangeAnchorChart F (Q c) Q (hid c) hid hQ b
       ⟨c, (nearbyRangeEquiv (Q c) (Q x) (hid c) (hid x) hx).symm a⟩).2
@@ -329,9 +318,8 @@ theorem finiteRankRangeAtlas_inverse_ambient (c x : X)
     exact (Module.finBasis K R).equivFunLOfIsModuleTopology
   change Q x (b.symm v : A) = Q x (Q c (b.symm v : A))
   apply congrArg (Q x)
-  rcases (b.symm v).property with ⟨y, hy⟩
-  rw [← hy]
-  exact (congrArg (fun f : A →L[K] A => f y) (hid c)).symm
+  exact ((LinearMap.IsIdempotentElem.mem_range_iff
+    (ContinuousLinearMap.IsIdempotentElem.toLinearMap (hid c))).mp (b.symm v).property).symm
 
 end
 
