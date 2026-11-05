@@ -125,6 +125,7 @@ jobs:
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Bounded",
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Compactness",
               "VectorBundlesTest/JointEvaluation",
+              "VectorBundles/Topology/Maps/CompactOpen",
           )
           states = {}
           for module in modules:
@@ -235,6 +236,7 @@ jobs:
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Bounded",
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Compactness",
               "VectorBundlesTest/JointEvaluation",
+              "VectorBundles/Topology/Maps/CompactOpen",
           )
           for module in modules:
               feedback = root / module
@@ -616,6 +618,19 @@ jobs:
             .own-lean-diagnostics/VectorBundles/Topology/FiniteNormalWeights/stdout.jsonl
             .own-lean-diagnostics/VectorBundles/Topology/FiniteNormalWeights/stderr.log
             .own-lean-diagnostics/VectorBundles/Topology/FiniteNormalWeights/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Preserve independent compact-open map Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.directory != '' && hashFiles('.own-lean-diagnostics/VectorBundles/Topology/Maps/CompactOpen/stdout.jsonl') != '' && hashFiles('.own-lean-diagnostics/VectorBundles/Topology/Maps/CompactOpen/stderr.log') != '' && hashFiles('.own-lean-diagnostics/VectorBundles/Topology/Maps/CompactOpen/exit-code.txt') != ''
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: maps-compact-open-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/VectorBundles/Topology/Maps/CompactOpen/stdout.jsonl
+            .own-lean-diagnostics/VectorBundles/Topology/Maps/CompactOpen/stderr.log
+            .own-lean-diagnostics/VectorBundles/Topology/Maps/CompactOpen/exit-code.txt
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 30

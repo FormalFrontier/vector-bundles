@@ -24,6 +24,7 @@ public import VectorBundles.Topology.Maps.FiniteChartReconstruction
 public import VectorBundles.Topology.Maps.FiniteChartReconstructionContinuity
 public import VectorBundles.Topology.Maps.FiberwiseSplitting
 public import VectorBundles.Topology.Maps.FiberwiseProjection
+public import VectorBundles.Topology.Maps.CompactOpen
 
 public import VectorBundles.LinearAlgebra.WeightedCoordinates
 public import VectorBundles.Topology.Maps.WeightedCoordinates
