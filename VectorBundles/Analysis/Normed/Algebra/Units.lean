@@ -7,6 +7,7 @@ Authors: Formal Frontier Agents
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.Normed.Group.Continuity
+import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.Algebra.Algebra.Bilinear
@@ -60,20 +61,20 @@ needed. -/
 theorem isLeftRegular_of_norm_one_sub_lt_one
     {R : Type uR} [NormedRing R] {a : R} (ha : ‖1 - a‖ < 1) :
     IsLeftRegular a := by
-  intro x y hxy
-  change a * x = a * y at hxy
-  apply sub_eq_zero.mp
-  by_contra hne
-  have hpos : 0 < ‖x - y‖ := norm_pos_iff.mpr hne
-  have heq : (1 - a) * (x - y) = x - y := by
-    rw [sub_mul, one_mul, mul_sub, hxy, sub_self, sub_zero]
-  have hle : ‖x - y‖ ≤ ‖1 - a‖ * ‖x - y‖ := by
-    calc
-      ‖x - y‖ = ‖(1 - a) * (x - y)‖ := congrArg norm heq.symm
-      _ ≤ ‖1 - a‖ * ‖x - y‖ := norm_mul_le _ _
-  have hlt : ‖1 - a‖ * ‖x - y‖ < ‖x - y‖ := by
-    simpa only [one_mul] using mul_lt_mul_of_pos_right ha hpos
-  exact (not_lt_of_ge hle) hlt
+  let g : R → R := fun x ↦ a * x
+  have hdiff : g - id = (AddMonoidHom.mulLeft (a - 1) : R → R) := by
+    funext x
+    change a * x - x = (a - 1) * x
+    rw [sub_mul, one_mul]
+  have hLip : LipschitzWith ‖a - 1‖₊ (g - id) := by
+    rw [hdiff]
+    exact AddMonoidHomClass.lipschitz_of_bound_nnnorm _ _ (fun x ↦ nnnorm_mul_le _ _)
+  have hsmall : ‖a - 1‖₊ < (1 : NNReal) := by
+    change ‖a - 1‖ < (1 : ℝ)
+    rwa [norm_sub_rev]
+  change Function.Injective g
+  exact (isometry_id.antilipschitzWith.add_sub_lipschitzWith hLip
+    (by simpa only [inv_one] using hsmall)).injective
 
 end NormedRing
 

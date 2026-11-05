@@ -6,6 +6,8 @@ module
 
 public import VectorBundles.Analysis.Normed.Ring.Idempotent
 public import Mathlib.Analysis.Normed.Operator.Banach
+import Mathlib.Analysis.Normed.Group.Uniform
+import Mathlib.Analysis.Normed.Operator.NNNorm
 public import Mathlib.LinearAlgebra.Dimension.Basic
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Topology.LocallyConstant.Basic
@@ -124,12 +126,16 @@ theorem IsIdempotentElem.exists_unit_range_ker_equiv_of_norm_sub_lt_one
   exact ⟨u, hu, hcomm, hconj, R, N, (fun _ ↦ rfl), (fun _ ↦ rfl),
     (fun _ ↦ rfl), (fun _ ↦ rfl)⟩
 
+private theorem idempotent_toLinearMap {p : E →L[K] E} (hp : IsIdempotentElem p) :
+    IsIdempotentElem p.toLinearMap := by
+  apply isIdempotentElem_iff.mpr
+  exact congrArg (fun f : E →L[K] E ↦ f.toLinearMap) (isIdempotentElem_iff.mp hp)
+
 private lemma IsIdempotentElem.rank_range_le_of_norm_sub_lt_one
     {K : Type uK} {E : Type uE} [NontriviallyNormedField K]
     [NormedAddCommGroup E] [NormedSpace K E]
     {p q : E →L[K] E} (hp : IsIdempotentElem p) (hpq : ‖p - q‖ < 1) :
     Module.rank K p.toLinearMap.range ≤ Module.rank K q.toLinearMap.range := by
-  have hpp : p * p = p := isIdempotentElem_iff.mp hp
   let f : p.toLinearMap.range →ₗ[K] q.toLinearMap.range :=
     { toFun := fun x ↦ ⟨q (x : E), ⟨(x : E), rfl⟩⟩
       map_add' := by
@@ -140,44 +146,30 @@ private lemma IsIdempotentElem.rank_range_le_of_norm_sub_lt_one
         intro a x
         apply Subtype.ext
         exact q.map_smul a (x : E) }
-  have hpfix : ∀ z : p.toLinearMap.range, p (z : E) = (z : E) := by
-    intro z
-    obtain ⟨w, hw⟩ := z.property
-    change p w = (z : E) at hw
-    have hppw : p (p w) = p w := congrArg (fun r : E →L[K] E ↦ r w) hpp
-    calc
-      p (z : E) = p (p w) := congrArg p hw.symm
-      _ = p w := hppw
-      _ = (z : E) := hw
+  have hpfix (z : p.toLinearMap.range) : p (z : E) = (z : E) :=
+    (LinearMap.IsIdempotentElem.mem_range_iff (idempotent_toLinearMap hp)).mp z.property
+  let f₀ : p.toLinearMap.range → E := fun z ↦ (z : E)
+  let g : p.toLinearMap.range → E := fun z ↦ q (z : E)
+  have hf₀ : Isometry f₀ := isometry_subtype_coe
+  have hdiff : g - f₀ = fun (z : p.toLinearMap.range) ↦ (q - p) (z : E) := by
+    funext z
+    change q (z : E) - (z : E) = q (z : E) - p (z : E)
+    rw [hpfix z]
+  have hLip : LipschitzWith ‖q - p‖₊ (g - f₀) := by
+    rw [hdiff]
+    intro x y
+    simpa only [mul_one, edist_dist, dist_eq_norm, Function.comp_apply, f₀] using
+      ((q - p).lipschitzWith.comp hf₀.lipschitzWith) x y
+  have hsmall : ‖q - p‖₊ < (1 : NNReal) := by
+    change ‖q - p‖ < (1 : ℝ)
+    rwa [norm_sub_rev]
+  have hg : Function.Injective g :=
+    (hf₀.antilipschitzWith.add_sub_lipschitzWith hLip
+      (by simpa only [inv_one] using hsmall)).injective
   apply LinearMap.rank_le_of_injective f
   intro x y hxy
-  have hq : q (x : E) = q (y : E) :=
-    congrArg (fun z : q.toLinearMap.range ↦ (z : E)) hxy
-  have hqxy : q ((x : E) - (y : E)) = 0 := by
-    rw [map_sub, hq, sub_self]
-  have hdiff : (p - q) ((x : E) - (y : E)) = (x : E) - (y : E) := by
-    change p ((x : E) - (y : E)) - q ((x : E) - (y : E)) = (x : E) - (y : E)
-    rw [p.map_sub, hpfix x, hpfix y, hqxy, sub_zero]
-  have hnorm : ‖(x : E) - (y : E)‖ ≤ ‖p - q‖ * ‖(x : E) - (y : E)‖ := by
-    calc
-      ‖(x : E) - (y : E)‖ = ‖(p - q) ((x : E) - (y : E))‖ :=
-        congrArg norm hdiff.symm
-      _ ≤ ‖p - q‖ * ‖(x : E) - (y : E)‖ := (p - q).le_opNorm _
-  have hzero : (x : E) - (y : E) = 0 := by
-    by_contra hne
-    have hpos : 0 < ‖(x : E) - (y : E)‖ := norm_pos_iff.mpr hne
-    have hlt : ‖p - q‖ * ‖(x : E) - (y : E)‖ < ‖(x : E) - (y : E)‖ := by
-      calc
-        _ < 1 * ‖(x : E) - (y : E)‖ := mul_lt_mul_of_pos_right hpq hpos
-        _ = _ := one_mul _
-    exact (not_lt_of_ge hnorm) hlt
-  apply Subtype.ext
-  exact sub_eq_zero.mp hzero
-
-private theorem idempotent_toLinearMap {p : E →L[K] E} (hp : IsIdempotentElem p) :
-    IsIdempotentElem p.toLinearMap := by
-  apply isIdempotentElem_iff.mpr
-  exact congrArg (fun f : E →L[K] E ↦ f.toLinearMap) (isIdempotentElem_iff.mp hp)
+  apply hg
+  exact congrArg (fun z : q.toLinearMap.range ↦ (z : E)) hxy
 
 /-- Both cardinal module ranks are stable under a perturbation of norm less than one. -/
 theorem IsIdempotentElem.rank_range_ker_eq_of_norm_sub_lt_one
