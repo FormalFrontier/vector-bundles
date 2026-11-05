@@ -61,10 +61,11 @@ universe uK uF uι
 /-!
 ## Coefficient bounds over a complete field
 
-The following argument proves coefficient bounds before using closedness of a finite span.
-It follows the simultaneous bounds-and-completeness induction in Formal Frontier Agents,
-*Operator-norm continuity over an incomplete scalar field*, “Finite spans over a complete field:
-bounds before closedness”. In particular, no independence assertion survives a change of
+Finite synthesis has a finite-dimensional scalar product as its domain. Mathlib's
+`LinearMap.exists_antilipschitzWith` gives an antilipschitz estimate for the injective
+linear synthesis map. This bounds each coordinate in the product sup norm, before
+closedness of the finite span is deduced from completeness of that product. The target
+keeps its given norm and scalar action. No independence assertion survives a change of
 scalar field without a new proof.
 -/
 
@@ -100,103 +101,32 @@ private theorem antilipschitz_finiteSynthesis {ι : Type uι} [Fintype ι]
   exact (pi_norm_le_iff_of_nonneg
     (mul_nonneg C.coe_nonneg (norm_nonneg _))).mpr (hC (c - d))
 
-/-- The induction proves bounds first; completeness of the finite scalar product then makes
-its image complete and closed, even when the ambient space is incomplete. -/
+/-- Antilipschitz control of finite synthesis bounds each coefficient. -/
 private theorem exists_coefficient_bound [CompleteSpace F] {ι : Type uι} [Fintype ι]
     (b : ι → E) (hb : LinearIndependent F b) :
     ∃ C : ℝ≥0, ∀ (c : ι → F) i,
       ‖c i‖ ≤ (C : ℝ) * ‖finiteSynthesis b c‖ := by
   classical
-  let P := fun (ι : Type uι) [Fintype ι] =>
-    ∀ (b : ι → E), LinearIndependent F b →
-      ∃ C : ℝ≥0, ∀ (c : ι → F) i,
-        ‖c i‖ ≤ (C : ℝ) * ‖finiteSynthesis b c‖
-  refine Fintype.induction_empty_option (P := P) ?_ ?_ ?_ ι b hb
-  · intro α β _ e ih b hb
-    let : Fintype α := Fintype.ofEquiv β e.symm
-    obtain ⟨C, hC⟩ := ih (b ∘ e) (hb.comp e e.injective)
-    refine ⟨C, ?_⟩
-    intro c i
-    have hsum : (∑ j : α, c (e j) • b (e j)) = ∑ j : β, c j • b j :=
-      e.sum_comp (fun j => c j • b j)
-    simpa only [finiteSynthesis_apply, Function.comp_apply, Equiv.apply_symm_apply, hsum]
-      using hC (c ∘ e) (e.symm i)
-  · intro b _
-    exact ⟨0, fun _ i => PEmpty.elim i⟩
-  · intro α _ ih b hb
-    obtain ⟨hb', hnot⟩ := linearIndependent_option.mp hb
-    let b' : α → E := b ∘ some
-    obtain ⟨C, hC⟩ := ih b' hb'
-    let S := finiteSynthesis (F := F) b'
-    have hclosed : IsClosed (Set.range S) :=
-      (antilipschitz_finiteSynthesis b' C hC).isClosed_range S.uniformContinuous
-    have hbnot : b none ∉ Set.range S := by
-      rintro ⟨c, hc⟩
-      apply hnot
-      rw [← hc]
-      change finiteSynthesis b' c ∈ Submodule.span F (Set.range b')
-      rw [finiteSynthesis_apply]
-      exact Submodule.sum_mem _ fun i _ =>
-        Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, rfl⟩)
-    obtain ⟨δ, hδ, hball⟩ :=
-      Metric.isOpen_iff.mp hclosed.isOpen_compl (b none) hbnot
-    have hsep (z : E) (hz : z ∈ Set.range S) : δ ≤ ‖b none - z‖ := by
-      apply le_of_not_gt
-      intro hzδ
-      have hzb : z ∈ Metric.ball (b none) δ := by
-        simpa only [Metric.mem_ball, dist_eq_norm, norm_sub_rev] using hzδ
-      exact hball hzb hz
-    let r : ℝ≥0 := ⟨δ⁻¹, inv_nonneg.mpr hδ.le⟩
-    let D : ℝ≥0 := max r (C * (1 + r * ‖b none‖₊))
-    refine ⟨D, ?_⟩
-    intro c i
-    let q := c none
-    let c' : α → F := fun j => c (some j)
-    let x := finiteSynthesis b c
-    have hx : x = q • b none + S c' := by
-      simp only [x, finiteSynthesis_apply, Fintype.sum_option, S, b', c', q,
-        Function.comp_apply]
-    have hqbound : ‖q‖ ≤ (r : ℝ) * ‖x‖ := by
-      by_cases hq : q = 0
-      · rw [hq, norm_zero]
-        exact mul_nonneg r.coe_nonneg (norm_nonneg x)
-      have hd := hsep (-(q⁻¹) • S c')
-        ⟨-(q⁻¹) • c', by simp only [map_smul]⟩
-      have heq : q • (b none - -(q⁻¹) • S c') = x := by
-        rw [smul_sub, smul_smul]
-        simp only [mul_neg, mul_inv_cancel₀ hq, neg_one_smul, sub_neg_eq_add]
-        exact hx.symm
-      have hmul : ‖q‖ * δ ≤ ‖x‖ := by
-        calc
-          ‖q‖ * δ ≤ ‖q‖ * ‖b none - -(q⁻¹) • S c'‖ :=
-            mul_le_mul_of_nonneg_left hd (norm_nonneg q)
-          _ = ‖x‖ := by rw [← norm_smul, heq]
-      change ‖q‖ ≤ δ⁻¹ * ‖x‖
-      simpa only [div_eq_mul_inv, mul_comm] using (le_div_iff₀ hδ).2 hmul
-    have hres : ‖S c'‖ ≤ (1 + (r : ℝ) * ‖b none‖) * ‖x‖ := by
-      calc
-        ‖S c'‖ = ‖x - q • b none‖ := by rw [hx]; congr 1; abel
-        _ ≤ ‖x‖ + ‖q • b none‖ := norm_sub_le _ _
-        _ = ‖x‖ + ‖q‖ * ‖b none‖ := by rw [norm_smul]
-        _ ≤ ‖x‖ + ((r : ℝ) * ‖x‖) * ‖b none‖ :=
-          add_le_add le_rfl (mul_le_mul_of_nonneg_right hqbound (norm_nonneg (b none)))
-        _ = (1 + (r : ℝ) * ‖b none‖) * ‖x‖ := by ring
-    cases i with
-    | none =>
-      exact hqbound.trans (mul_le_mul_of_nonneg_right
-        (show (r : ℝ) ≤ (D : ℝ) from (show r ≤ D from le_max_left _ _))
-        (norm_nonneg x))
-    | some i =>
-      have hi : ‖c' i‖ ≤ ((C * (1 + r * ‖b none‖₊) : ℝ≥0) : ℝ) * ‖x‖ := by
-        change ‖c' i‖ ≤ (C : ℝ) * (1 + (r : ℝ) * ‖b none‖) * ‖x‖
-        calc
-          ‖c' i‖ ≤ (C : ℝ) * ‖S c'‖ := hC c' i
-          _ ≤ (C : ℝ) * ((1 + (r : ℝ) * ‖b none‖) * ‖x‖) :=
-            mul_le_mul_of_nonneg_left hres C.coe_nonneg
-          _ = _ := (mul_assoc _ _ _).symm
-      exact hi.trans (mul_le_mul_of_nonneg_right
-        (show ((C * (1 + r * ‖b none‖₊) : ℝ≥0) : ℝ) ≤ (D : ℝ)
-          from (show C * (1 + r * ‖b none‖₊) ≤ D from le_max_right _ _)) (norm_nonneg x))
+  have hinj : Function.Injective (finiteSynthesis (F := F) b) := by
+    intro c d h
+    funext i
+    exact hb.eq_coords_of_eq (by simpa only [finiteSynthesis_apply] using h) i
+  obtain ⟨K, _, hK⟩ :=
+    (finiteSynthesis (F := F) b).toLinearMap.exists_antilipschitzWith
+      (LinearMap.ker_eq_bot.mpr hinj)
+  refine ⟨K + 1, ?_⟩
+  intro c i
+  have hc : ‖c‖ ≤ (K : ℝ) * ‖finiteSynthesis b c‖ := by
+    simpa only [ContinuousLinearMap.coe_coe, dist_zero_right, map_zero] using
+      hK.le_mul_dist c 0
+  calc
+    ‖c i‖ ≤ ‖c‖ := norm_le_pi_norm c i
+    _ ≤ (K : ℝ) * ‖finiteSynthesis b c‖ := hc
+    _ ≤ ((K + 1 : ℝ≥0) : ℝ) * ‖finiteSynthesis b c‖ :=
+      mul_le_mul_of_nonneg_right
+        (show (K : ℝ) ≤ ((K + 1 : ℝ≥0) : ℝ) from
+          (show K ≤ K + 1 from le_add_of_nonneg_right zero_le_one))
+        (norm_nonneg _)
 
 private theorem range_finiteSynthesis {ι : Type uι} [Fintype ι] (b : ι → E) :
     (finiteSynthesis b).toLinearMap.range = Submodule.span F (Set.range b) := by
