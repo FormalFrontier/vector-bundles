@@ -336,20 +336,10 @@ theorem closedSubdivisionUnitIntervalHomeomorph_symm_apply_fiber (d : X × I)
       ((⟨d.1, hd.1⟩, d.2), w)).val =
       ((closedSubdivisionUnitIntervalFiberLinearEquiv
         p U hN t ht ht0 htN M e he hp L hL d hd).symm w).val := by
-  let H := closedSubdivisionUnitIntervalHomeomorph p U hN t ht ht0 htN M e he hp
-  let v := (closedSubdivisionUnitIntervalFiberLinearEquiv
-    p U hN t ht ht0 htN M e he hp L hL d hd).symm w
-  let z : p ⁻¹' (U ×ˢ (univ : Set I)) :=
-    ⟨v.val, Eq.mpr (congrArg (fun b : X × I =>
-      b ∈ U ×ˢ (univ : Set I)) v.property) hd⟩
-  have hf : H z = ((⟨d.1, hd.1⟩, d.2), w) := by
-    have h := closedSubdivisionUnitIntervalHomeomorph_apply_fiber
-      p U hN t ht ht0 htN M e he hp L hL d hd v
-    rw [LinearEquiv.apply_symm_apply] at h
-    exact h
-  have hi := H.symm_apply_apply z
-  rw [hf] at hi
-  exact congrArg Subtype.val hi
+  rw [closedSubdivisionUnitIntervalHomeomorph_symm_apply_val]
+  exact closedSubdivisionHomeomorph_symm_apply_fiber p U hN t ht M e he hp L hL d
+    ⟨hd.1, ht0.le.trans unitInterval.nonneg',
+      unitInterval.le_one'.trans htN.symm.le⟩ w
 
 end UnitInterval
 

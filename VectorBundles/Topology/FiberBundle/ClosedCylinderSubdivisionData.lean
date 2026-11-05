@@ -389,17 +389,26 @@ theorem closedSubdivisionUnitIntervalHomeomorph_apply_bottom
   closedSubdivisionUnitIntervalHomeomorph_apply_first_snd p U hN t ht ht0 htN M e he hp z
     (by rw [hz, ← ht0]; exact ht (Nat.zero_le 1))
 
+/-- Endpoint normalization changes only membership witnesses in the assembled inverse. -/
+theorem closedSubdivisionUnitIntervalHomeomorph_symm_apply_val
+    (w : (U × I) × M ⟨0, hN⟩) :
+    ((closedSubdivisionUnitIntervalHomeomorph
+      p U hN t ht ht0 htN M e he hp).symm w).val =
+      ((closedSubdivisionHomeomorph p U hN t ht M e he hp).symm
+        ((w.1.1, ⟨w.1.2,
+          ht0.le.trans unitInterval.nonneg',
+          unitInterval.le_one'.trans htN.symm.le⟩), w.2)).val := private_decl% (by
+  rfl)
+
 /-- The inverse of the endpoint-normalized chart preserves the original base. -/
 theorem closedSubdivisionUnitIntervalHomeomorph_symm_apply_base
     (w : (U × I) × M ⟨0, hN⟩) :
     p ((closedSubdivisionUnitIntervalHomeomorph p U hN t ht ht0 htN M e he hp).symm w).val =
       ((w.1.1 : X), w.1.2) := by
-  let H := closedSubdivisionUnitIntervalHomeomorph p U hN t ht ht0 htN M e he hp
-  have hb := closedSubdivisionUnitIntervalHomeomorph_apply_base
-    p U hN t ht ht0 htN M e he hp (H.symm w)
-  change (((H (H.symm w)).1.1 : X), (H (H.symm w)).1.2) = p (H.symm w).val at hb
-  rw [H.apply_symm_apply] at hb
-  exact hb.symm
+  rw [closedSubdivisionUnitIntervalHomeomorph_symm_apply_val]
+  exact closedSubdivisionHomeomorph_symm_apply_base p U hN t ht M e he hp
+    ((w.1.1, ⟨w.1.2, ht0.le.trans unitInterval.nonneg',
+      unitInterval.le_one'.trans htN.symm.le⟩), w.2)
 
 /-- Throughout the first slab the normalized inverse is the first chart inverse
 at the same original time and fiber coordinate. -/

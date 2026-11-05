@@ -542,46 +542,46 @@ theorem glueClosedCylinder_apply_right (z : Z) (hz : c ≤ (p z).2) :
   rw [trivialization_cast_apply]
   exact ha
 
+/-- The global trivialization has the same forward map as the raw glued chart. -/
+theorem glueClosedCylinder_apply_eq_homeomorph (z : Z) :
+    glueClosedCylinder c p h₁ h₂ hp₁ hp₂ hπ z =
+      glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ z := by
+  change (glueClosedCylinder._private_1 c p h₁ h₂ hp₁ hp₂ hπ) z = _
+  unfold glueClosedCylinder._private_1
+  rw [trivialization_cast_apply]
+  rfl
+
+/-- At every coordinate pair, the partial-homeomorphism inverse is the raw glued inverse. -/
+theorem glueClosedCylinder_toOpenPartialHomeomorph_symm (q : (X × T) × F) :
+    (glueClosedCylinder c p h₁ h₂ hp₁ hp₂ hπ).toOpenPartialHomeomorph.symm q =
+      (glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ).symm q := by
+  let e := glueClosedCylinder c p h₁ h₂ hp₁ hp₂ hπ
+  let H := glueClosedCylinderHomeomorph c p h₁ h₂ hp₁ hp₂ hπ
+  have hf : e (H.symm q) = q :=
+    (glueClosedCylinder_apply_eq_homeomorph c p h₁ h₂ hp₁ hp₂ hπ (H.symm q)).trans
+      (H.apply_symm_apply q)
+  have hi := e.toOpenPartialHomeomorph.left_inv
+    (e.mem_source.mpr (show p (H.symm q) ∈ e.baseSet by
+      rw [glueClosedCylinder_baseSet]
+      trivial))
+  change e.toOpenPartialHomeomorph.symm (e (H.symm q)) = H.symm q at hi
+  rw [hf] at hi
+  exact hi
+
 /-- In left coordinates the inverse is the inverse of the original left chart. -/
 theorem glueClosedCylinder_symm_apply_left (b : X × T) (hb : b.2 ≤ c) (v : F) :
     (glueClosedCylinder c p h₁ h₂ hp₁ hp₂ hπ).toOpenPartialHomeomorph.symm (b, v) =
       (h₁.symm (⟨b, hb⟩, v)).val := by
-  let e := glueClosedCylinder c p h₁ h₂ hp₁ hp₂ hπ
-  let z := h₁.symm (⟨b, hb⟩, v)
-  have hz : p z.val = b := chart_symm_base h₁ hp₁ _
-  have hzl : (p z.val).2 ≤ c := hz ▸ hb
-  have hf : e z.val = (b, v) := by
-    rw [glueClosedCylinder_apply_left c p h₁ h₂ hp₁ hp₂ hπ z.val hzl]
-    apply Prod.ext hz
-    change (h₁ (h₁.symm (⟨b, hb⟩, v))).2 = v
-    exact congrArg Prod.snd (h₁.apply_symm_apply _)
-  have hi := e.toOpenPartialHomeomorph.left_inv
-    (e.mem_source.mpr (show p z.val ∈ e.baseSet by rw [glueClosedCylinder_baseSet]; trivial))
-  change e.toOpenPartialHomeomorph.symm (e z.val) = z.val at hi
-  rw [hf] at hi
-  exact hi
+  rw [glueClosedCylinder_toOpenPartialHomeomorph_symm]
+  exact glueClosedCylinderHomeomorph_symm_apply_left c p h₁ h₂ hp₁ hp₂ hπ b hb v
 
 /-- In right coordinates first undo the seam change, then use the right inverse. -/
 theorem glueClosedCylinder_symm_apply_right (b : X × T) (hb : c ≤ b.2) (v : F) :
     (glueClosedCylinder c p h₁ h₂ hp₁ hp₂ hπ).toOpenPartialHomeomorph.symm (b, v) =
       (h₂.symm (⟨b, hb⟩,
         (closedCylinderCoordChange c p h₁ h₂ hp₁ hp₂ b.1).symm v)).val := by
-  let e := glueClosedCylinder c p h₁ h₂ hp₁ hp₂ hπ
-  let k := normalizeClosedCylinderRight c p h₁ h₂ hp₁ hp₂
-  let z := k.symm (⟨b, hb⟩, v)
-  have hz : p z.val = b :=
-    chart_symm_base k (normalizeClosedCylinderRight_fst c p h₁ h₂ hp₁ hp₂) _
-  have hzr : c ≤ (p z.val).2 := hz ▸ hb
-  have hf : e z.val = (b, v) := by
-    rw [glueClosedCylinder_apply_right c p h₁ h₂ hp₁ hp₂ hπ z.val hzr]
-    have hk : (k ⟨z.val, hzr⟩).2 = v := congrArg Prod.snd (k.apply_symm_apply _)
-    apply Prod.ext hz
-    simpa only [k, normalizeClosedCylinderRight_apply, hp₂, hz] using hk
-  have hi := e.toOpenPartialHomeomorph.left_inv
-    (e.mem_source.mpr (show p z.val ∈ e.baseSet by rw [glueClosedCylinder_baseSet]; trivial))
-  change e.toOpenPartialHomeomorph.symm (e z.val) = z.val at hi
-  rw [hf] at hi
-  exact hi
+  rw [glueClosedCylinder_toOpenPartialHomeomorph_symm]
+  exact glueClosedCylinderHomeomorph_symm_apply_right c p h₁ h₂ hp₁ hp₂ hπ b hb v
 
 /-- A global trivialization with these two coordinate formulas is the glued chart. -/
 theorem glueClosedCylinder_unique (e : Trivialization F p) (he : e.baseSet = univ)

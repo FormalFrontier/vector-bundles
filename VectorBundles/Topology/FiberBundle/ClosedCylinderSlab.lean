@@ -146,6 +146,22 @@ private def closedSlabRightChart (p : Z → X × T) (U : Set X) (a c b : T)
   (closedSlabRightSource p U a c b hac).trans
     (HR.trans ((closedSlabRightBase U a c b hac).symm.prodCongr (Homeomorph.refl G)))
 
+private theorem closedSlabLeftChart_symm_apply_val
+    (p : Z → X × T) (U : Set X) (a c b : T) (hcb : c ≤ b)
+    (HL : (p ⁻¹' (U ×ˢ Icc a c)) ≃ₜ (U × Icc a c) × F)
+    (w : (U × Icc a b) × F) (hw : (w.1.2 : T) ≤ c) :
+    ((closedSlabLeftChart p U a c b hcb HL).symm
+      (⟨w.1, hw⟩, w.2)).val.val =
+      (HL.symm ((w.1.1, ⟨(w.1.2 : T), w.1.2.property.1, hw⟩), w.2)).val := rfl
+
+private theorem closedSlabRightChart_symm_apply_val
+    (p : Z → X × T) (U : Set X) (a c b : T) (hac : a ≤ c)
+    (HR : (p ⁻¹' (U ×ˢ Icc c b)) ≃ₜ (U × Icc c b) × G)
+    (w : (U × Icc a b) × G) (hw : c ≤ (w.1.2 : T)) :
+    ((closedSlabRightChart p U a c b hac HR).symm
+      (⟨w.1, hw⟩, w.2)).val.val =
+      (HR.symm ((w.1.1, ⟨(w.1.2 : T), hw, w.1.2.property.2⟩), w.2)).val := rfl
+
 private theorem closedSlabLeftChart_base (p : Z → X × T) (U : Set X) (a c b : T)
     (hcb : c ≤ b) (HL : (p ⁻¹' (U ×ˢ Icc a c)) ≃ₜ (U × Icc a c) × F)
     (hpL : ∀ z, (((HL z).1.1 : X), ((HL z).1.2 : T)) = p z.val)
@@ -234,22 +250,19 @@ theorem glueClosedSlabHomeomorph_symm_proj (w : (U × Icc a b) × F) :
       ⟨(p ((glueClosedSlabHomeomorph p U a c b hac hcb HL HR hpL hpR hp).symm w).val).2,
         ((glueClosedSlabHomeomorph p U a c b hac hcb HL HR hpL hpR hp).symm w).property.2⟩) :
       U × Icc a b) = w.1 := by
-  let e := glueClosedSlabHomeomorph p U a c b hac hcb HL HR hpL hpR hp
-  have hb := glueClosedSlabHomeomorph_proj p U a c b hac hcb HL HR hpL hpR hp (e.symm w)
-  change (e (e.symm w)).1 = closedSlabProjection p U a b (e.symm w) at hb
-  rw [e.apply_symm_apply] at hb
-  exact hb.symm
+  exact glueClosedCylinderHomeomorph_symm_proj
+    (⟨c, hac, hcb⟩ : Icc a b) (closedSlabProjection p U a b)
+    (closedSlabLeftChart p U a c b hcb HL) (closedSlabRightChart p U a c b hac HR)
+    (closedSlabLeftChart_base p U a c b hcb HL hpL)
+    (closedSlabRightChart_base p U a c b hac HR hpR)
+    (continuous_closedSlabProjection p U a b hp) w
 
 /-- The inverse preserves the full original base point. -/
 theorem glueClosedSlabHomeomorph_symm_apply_base (w : (U × Icc a b) × F) :
     p ((glueClosedSlabHomeomorph p U a c b hac hcb HL HR hpL hpR hp).symm w).val =
       ((w.1.1 : X), (w.1.2 : T)) := by
-  let e := glueClosedSlabHomeomorph p U a c b hac hcb HL HR hpL hpR hp
-  have hb := glueClosedSlabHomeomorph_apply_base p U a c b hac hcb HL HR hpL hpR hp
-    (e.symm w)
-  change (((e (e.symm w)).1.1 : X), ((e (e.symm w)).1.2 : T)) = p (e.symm w).val at hb
-  rw [e.apply_symm_apply] at hb
-  exact hb.symm
+  exact congrArg (fun v : U × Icc a b => ((v.1 : X), (v.2 : T)))
+    (glueClosedSlabHomeomorph_symm_proj p U a c b hac hcb HL HR hpL hpR hp w)
 
 /-- At every left time the inverse gives the same point of the original total
 space as the original left inverse, with unchanged fiber coordinate. -/
@@ -257,31 +270,14 @@ theorem glueClosedSlabHomeomorph_symm_apply_left (w : (U × Icc a b) × F)
     (hw : (w.1.2 : T) ≤ c) :
     ((glueClosedSlabHomeomorph p U a c b hac hcb HL HR hpL hpR hp).symm w).val =
       (HL.symm ((w.1.1, ⟨(w.1.2 : T), w.1.2.property.1, hw⟩), w.2)).val := by
-  let e := glueClosedSlabHomeomorph p U a c b hac hcb HL HR hpL hpR hp
-  let v : (U × Icc a c) × F :=
-    ((w.1.1, ⟨(w.1.2 : T), w.1.2.property.1, hw⟩), w.2)
-  have hz : p (HL.symm v).val = ((w.1.1 : X), (w.1.2 : T)) := by
-    have hb := hpL (HL.symm v)
-    rw [HL.apply_symm_apply] at hb
-    exact hb.symm
-  let z : p ⁻¹' (U ×ˢ Icc a b) := ⟨(HL.symm v).val,
-    ⟨(HL.symm v).property.1, (HL.symm v).property.2.1,
-      (HL.symm v).property.2.2.trans hcb⟩⟩
-  have hzl : (p z.val).2 ≤ c := (HL.symm v).property.2.2
-  have hf : e z = w := by
-    change glueClosedSlabHomeomorph p U a c b hac hcb HL HR hpL hpR hp z = w
-    rw [glueClosedSlabHomeomorph_apply_left p U a c b hac hcb HL HR hpL hpR hp z hzl]
-    apply Prod.ext
-    · apply Prod.ext
-      · apply Subtype.ext
-        exact congrArg Prod.fst hz
-      · apply Subtype.ext
-        exact congrArg Prod.snd hz
-    · change (HL (HL.symm v)).2 = w.2
-      exact congrArg Prod.snd (HL.apply_symm_apply v)
-  have hi := e.symm_apply_apply z
-  rw [hf] at hi
-  exact congrArg Subtype.val hi
+  have h := glueClosedCylinderHomeomorph_symm_apply_left
+    (⟨c, hac, hcb⟩ : Icc a b) (closedSlabProjection p U a b)
+    (closedSlabLeftChart p U a c b hcb HL) (closedSlabRightChart p U a c b hac HR)
+    (closedSlabLeftChart_base p U a c b hcb HL hpL)
+    (closedSlabRightChart_base p U a c b hac HR hpR)
+    (continuous_closedSlabProjection p U a b hp) w.1 hw w.2
+  exact (congrArg Subtype.val h).trans
+    (closedSlabLeftChart_symm_apply_val p U a c b hcb HL w hw)
 
 /-- The right-to-left seam change for the original slab charts. This is the
 coordinate change of the canonical restricted-cylinder construction. -/
@@ -376,37 +372,15 @@ theorem glueClosedSlabHomeomorph_symm_apply_right (w : (U × Icc a b) × F)
       (HR.symm ((w.1.1, ⟨(w.1.2 : T), hw, w.1.2.property.2⟩),
         (closedSlabCoordChange p U a c b hac hcb HL HR hpL hpR
           w.1.1).symm w.2)).val := private_decl% (by
-  let e := glueClosedSlabHomeomorph p U a c b hac hcb HL HR hpL hpR hp
-  let v : (U × Icc c b) × G :=
-    ((w.1.1, ⟨(w.1.2 : T), hw, w.1.2.property.2⟩),
-      (closedSlabCoordChange p U a c b hac hcb HL HR hpL hpR w.1.1).symm w.2)
-  have hz : p (HR.symm v).val = ((w.1.1 : X), (w.1.2 : T)) := by
-    have hb := hpR (HR.symm v)
-    rw [HR.apply_symm_apply] at hb
-    exact hb.symm
-  let z : p ⁻¹' (U ×ˢ Icc a b) := ⟨(HR.symm v).val,
-    ⟨(HR.symm v).property.1, hac.trans (HR.symm v).property.2.1,
-      (HR.symm v).property.2.2⟩⟩
-  have hzr : c ≤ (p z.val).2 := (HR.symm v).property.2.1
-  have hf : e z = w := by
-    change glueClosedSlabHomeomorph p U a c b hac hcb HL HR hpL hpR hp z = w
-    rw [glueClosedSlabHomeomorph_apply_right p U a c b hac hcb HL HR hpL hpR hp z hzr]
-    apply Prod.ext
-    · apply Prod.ext
-      · apply Subtype.ext
-        exact congrArg Prod.fst hz
-      · apply Subtype.ext
-        exact congrArg Prod.snd hz
-    · have hx : (⟨(p z.val).1, z.property.1⟩ : U) = w.1.1 :=
-        Subtype.ext (congrArg Prod.fst hz)
-      rw [hx]
-      change closedSlabCoordChange p U a c b hac hcb HL HR hpL hpR w.1.1
-        (HR (HR.symm v)).2 = w.2
-      rw [HR.apply_symm_apply]
-      exact (closedSlabCoordChange p U a c b hac hcb HL HR hpL hpR w.1.1).apply_symm_apply w.2
-  have hi := e.symm_apply_apply z
-  rw [hf] at hi
-  exact congrArg Subtype.val hi)
+  have h := glueClosedCylinderHomeomorph_symm_apply_right
+    (⟨c, hac, hcb⟩ : Icc a b) (closedSlabProjection p U a b)
+    (closedSlabLeftChart p U a c b hcb HL) (closedSlabRightChart p U a c b hac HR)
+    (closedSlabLeftChart_base p U a c b hcb HL hpL)
+    (closedSlabRightChart_base p U a c b hac HR hpR)
+    (continuous_closedSlabProjection p U a b hp) w.1 hw w.2
+  exact (congrArg Subtype.val h).trans
+    (closedSlabRightChart_symm_apply_val p U a c b hac HR
+      (w.1, (closedSlabCoordChange p U a c b hac hcb HL HR hpL hpR w.1.1).symm w.2) hw))
 
 section Linear
 
@@ -463,6 +437,25 @@ noncomputable def glueClosedSlabFiberLinearEquiv (d : X × T) (hd : d ∈ U ×ˢ
         (closedSlabLeftFiberLinearEquiv p U a c b hac hcb Lleft)
         (closedSlabRightFiberLinearEquiv p U a c b hac hcb Lright)
         (⟨d.1, hd.1⟩, ⟨d.2, hd.2⟩)))
+
+omit [TopologicalSpace X] [TopologicalSpace T] [TopologicalSpace Z]
+  [TopologicalSpace F] [TopologicalSpace G] [ClosedIicTopology T] [ClosedIciTopology T] in
+private theorem glueClosedSlabFiberLinearEquiv_symm_apply_val
+    (d : X × T) (hd : d ∈ U ×ˢ Icc a b) (w : F) :
+    ((glueClosedSlabFiberLinearEquiv p U a c b hac hcb
+      Lleft Lright d hd).symm w).val =
+      (((glueClosedCylinderFiberLinearEquiv
+        (⟨c, hac, hcb⟩ : Icc a b) (closedSlabProjection p U a b)
+        (closedSlabLeftFiberLinearEquiv p U a c b hac hcb Lleft)
+        (closedSlabRightFiberLinearEquiv p U a c b hac hcb Lright)
+        (⟨d.1, hd.1⟩, ⟨d.2, hd.2⟩)).symm w).val).val := by
+  exact LinearEquiv.restrictPreimageFiber_apply_val R p
+    (Equiv.Set.prod U (Icc a b)) (⟨d.1, hd.1⟩, ⟨d.2, hd.2⟩)
+    ((glueClosedCylinderFiberLinearEquiv
+      (⟨c, hac, hcb⟩ : Icc a b) (closedSlabProjection p U a b)
+      (closedSlabLeftFiberLinearEquiv p U a c b hac hcb Lleft)
+      (closedSlabRightFiberLinearEquiv p U a c b hac hcb Lright)
+      (⟨d.1, hd.1⟩, ⟨d.2, hd.2⟩)).symm w)
 
 omit [TopologicalSpace X] [TopologicalSpace T] [TopologicalSpace Z]
   [TopologicalSpace F] [TopologicalSpace G] [ClosedIicTopology T] [ClosedIciTopology T] in
@@ -590,18 +583,20 @@ theorem glueClosedSlabHomeomorph_symm_apply_fiber (d : X × T)
       ((⟨d.1, hd.1⟩, ⟨d.2, hd.2⟩), w)).val =
       ((glueClosedSlabFiberLinearEquiv p U a c b hac hcb
         Lleft Lright d hd).symm w).val := private_decl% (by
-  let e := glueClosedSlabHomeomorph p U a c b hac hcb HL HR hpL hpR hp
-  let v := (glueClosedSlabFiberLinearEquiv p U a c b hac hcb Lleft Lright d hd).symm w
-  let z : p ⁻¹' (U ×ˢ Icc a b) :=
-    ⟨v.val, Eq.mpr (congrArg (fun f : X × T => f ∈ U ×ˢ Icc a b) v.property) hd⟩
-  have hf : e z = ((⟨d.1, hd.1⟩, ⟨d.2, hd.2⟩), w) := by
-    have h := glueClosedSlabHomeomorph_apply_fiber p U a c b hac hcb HL HR hpL hpR hp
-      Lleft Lright hLL hLR d hd v
-    rw [LinearEquiv.apply_symm_apply] at h
-    exact h
-  have hi := e.symm_apply_apply z
-  rw [hf] at hi
-  exact congrArg Subtype.val hi)
+  have h := glueClosedCylinderHomeomorph_symm_apply_fiber
+    (⟨c, hac, hcb⟩ : Icc a b) (closedSlabProjection p U a b)
+    (closedSlabLeftFiberLinearEquiv p U a c b hac hcb Lleft)
+    (closedSlabRightFiberLinearEquiv p U a c b hac hcb Lright)
+    (closedSlabLeftChart p U a c b hcb HL) (closedSlabRightChart p U a c b hac HR)
+    (closedSlabLeftChart_base p U a c b hcb HL hpL)
+    (closedSlabRightChart_base p U a c b hac HR hpR)
+    (closedSlabLeftFiberLinearEquiv_apply p U a c b hac hcb HL Lleft hLL)
+    (closedSlabRightFiberLinearEquiv_apply p U a c b hac hcb HR Lright hLR)
+    (continuous_closedSlabProjection p U a b hp)
+    (⟨d.1, hd.1⟩, ⟨d.2, hd.2⟩) w
+  exact (congrArg Subtype.val h).trans
+    (glueClosedSlabFiberLinearEquiv_symm_apply_val
+      p U a c b hac hcb Lleft Lright d hd w).symm)
 
 /-- The second coordinate of the slab chart preserves the given zero in each
 original projection fiber over the slab. -/
