@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import VectorBundles.Topology.Algebra.TrivSqZeroExt.AddGroup
 public import VectorBundles.Algebra.Ring.Units
 public import VectorBundles.Analysis.Normed.Algebra.Units
 public import VectorBundles.Analysis.Normed.Algebra.OperatorFamilies
@@ -12,6 +13,9 @@ public import VectorBundles.Analysis.Normed.Operator.Projective
 public import VectorBundles.Analysis.Normed.Operator.Splitting
 public import VectorBundles.Analysis.Normed.Module.Completion
 public import VectorBundles.Topology.Algebra.Monoid.Units
+public import VectorBundles.Topology.Algebra.TrivSqZeroExt.Homotopy
+public import VectorBundles.Topology.Algebra.TrivSqZeroExt.ProductTopology
+public import VectorBundles.Topology.Algebra.TrivSqZeroExt.Units
 public import VectorBundles.Topology.Module.FiniteCoordinates.OperatorNorm
 public import VectorBundles.Topology.VectorBundle.FiniteRank.Embedding
 public import VectorBundles.Topology.VectorBundle.FiniteRank.StableComplement
