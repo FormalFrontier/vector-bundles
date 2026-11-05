@@ -81,10 +81,7 @@ theorem isLocallyConstant_finrank_of_linearEquiv_cover
     (hU : ∀ x : X, ∃ i : I, x ∈ interior (U i))
     (hF : ∀ i, ∀ x ∈ U i, Nonempty (F x ≃ₗ[K] G i)) :
     IsLocallyConstant (fun x : X => Module.finrank K (F x)) := by
-  have h := isLocallyConstant_rank_of_linearEquiv_cover F G U hU hF
-  rw [IsLocallyConstant.iff_eventually_eq] at h ⊢
-  intro x
-  filter_upwards [h x] with y hy
-  exact congrArg Cardinal.toNat hy
+  simpa only [Module.finrank, Function.comp_def] using
+    (isLocallyConstant_rank_of_linearEquiv_cover F G U hU hF).comp Cardinal.toNat
 
 end Module

@@ -116,6 +116,7 @@ jobs:
               "VectorBundles/Topology/VectorBundle/FiniteRank/Embedding",
               "VectorBundles/Topology/VectorBundle/FiniteRank/LinearEquiv",
               "VectorBundles/Topology/VectorBundle/FiniteRank/Projection",
+              "VectorBundles/Topology/Module/Finrank",
               "VectorBundles/Topology/VectorBundle/ProjectorAtlas/SplitFamily",
               "VectorBundlesTest/Topology/VectorBundle/ComplementaryRangeBundle",
               "VectorBundles/Analysis/Normed/Module/JointEvaluation",
@@ -225,6 +226,7 @@ jobs:
               "VectorBundles/Topology/VectorBundle/FiniteRank/Embedding",
               "VectorBundles/Topology/VectorBundle/FiniteRank/LinearEquiv",
               "VectorBundles/Topology/VectorBundle/FiniteRank/Projection",
+              "VectorBundles/Topology/Module/Finrank",
               "VectorBundles/Topology/VectorBundle/ProjectorAtlas/SplitFamily",
               "VectorBundlesTest/Topology/VectorBundle/ComplementaryRangeBundle",
               "VectorBundles/Analysis/Normed/Module/JointEvaluation",
@@ -575,6 +577,19 @@ jobs:
             .own-lean-diagnostics/VectorBundles/Topology/VectorBundle/FiniteRank/Projection/stdout.jsonl
             .own-lean-diagnostics/VectorBundles/Topology/VectorBundle/FiniteRank/Projection/stderr.log
             .own-lean-diagnostics/VectorBundles/Topology/VectorBundle/FiniteRank/Projection/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Preserve independent module finrank Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.directory != ''
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: module-finrank-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/VectorBundles/Topology/Module/Finrank/stdout.jsonl
+            .own-lean-diagnostics/VectorBundles/Topology/Module/Finrank/stderr.log
+            .own-lean-diagnostics/VectorBundles/Topology/Module/Finrank/exit-code.txt
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 30

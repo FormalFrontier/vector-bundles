@@ -201,10 +201,8 @@ theorem locallyCompactSpace_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P
   have : LocallyCompactSpace (A.chart i).source :=
     (A.sourceHomeomorph i).isOpenEmbedding.locallyCompactSpace
   let p' : (A.chart i).source := ⟨p, (A.mem_source_iff i p).mpr hi⟩
-  have hpre : (Subtype.val : (A.chart i).source → TotalSpace P E) ⁻¹' s ∈ 𝓝 p' := by
-    obtain ⟨u, hus, hu, hpu⟩ := mem_nhds_iff.mp hs
-    exact mem_nhds_iff.mpr ⟨Subtype.val ⁻¹' u, Set.preimage_mono hus,
-      hu.preimage continuous_subtype_val, hpu⟩
+  have hpre : (Subtype.val : (A.chart i).source → TotalSpace P E) ⁻¹' s ∈ 𝓝 p' :=
+    continuous_subtype_val.continuousAt.preimage_mem_nhds hs
   obtain ⟨v, hvs, hv, hpv⟩ := mem_nhds_iff.mp hpre
   obtain ⟨c, hcompact, hpc, hcv⟩ := exists_compact_subset hv hpv
   have hc : c ∈ 𝓝 p' :=
@@ -213,10 +211,7 @@ theorem locallyCompactSpace_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P
     hcv.trans hvs
   refine ⟨Subtype.val '' c, ?_, ?_, hcompact.image continuous_subtype_val⟩
   · -- Openness of the original source makes its neighbourhoods ambient neighbourhoods.
-    obtain ⟨v, hvc, hv, hpv⟩ := mem_nhds_iff.mp hc
-    refine mem_nhds_iff.mpr ⟨Subtype.val '' v, Set.image_mono hvc, ?_, ?_⟩
-    · exact (A.chart i).open_source.isOpenEmbedding_subtypeVal.isOpenMap v hv
-    · exact ⟨p', hpv, rfl⟩
+    exact (A.chart i).open_source.isOpenEmbedding_subtypeVal.isOpenMap.image_mem_nhds hc
   · rintro q ⟨q', hq', rfl⟩
     exact hcs hq'
 
@@ -373,12 +368,8 @@ theorem regularSpace_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
     have hFinterior : p.proj ∈ interior F := mem_interior_iff_mem_nhds.mpr hFp
     have hDclosed : IsClosed ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' F) :=
       hFclosed.preimage hproj
-    have hDnhds : ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' F) ∈ 𝓝 p := by
-      refine mem_nhds_iff.mpr
-        ⟨(TotalSpace.proj : TotalSpace P E → B) ⁻¹' interior F, ?_,
-          isOpen_interior.preimage hproj, hFinterior⟩
-      intro q hq
-      exact (interior_subset : interior F ⊆ F) hq
+    have hDnhds : ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' F) ∈ 𝓝 p :=
+      hproj.continuousAt.preimage_mem_nhds hFp
     have hDsource : ((TotalSpace.proj : TotalSpace P E → B) ⁻¹' F) ⊆
         (A.chart i).source := by
       intro q hq
@@ -411,30 +402,17 @@ theorem regularSpace_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
   have hDS : D ⊆ (A.chart i).source := hDsource
   -- W and the interior of the closed buffer give an ambient neighbourhood.
   have haDinterior : a ∈ interior D := mem_interior_iff_mem_nhds.mpr hDnhds
-  have hWD : W ∩ interior D ∈ 𝓝 a := by
-    obtain ⟨u, huW, hu, hau⟩ := mem_nhds_iff.mp hW
-    refine mem_nhds_iff.mpr
-      ⟨u ∩ interior D, ?_, hu.inter isOpen_interior, ⟨hau, haDinterior⟩⟩
-    intro q hq
-    exact ⟨huW hq.1, hq.2⟩
+  have hWD : W ∩ interior D ∈ 𝓝 a :=
+    Filter.inter_mem hW (isOpen_interior.mem_nhds haDinterior)
   -- Pull back that neighbourhood to the original source subtype.
-  have hpre : j ⁻¹' (W ∩ interior D) ∈ 𝓝 a' := by
-    obtain ⟨u, huWD, hu, hau⟩ := mem_nhds_iff.mp hWD
-    exact mem_nhds_iff.mpr
-      ⟨j ⁻¹' u, Set.preimage_mono huWD, hu.preimage continuous_subtype_val, hau⟩
+  have hpre : j ⁻¹' (W ∩ interior D) ∈ 𝓝 a' :=
+    continuous_subtype_val.continuousAt.preimage_mem_nhds hWD
   -- Choose a closed neighbourhood in the original source.
   rcases exists_mem_nhds_isClosed_subset hpre with
     ⟨C', hC'nhds, hC'closed, hC'sub⟩
   let C : Set (TotalSpace P E) := j '' C'
-  have hpreimage_image : j ⁻¹' C = C' := by
-    ext q
-    change j q ∈ j '' C' ↔ q ∈ C'
-    constructor
-    · rintro ⟨r, hr, hrq⟩
-      have hrq' : r = q := Subtype.ext hrq
-      exact hrq' ▸ hr
-    · intro hq
-      exact ⟨q, hq, rfl⟩
+  have hpreimage_image : j ⁻¹' C = C' :=
+    Set.preimage_image_eq C' Subtype.val_injective
   have hCrel : IsClosed (j ⁻¹' C) := by
     rw [hpreimage_image]
     exact hC'closed
@@ -470,12 +448,8 @@ theorem regularSpace_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
       ((A.chart i).open_source.isOpenEmbedding_subtypeVal.isOpenMap
         ((j ⁻¹' C)ᶜ) hCrel.isOpen_compl).union hDclosed.isOpen_compl
   -- Openness of the source transports its neighbourhood to the ambient space.
-  have hCnhds : C ∈ 𝓝 a := by
-    obtain ⟨v, hvc, hv, hav⟩ := mem_nhds_iff.mp hC'nhds
-    refine mem_nhds_iff.mpr ⟨j '' v, ?_, ?_, ?_⟩
-    · exact Set.image_mono hvc
-    · exact (A.chart i).open_source.isOpenEmbedding_subtypeVal.isOpenMap v hv
-    · exact ⟨a', hav, rfl⟩
+  have hCnhds : C ∈ 𝓝 a :=
+    (A.chart i).open_source.isOpenEmbedding_subtypeVal.isOpenMap.image_mem_nhds hC'nhds
   exact ⟨C, hCnhds, hCclosed, hCW⟩
 
 /-- The canonical zero section of a finite-rank atlas is a topological embedding
