@@ -12,6 +12,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Algebra.Ring.Idempotent
+import VectorBundles.Algebra.Ring.Idempotent
 import Mathlib.Tactic.Abel
 
 /-! # Kernel charts for families of continuous linear idempotents
@@ -57,8 +58,8 @@ theorem kernelTransport_apply (P : X → A →L[K] A) (x₀ x : X) (a : A) :
 @[simp]
 theorem kernelTransport_self (P : X → A →L[K] A) (x₀ : X)
     (h : P x₀ * P x₀ = P x₀) : kernelTransport P x₀ x₀ = 1 := by
-  simp only [kernelTransport, sub_mul, mul_sub, one_mul, mul_one, h]
-  abel
+  unfold kernelTransport
+  exact (show IsIdempotentElem (P x₀) from h).mul_add_mul_one_sub_self
 
 /-- The center belongs to its transport domain for an idempotent family. -/
 theorem self_mem_kernelChartDomain (P : X → A →L[K] A) (x₀ : X)
@@ -70,13 +71,7 @@ private theorem transport_semiconj {R : Type*} [Ring R] {p q : R}
     SemiconjBy (q * p + (1 - q) * (1 - p)) p q := by
   change (q * p + (1 - q) * (1 - p)) * p =
     q * (q * p + (1 - q) * (1 - p))
-  calc
-    _ = q * p := by
-      rw [add_mul, mul_assoc, hp.eq, mul_assoc,
-        hp.one_sub_mul_self, mul_zero, add_zero]
-    _ = _ := by
-      rw [mul_add, ← mul_assoc, hq.eq, ← mul_assoc,
-        hq.mul_one_sub_self, zero_mul, add_zero]
+  exact hp.mul_add_mul_one_sub_intertwines hq
 
 /-- The transport intertwines two idempotents without a commutation assumption. -/
 theorem kernelTransport_intertwines (P : X → A →L[K] A) (x₀ x : X)

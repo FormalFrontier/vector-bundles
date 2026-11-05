@@ -114,7 +114,7 @@ noncomputable def complementaryRangeFiniteRankAtlas
     exact congrArg (β b) (hρβ b (ρ b a))
   have hQ (b : B) : Q b * Q b = Q b := by
     change (1 - R b) * (1 - R b) = 1 - R b
-    simp only [sub_mul, mul_sub, one_mul, mul_one, hR b, sub_self, sub_zero]
+    exact (show IsIdempotentElem (R b) from hR b).one_sub.eq
   have hid (b : B) : IsIdempotentElem (Qc b) := by
     change Qc b * Qc b = Qc b
     ext a

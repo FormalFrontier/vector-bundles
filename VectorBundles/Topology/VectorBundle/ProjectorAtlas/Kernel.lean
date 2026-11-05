@@ -183,8 +183,8 @@ noncomputable def kernelAtlasChartData (F : Type uF)
   let Q : X → A →L[K] A := fun x => 1 - P x
   have hQ : Continuous Q := continuous_const.sub hP
   have hQid (x : X) : IsIdempotentElem (Q x) := by
-    change (1 - P x) * (1 - P x) = 1 - P x
-    rw [mul_sub, mul_one, sub_mul, one_mul, hid x, sub_self, sub_zero]
+    change IsIdempotentElem (1 - P x)
+    exact (hid x).one_sub
   let S : X → Submodule K A := fun x => LinearMap.range (Q x).toLinearMap
   let E : X → Submodule K A := fun x => LinearMap.ker (P x).toLinearMap
   have hS (x : X) : S x = E x := by

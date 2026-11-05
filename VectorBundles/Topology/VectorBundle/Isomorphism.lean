@@ -8,6 +8,7 @@ public import Mathlib.Topology.VectorBundle.FiniteDimensional
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import VectorBundles.Topology.VectorBundle.CoordinateMap
+import VectorBundles.Topology.VectorBundle.Embedding
 public import VectorBundles.Analysis.Normed.Ring.Units
 
 /-!
@@ -26,15 +27,16 @@ on each fiber. No separate structure for bundle isomorphisms is introduced.
 Only the source model is assumed finite dimensional: at each base point the two trivializations and
 the given fiber equivalence identify the target model with the source model. No nonemptiness or
 separation hypothesis on the base is required, and zero-dimensional fibers are permitted.
-At an actual point of the target total space, forward continuity and the target module topology
-also give the source model its module topology. Coordinate operators are normalized into units of
-the source endomorphism ring, where inversion is continuous without completeness. All operators
-use the original model norms. Completeness of the scalar field is needed only to recover the
-module-topology hypothesis for arbitrary finite-dimensional normed models.
+The target chart identifies its model with the range of the given fiber equivalence, equipped
+with the original target-fiber subtype topology. The model's module topology therefore gives this
+range its module topology. The bundle embedding criterion applies to the forward total-space map;
+composing the inverse total-space map with this embedding gives the identity, proving continuity.
+Completeness of the scalar field is needed only to recover the module-topology hypothesis for
+finite-dimensional normed models at a given base point.
 
 The coordinate and module-topology arguments use Mathlib's vector-bundle APIs by Nicolò Cavalleri,
 Sébastien Gouëzel, Heather Macbeth, Patrick Massot and Floris van Doorn, and its module-topology API
-by Kevin Buzzard and Will Sawin. The unit argument uses the topology of units developed in Mathlib.
+by Kevin Buzzard and Will Sawin.
 
 ## References
 
@@ -79,93 +81,29 @@ theorem continuous_totalSpace_symm_of_isModuleTopology
     Continuous (fun p : TotalSpace F₂ E₂ =>
       (⟨p.proj, (e p.proj).symm p.2⟩ : TotalSpace F₁ E₁)) := by
   classical
-  refine continuous_iff_continuousAt.2 fun p₀ => ?_
-  let c₁ := trivializationAt F₁ E₁ p₀.proj
-  let c₂ := trivializationAt F₂ E₂ p₀.proj
-  have hb₁ : p₀.proj ∈ c₁.baseSet := mem_baseSet_trivializationAt F₁ E₁ p₀.proj
-  have hb₂ : p₀.proj ∈ c₂.baseSet := mem_baseSet_trivializationAt F₂ E₂ p₀.proj
-  have hU₁ := c₁.open_baseSet.mem_nhds hb₁
-  have hU₂ := c₂.open_baseSet.mem_nhds hb₂
-  let aₗ (b : B) (h₁ : b ∈ c₁.baseSet) (h₂ : b ∈ c₂.baseSet) : F₁ ≃ₗ[𝕜] F₂ :=
-    (((c₁.linearEquivAt 𝕜 b h₁).symm.trans (e b)).trans
-      (c₂.linearEquivAt 𝕜 b h₂))
-  -- Continuity of one fixed model map follows directly from joint coordinate evaluation.
-  -- This step does not use the module topology on the source.
-  have ha₀ : Continuous (aₗ p₀.proj hb₁ hb₂) := by
-    have h := (c₁.continuousOn_linearMapAt_comp_apply c₂
-      (fun b => (e b).toLinearMap) htotal).comp_continuous
-        (Continuous.prodMk_right p₀.proj)
-        (fun v : F₁ => ⟨⟨hb₁, hb₂⟩, Set.mem_univ v⟩)
-    refine h.congr fun v => ?_
-    change c₂.linearMapAt 𝕜 p₀.proj (e p₀.proj (c₁.symmₗ 𝕜 p₀.proj v)) =
-      (c₂.linearEquivAt 𝕜 p₀.proj hb₂)
-        (e p₀.proj ((c₁.linearEquivAt 𝕜 p₀.proj hb₁).symm v))
-    rw [c₂.coe_linearMapAt_of_mem (R := 𝕜) hb₂, c₁.symmₗ_apply hb₁,
-      c₂.linearEquivAt_apply, c₁.linearEquivAt_symm_apply]
-  let a₀ : F₁ ≃L[𝕜] F₂ :=
-    { toLinearEquiv := aₗ p₀.proj hb₁ hb₂
-      continuous_toFun := ha₀
-      continuous_invFun := IsModuleTopology.continuous_of_linearMap
-        (aₗ p₀.proj hb₁ hb₂).symm.toLinearMap }
-  -- Only this fixed inverse is used to transport the source module-topology class.
-  let : IsModuleTopology 𝕜 F₁ := IsModuleTopology.iso a₀.symm
-  let A : B → F₁ →L[𝕜] F₂ := fun b =>
-    ⟨(c₂.linearMapAt 𝕜 b).comp ((e b).toLinearMap.comp (c₁.symmₗ 𝕜 b)),
-      IsModuleTopology.continuous_of_linearMap _⟩
-  let a (b : B) (h₁ : b ∈ c₁.baseSet) (h₂ : b ∈ c₂.baseSet) : F₁ ≃L[𝕜] F₂ :=
-    { toLinearEquiv := aₗ b h₁ h₂
-      continuous_toFun := IsModuleTopology.continuous_of_linearMap (aₗ b h₁ h₂).toLinearMap
-      continuous_invFun := IsModuleTopology.continuous_of_linearMap
-        (aₗ b h₁ h₂).symm.toLinearMap }
-  have hAa (b : B) (h₁ : b ∈ c₁.baseSet) (h₂ : b ∈ c₂.baseSet) :
-      A b = (a b h₁ h₂ : F₁ →L[𝕜] F₂) := by
-    ext v
-    simp [A, a, aₗ, h₁, h₂]
-  have hA : ContinuousAt A p₀.proj :=
-    (c₁.continuousOn_linearMapAt_comp_of_isModuleTopology c₂
-      (fun b => (e b).toLinearMap) htotal).continuousAt (Filter.inter_mem hU₁ hU₂)
-  -- Normalize by the fixed equivalence, obtaining existing units of End(F₁).
-  -- Their definition outside the overlap is irrelevant to continuity at the chosen point.
-  let u : B → (F₁ →L[𝕜] F₁)ˣ := fun b =>
-    if hb : b ∈ c₁.baseSet ∩ c₂.baseSet then
-      ((a b hb.1 hb.2).trans a₀.symm).toUnit
-    else 1
-  have huval : ContinuousAt (fun b => (u b : F₁ →L[𝕜] F₁)) p₀.proj := by
-    have hnorm : ContinuousAt (fun b => (a₀.symm : F₂ →L[𝕜] F₁).comp (A b))
-        p₀.proj := continuousAt_const.clm_comp hA
-    apply hnorm.congr_of_eventuallyEq
-    filter_upwards [hU₁, hU₂] with b h₁ h₂
-    rw [hAa b h₁ h₂]
-    ext v
-    exact congrArg (fun w : (F₁ →L[𝕜] F₁)ˣ => w.val v)
-      (show u b = ((a b h₁ h₂).trans a₀.symm).toUnit from
-        dite_eq_left (show b ∈ c₁.baseSet ∩ c₂.baseSet from ⟨h₁, h₂⟩))
-  have hu : ContinuousAt u p₀.proj :=
-    (Units.isEmbedding_val_seminormedRing (R := F₁ →L[𝕜] F₁)).isInducing.continuousAt_iff.mpr
-      huval
-  have hi : ContinuousAt (fun b => (↑((u b)⁻¹) : F₁ →L[𝕜] F₁)) p₀.proj :=
-    Units.continuous_coe_inv.continuousAt.comp hu
-  have huinv (b : B) (h₁ : b ∈ c₁.baseSet) (h₂ : b ∈ c₂.baseSet) (v : F₂) :
-      (↑((u b)⁻¹) : F₁ →L[𝕜] F₁) (a₀.symm v) = (a b h₁ h₂).symm v := by
-    simp only [u, dite_eq_left (show b ∈ c₁.baseSet ∩ c₂.baseSet from ⟨h₁, h₂⟩)]
-    change ((a b h₁ h₂).trans a₀.symm).symm (a₀.symm v) = (a b h₁ h₂).symm v
-    simp
-  rw [FiberBundle.continuousAt_totalSpace]
-  refine ⟨(FiberBundle.continuous_proj F₂ E₂).continuousAt, ?_⟩
-  have hv : ContinuousAt (fun p : TotalSpace F₂ E₂ => a₀.symm (c₂ p).2) p₀ :=
-    a₀.symm.continuous.continuousAt.comp
-      (c₂.continuousAt (c₂.mem_source.mpr hb₂)).snd
-  have heval := (hi.comp (FiberBundle.continuous_proj F₂ E₂).continuousAt).clm_apply hv
-  apply heval.congr_of_eventuallyEq
-  filter_upwards [(FiberBundle.continuous_proj F₂ E₂).continuousAt.preimage_mem_nhds hU₁,
-    (FiberBundle.continuous_proj F₂ E₂).continuousAt.preimage_mem_nhds hU₂] with p h₁ h₂
-  change (c₁ ⟨p.proj, (e p.proj).symm p.2⟩).2 =
-    (↑((u p.proj)⁻¹) : F₁ →L[𝕜] F₁) (a₀.symm (c₂ p).2)
-  rw [huinv p.proj h₁ h₂]
-  change (c₁ ⟨p.proj, (e p.proj).symm p.2⟩).2 =
-    (c₁.linearEquivAt 𝕜 p.proj h₁)
-      ((e p.proj).symm ((c₂.linearEquivAt 𝕜 p.proj h₂).symm (c₂ p).2))
-  rw [c₂.linearEquivAt_symm_apply, c₂.symm_proj_apply p h₂, c₁.linearEquivAt_apply]
+  let φ : ∀ b, E₁ b →ₗ[𝕜] E₂ b := fun b => (e b).toLinearMap
+  let : ∀ b, IsModuleTopology 𝕜 (φ b).range := fun b => by
+    let c := VectorBundle.continuousLinearEquivAt 𝕜 F₂ E₂ b
+    have hmem (v : F₂) : c.symm v ∈ (φ b).range :=
+      ⟨(e b).symm (c.symm v), (e b).apply_symm_apply (c.symm v)⟩
+    let d : F₂ ≃L[𝕜] (φ b).range :=
+      { toLinearEquiv :=
+          { toFun := fun v => ⟨c.symm v, hmem v⟩
+            invFun := fun v => c v.1
+            left_inv := fun v => c.apply_symm_apply v
+            right_inv := fun v => Subtype.ext (c.symm_apply_apply v.1)
+            map_add' := fun v w => Subtype.ext (map_add c.symm v w)
+            map_smul' := fun a v => Subtype.ext (map_smul c.symm a v) }
+        continuous_toFun := c.symm.continuous.subtype_mk hmem
+        continuous_invFun := c.continuous.comp continuous_subtype_val }
+    exact IsModuleTopology.iso d
+  have hPhi : Topology.IsEmbedding (fun p : TotalSpace F₁ E₁ =>
+      (⟨p.proj, e p.proj p.2⟩ : TotalSpace F₂ E₂)) :=
+    isEmbedding_of_injective (F := F₁) (G := F₂) φ (fun b => (e b).injective) htotal
+  apply hPhi.continuous_iff.mpr
+  refine (continuous_id : Continuous (id : TotalSpace F₂ E₂ → TotalSpace F₂ E₂)).congr ?_
+  rintro ⟨b, v⟩
+  simp only [Function.comp_def, LinearEquiv.apply_symm_apply, id_eq]
 
 section CompleteField
 

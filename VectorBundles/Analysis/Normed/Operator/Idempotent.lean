@@ -174,12 +174,6 @@ private lemma IsIdempotentElem.rank_range_le_of_norm_sub_lt_one
   apply Subtype.ext
   exact sub_eq_zero.mp hzero
 
-private theorem idempotent_complement {p : E →L[K] E} (hp : IsIdempotentElem p) :
-    IsIdempotentElem (1 - p) := by
-  apply isIdempotentElem_iff.mpr
-  have hp2 : p * p = p := isIdempotentElem_iff.mp hp
-  rw [sub_mul, one_mul, mul_sub, mul_one, hp2, sub_self, sub_zero]
-
 private theorem idempotent_toLinearMap {p : E →L[K] E} (hp : IsIdempotentElem p) :
     IsIdempotentElem p.toLinearMap := by
   apply isIdempotentElem_iff.mpr
@@ -203,8 +197,8 @@ theorem IsIdempotentElem.rank_range_ker_eq_of_norm_sub_lt_one
       rw [norm_sub_rev]
       exact hcomp
     have hN := le_antisymm
-      ((idempotent_complement hp).rank_range_le_of_norm_sub_lt_one hcomp)
-      ((idempotent_complement hq).rank_range_le_of_norm_sub_lt_one hcomprev)
+      (hp.one_sub.rank_range_le_of_norm_sub_lt_one hcomp)
+      (hq.one_sub.rank_range_le_of_norm_sub_lt_one hcomprev)
     have hp_rank := congrArg (fun S : Submodule K E ↦ Module.rank K S)
       (LinearMap.IsIdempotentElem.ker_eq_range_one_sub (idempotent_toLinearMap hp)).symm
     have hq_rank := congrArg (fun S : Submodule K E ↦ Module.rank K S)
