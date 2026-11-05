@@ -94,6 +94,16 @@ topological fiber bundles.
   surjective-isometry equivalence. The separation quotient therefore has a linear-isometric
   section when its module is projective, using the given continuous constant scalar actions.
 
+- **Isometric kernel-product decompositions.** Over any semiring, a linear isometry
+  `f : E →ₗᵢ[R] F` of seminormed additive groups with a linear right inverse `s`
+  gives `E ≃ₗᵢ[R] (F × f.toLinearMap.ker)`
+  (`LinearIsometry.equivProdKerOfRightInverse` in
+  [module](VectorBundles/Analysis/Normed/Operator/Splitting.lean)). The kernel keeps
+  its original module and inherited geometry; the product uses the maximum norm.
+  The kernel may be nonzero. No separation, scalar norm or topology, or continuity
+  assumption on `s` is required. The whole underlying linear and continuous
+  equivalences agree with the canonical continuous splitting, including its ring form.
+
 These families are proved here, with the original fiber and total-space topologies.
 The [catalogue](docs/HeadlineResults.md) gives the individual statements and variants;
 the [detailed guide](docs/Results.md) adds examples and distinguishes Mathlib constructions.
@@ -464,6 +474,7 @@ identifies analysis modules and examples requiring direct imports.
 | [`VectorBundles.Analysis.Normed.Operator.Idempotent`](VectorBundles/Analysis/Normed/Operator/Idempotent.lean) | Range and kernel transport and cardinal-rank stability |
 | [`VectorBundles.Analysis.Normed.Operator.KernelFamilyCoordinates`](VectorBundles/Analysis/Normed/Operator/KernelFamilyCoordinates.lean) | Fixed-kernel product coordinates on unit domains |
 | [`Analysis.Normed.Operator.Projective`](VectorBundles/Analysis/Normed/Operator/Projective.lean) | Projective linear-isometric sections, uniform embeddings and separation-quotient sections |
+| [`Analysis.Normed.Operator.Splitting`](VectorBundles/Analysis/Normed/Operator/Splitting.lean) | Inherited kernel geometry and isometric kernel-product decompositions over semirings |
 | [`VectorBundles.Analysis.Normed.Ring.CommutingIdempotent`](VectorBundles/Analysis/Normed/Ring/CommutingIdempotent.lean) | Seminorm gaps and rigidity of close commuting idempotents |
 | [`VectorBundles.Analysis.Normed.Ring.CommutingIdempotent.Topology`](VectorBundles/Analysis/Normed/Ring/CommutingIdempotent/Topology.lean) | Local constancy from eventual nearby commutation |
 | [`LinearAlgebra.Pairing.Adjoint`](VectorBundles/LinearAlgebra/Pairing/Adjoint.lean) | Raw adjoint relations and linear bundling from right-linear pairings with separating columns |
