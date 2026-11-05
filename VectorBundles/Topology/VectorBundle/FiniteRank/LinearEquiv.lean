@@ -131,21 +131,7 @@ theorem isLocallyConstant_finrank (A : FiniteRankAtlas.{_, _, _, _, uI} K P E) :
 theorem finrank_eq_of_isPreconnected (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)
     {s : Set B} (hs : IsPreconnected s) {x y : B} (hx : x ∈ s) (hy : y ∈ s) :
     Module.finrank K (E x) = Module.finrank K (E y) := by
-  classical
-  by_contra hxy
-  let f : B → ℕ := fun b => Module.finrank K (E b)
-  let U : Set B := f ⁻¹' {f x}
-  let V : Set B := f ⁻¹' ({f x}ᶜ)
-  have hU : IsOpen U := A.isLocallyConstant_finrank {f x}
-  have hV : IsOpen V := A.isLocallyConstant_finrank ({f x}ᶜ)
-  have hcover : s ⊆ U ∪ V := by
-    intro z _
-    by_cases h : f z = f x
-    · exact Or.inl h
-    · exact Or.inr h
-  obtain ⟨z, hz⟩ := hs U V hU hV hcover
-    ⟨x, hx, rfl⟩ ⟨y, hy, fun h => hxy h.symm⟩
-  simp [U, V] at hz
+  exact (A.isLocallyConstant_finrank).apply_eq_of_isPreconnected hs hx hy
 
 /-- All fibres over a preconnected base have the same finrank. -/
 theorem finrank_eq (A : FiniteRankAtlas.{_, _, _, _, uI} K P E)

@@ -114,6 +114,8 @@ jobs:
               "VectorBundles/Topology/VectorBundle/FiniteRank/Weights",
               "VectorBundles/Topology/VectorBundle/FiniteRank/FiberCoordinates",
               "VectorBundles/Topology/VectorBundle/FiniteRank/Embedding",
+              "VectorBundles/Topology/VectorBundle/FiniteRank/LinearEquiv",
+              "VectorBundles/Topology/VectorBundle/FiniteRank/Projection",
               "VectorBundles/Topology/VectorBundle/ProjectorAtlas/SplitFamily",
               "VectorBundlesTest/Topology/VectorBundle/ComplementaryRangeBundle",
               "VectorBundles/Analysis/Normed/Module/JointEvaluation",
@@ -220,6 +222,8 @@ jobs:
               "VectorBundles/Topology/VectorBundle/FiniteRank/Weights",
               "VectorBundles/Topology/VectorBundle/FiniteRank/FiberCoordinates",
               "VectorBundles/Topology/VectorBundle/FiniteRank/Embedding",
+              "VectorBundles/Topology/VectorBundle/FiniteRank/LinearEquiv",
+              "VectorBundles/Topology/VectorBundle/FiniteRank/Projection",
               "VectorBundles/Topology/VectorBundle/ProjectorAtlas/SplitFamily",
               "VectorBundlesTest/Topology/VectorBundle/ComplementaryRangeBundle",
               "VectorBundles/Analysis/Normed/Module/JointEvaluation",
@@ -524,6 +528,32 @@ jobs:
             .own-lean-diagnostics/VectorBundles/Analysis/Normed/Operator/Splitting/stdout.jsonl
             .own-lean-diagnostics/VectorBundles/Analysis/Normed/Operator/Splitting/stderr.log
             .own-lean-diagnostics/VectorBundles/Analysis/Normed/Operator/Splitting/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Preserve independent finite-rank linear-equivalence Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.directory != ''
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: finite-rank-linear-equiv-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/VectorBundles/Topology/VectorBundle/FiniteRank/LinearEquiv/stdout.jsonl
+            .own-lean-diagnostics/VectorBundles/Topology/VectorBundle/FiniteRank/LinearEquiv/stderr.log
+            .own-lean-diagnostics/VectorBundles/Topology/VectorBundle/FiniteRank/LinearEquiv/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Preserve independent finite-rank projection Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.directory != ''
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: finite-rank-projection-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/VectorBundles/Topology/VectorBundle/FiniteRank/Projection/stdout.jsonl
+            .own-lean-diagnostics/VectorBundles/Topology/VectorBundle/FiniteRank/Projection/stderr.log
+            .own-lean-diagnostics/VectorBundles/Topology/VectorBundle/FiniteRank/Projection/exit-code.txt
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 30

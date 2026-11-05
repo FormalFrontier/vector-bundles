@@ -78,21 +78,8 @@ theorem isOpenMap_proj
       IsOpen ((fun p : (A.chart i).source => p.1.proj) ''
         ((Subtype.val : (A.chart i).source → TotalSpace P E) ⁻¹' s)) := by
     have hmap : IsOpenMap (fun p : (A.chart i).source => p.1.proj) := by
-      have hbase : IsOpenMap (Subtype.val : (A.chart i).baseSet → B) := by
-        intro t ht
-        rcases ht with ⟨u, hu, rfl⟩
-        have himage :
-            (Subtype.val : (A.chart i).baseSet → B) ''
-                ((Subtype.val : (A.chart i).baseSet → B) ⁻¹' u) =
-              (A.chart i).baseSet ∩ u := by
-          ext b
-          constructor
-          · rintro ⟨q, hq, rfl⟩
-            exact ⟨q.2, hq⟩
-          · rintro ⟨hb, hbu⟩
-            exact ⟨⟨b, hb⟩, hbu, rfl⟩
-        rw [himage]
-        exact (A.chart i).open_baseSet.inter hu
+      have hbase : IsOpenMap (Subtype.val : (A.chart i).baseSet → B) :=
+        (A.chart i).open_baseSet.isOpenMap_subtype_val
       have hcomp : IsOpenMap
           ((Subtype.val : (A.chart i).baseSet → B) ∘ Prod.fst ∘ A.sourceHomeomorph i) :=
         hbase.comp (isOpenMap_fst.comp (A.sourceHomeomorph i).isOpenMap)
@@ -255,21 +242,7 @@ theorem firstCountableTopology_totalSpace (A : FiniteRankAtlas.{_, _, _, _, uI} 
   have hjq : j q = p := congrArg Subtype.val (H.symm_apply_apply p')
   -- The original open source upgrades chart neighbourhoods to ambient neighbourhoods.
   have hmap : Filter.map j (𝓝 q) = 𝓝 p := by
-    ext s
-    change j ⁻¹' s ∈ 𝓝 q ↔ s ∈ 𝓝 p
-    constructor
-    · intro hs
-      obtain ⟨v, hvs, hv, hqv⟩ := mem_nhds_iff.mp hs
-      refine mem_nhds_iff.mpr ⟨j '' v, ?_, hj v hv, ⟨q, hqv, hjq⟩⟩
-      rintro _ ⟨x, hx, rfl⟩
-      exact hvs hx
-    · intro hs
-      obtain ⟨u, hus, hu, hpu⟩ := mem_nhds_iff.mp hs
-      refine mem_nhds_iff.mpr ⟨j ⁻¹' u, Set.preimage_mono hus,
-        hu.preimage hjcont, ?_⟩
-      change j q ∈ u
-      rw [hjq]
-      exact hpu
+    simpa only [hjq] using hj.map_nhds_eq (hjcont.continuousAt (x := q))
   rw [← hmap]
   infer_instance
 
