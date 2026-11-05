@@ -9,6 +9,7 @@ public import VectorBundles.Topology.FiberBundle.Pullback
 public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.UnitInterval
 public import Mathlib.Topology.VectorBundle.Constructions
+import VectorBundles.Topology.FiberBundle.ClosedCylinderSubdivisionDataLinear
 
 /-!
 # Linear trivializations near a compact cylinder
@@ -47,164 +48,20 @@ local triviality statement, not an endpoint-isomorphism or classification theore
 
 open Bundle Set TopologicalSpace Topology
 
-universe uX uK uF uE uB uC
+universe uX uK uF uE uB
 
 namespace VectorBundle
 
-section RestrictedCharts
-
-variable {B : Type uB} {C : Type uC} {F : Type uF} {E : B → Type uE}
-  [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace F]
-  [TopologicalSpace (TotalSpace F E)]
-
-private noncomputable def pullbackRestrictedChart {f : C → B} (hf : IsEmbedding f)
-    (hp : Continuous (π F E)) {s : Set B} (hs : s ⊆ range f)
-    (h : ((π F E) ⁻¹' s) ≃ₜ s × F) :
-    ((π F (f *ᵖ E)) ⁻¹' (f ⁻¹' s)) ≃ₜ (f ⁻¹' s) × F :=
-  ((Bundle.Pullback.isEmbedding_lift F E f hf hp).homeomorphOfSubsetRange
-    ((preimage_mono hs).trans (Bundle.Pullback.range_lift F E f).ge)).trans
-    (h.trans ((hf.homeomorphOfSubsetRange hs).symm.prodCongr (Homeomorph.refl F)))
-
-private theorem pullbackRestrictedChart_fst {f : C → B} (hf : IsEmbedding f)
-    (hp : Continuous (π F E)) {s : Set B} (hs : s ⊆ range f)
-    (h : ((π F E) ⁻¹' s) ≃ₜ s × F)
-    (hh : ∀ z, (h z).1.val = z.val.proj)
-    (z : (π F (f *ᵖ E)) ⁻¹' (f ⁻¹' s)) :
-    (pullbackRestrictedChart hf hp hs h z).1.val = z.val.proj := by
-  let g := hf.homeomorphOfSubsetRange hs
-  have he : (pullbackRestrictedChart hf hp hs h z).1 = ⟨z.val.proj, z.property⟩ := by
-    apply g.injective
-    change g (g.symm _) = _
-    rw [g.apply_symm_apply]
-    apply Subtype.ext
-    exact hh _
-  exact congrArg Subtype.val he
-
-private noncomputable def descendRestrictedChart {f : C → B} (hf : IsEmbedding f)
-    (hp : Continuous (π F E)) {s : Set B} (hs : s ⊆ range f)
-    (e : Trivialization F (π F (f *ᵖ E))) (he : f ⁻¹' s ⊆ e.baseSet) :
-    ((π F E) ⁻¹' s) ≃ₜ s × F :=
-  ((Bundle.Pullback.isEmbedding_lift F E f hf hp).homeomorphOfSubsetRange
-    ((preimage_mono hs).trans (Bundle.Pullback.range_lift F E f).ge)).symm.trans
-    ((e.preimageHomeomorph he).trans
-      ((hf.homeomorphOfSubsetRange hs).prodCongr (Homeomorph.refl F)))
-
-private theorem descendRestrictedChart_fst {f : C → B} (hf : IsEmbedding f)
-    (hp : Continuous (π F E)) {s : Set B} (hs : s ⊆ range f)
-    (e : Trivialization F (π F (f *ᵖ E))) (he : f ⁻¹' s ⊆ e.baseSet)
-    (z : (π F E) ⁻¹' s) :
-    (descendRestrictedChart hf hp hs e he z).1.val = z.val.proj := by
-  let D := (Bundle.Pullback.isEmbedding_lift F E f hf hp).homeomorphOfSubsetRange
-    ((preimage_mono hs).trans (Bundle.Pullback.range_lift F E f).ge)
-  have hz := congrArg (fun q ↦ q.val.proj) (D.apply_symm_apply z)
-  change f (D.symm z).val.proj = z.val.proj at hz
-  change ((hf.homeomorphOfSubsetRange hs)
-    (e.preimageHomeomorph he (D.symm z)).1).val = z.val.proj
-  rw [IsEmbedding.homeomorphOfSubsetRange_apply_coe]
-  erw [Trivialization.preimageHomeomorph_apply]
-  exact hz
-
-variable {K : Type uK} [Semiring K] [AddCommMonoid F] [Module K F]
-    [∀ b, AddCommMonoid (E b)] [∀ b, Module K (E b)]
-
-private theorem descendRestrictedChart_linear {f : C → B} (hf : IsEmbedding f)
-    (hp : Continuous (π F E)) {s : Set B} (hs : s ⊆ range f)
-    (e : Trivialization F (π F (f *ᵖ E))) [e.IsLinear K]
-    (he : f ⁻¹' s ⊆ e.baseSet) (b : B) (hb : b ∈ s) :
-    IsLinearMap K (fun v : E b ↦ (descendRestrictedChart hf hp hs e he ⟨⟨b, v⟩, hb⟩).2) := by
-  obtain ⟨c, rfl⟩ := hs hb
-  let D := (Bundle.Pullback.isEmbedding_lift F E f hf hp).homeomorphOfSubsetRange
-    ((preimage_mono hs).trans (Bundle.Pullback.range_lift F E f).ge)
-  have hh (v : E (f c)) : D.symm ⟨⟨f c, v⟩, hb⟩ = ⟨⟨c, v⟩, hb⟩ := by
-    apply D.injective
-    rw [D.apply_symm_apply]
+private def totalSpaceProjectionFiberEquiv {B : Type uB}
+    (F : Type uF) (E : B → Type uE) (b : B) :
+    {z : TotalSpace F E // z.proj = b} ≃ E b where
+  toFun := fun z ↦ z.property ▸ z.val.2
+  invFun := fun v ↦ ⟨⟨b, v⟩, rfl⟩
+  left_inv := by
+    rintro ⟨⟨b', v⟩, h⟩
+    cases h
     rfl
-  have hlin := e.linear K (he hb)
-  change IsLinearMap K (fun v : E (f c) ↦ (e ⟨c, v⟩).2) at hlin
-  have heq : (fun v : E (f c) ↦ (descendRestrictedChart hf hp hs e he ⟨⟨f c, v⟩, hb⟩).2) =
-      (fun v : E (f c) ↦ (e ⟨c, v⟩).2) := by
-    funext v
-    change (e.preimageHomeomorph he (D.symm ⟨⟨f c, v⟩, hb⟩)).2 = _
-    rw [hh]
-    exact congrArg Prod.snd (e.preimageHomeomorph_apply he ⟨⟨c, v⟩, hb⟩)
-  rw [heq]
-  exact hlin
-
-end RestrictedCharts
-
-section Slab
-
-variable {X : Type*} {F : Type*} {K : Type*}
-    [TopologicalSpace X] [TopologicalSpace F] [Semiring K]
-    [AddCommMonoid F] [Module K F]
-    {E : X × unitInterval → Type*} [TopologicalSpace (TotalSpace F E)]
-    [∀ b, AddCommMonoid (E b)] [∀ b, Module K (E b)]
-
-private noncomputable def restrictedChartCongr {B Z : Type*}
-    [TopologicalSpace B] [TopologicalSpace Z] {p : Z → B}
-    {s t : Set B} (hst : s = t) (h : (p ⁻¹' s) ≃ₜ s × F) :
-    (p ⁻¹' t) ≃ₜ t × F :=
-  (Homeomorph.setCongr (congrArg (fun s ↦ p ⁻¹' s) hst)).symm.trans
-    (h.trans ((Homeomorph.setCongr hst).prodCongr (Homeomorph.refl F)))
-
--- Transport the two proper closed restrictions to a pullback bundle before gluing.
--- No intermediate closed-slab chart is extended to an open ambient chart.
-private theorem exists_linearChart_union_slabs (U : Set X) {a c b : unitInterval}
-    (hac : a ≤ c) (hcb : c ≤ b)
-    (hp : Continuous (π F E))
-    (h₀ : ((π F E) ⁻¹' (U ×ˢ Icc a c)) ≃ₜ (U ×ˢ Icc a c) × F)
-    (h₁ : ((π F E) ⁻¹' (U ×ˢ Icc c b)) ≃ₜ (U ×ˢ Icc c b) × F)
-    (hp₀ : ∀ z, (h₀ z).1.val = z.val.proj)
-    (hp₁ : ∀ z, (h₁ z).1.val = z.val.proj)
-    (hl₀ : ∀ q (hq : q ∈ U ×ˢ Icc a c),
-      IsLinearMap K (fun v : E q ↦ (h₀ ⟨⟨q, v⟩, hq⟩).2))
-    (hl₁ : ∀ q (hq : q ∈ U ×ˢ Icc c b),
-      IsLinearMap K (fun v : E q ↦ (h₁ ⟨⟨q, v⟩, hq⟩).2)) :
-    ∃ h : ((π F E) ⁻¹' (U ×ˢ Icc a b)) ≃ₜ (U ×ˢ Icc a b) × F,
-      (∀ z, (h z).1.val = z.val.proj) ∧
-      ∀ q (hq : q ∈ U ×ˢ Icc a b),
-        IsLinearMap K (fun v : E q ↦ (h ⟨⟨q, v⟩, hq⟩).2) := by
-  let f : U × Icc a b → X × unitInterval := fun q ↦ (q.1.val, q.2.val)
-  have hf : IsEmbedding f := IsEmbedding.subtypeVal.prodMap IsEmbedding.subtypeVal
-  have hs₀ : U ×ˢ Icc a c ⊆ range f := by
-    rintro ⟨x, t⟩ ⟨hx, hat, htc⟩
-    exact ⟨(⟨x, hx⟩, ⟨t, hat, htc.trans hcb⟩), rfl⟩
-  have hs₁ : U ×ˢ Icc c b ⊆ range f := by
-    rintro ⟨x, t⟩ ⟨hx, hct, htb⟩
-    exact ⟨(⟨x, hx⟩, ⟨t, hac.trans hct, htb⟩), rfl⟩
-  have hs : U ×ˢ Icc a b ⊆ range f := by
-    rintro ⟨x, t⟩ ⟨hx, hat, htb⟩
-    exact ⟨(⟨x, hx⟩, ⟨t, hat, htb⟩), rfl⟩
-  let cut : Icc a b := ⟨c, hac, hcb⟩
-  have eq₀ : f ⁻¹' (U ×ˢ Icc a c) = {q : U × Icc a b | q.2 ≤ cut} := by
-    ext q
-    exact ⟨fun h ↦ h.2.2, fun h ↦ ⟨q.1.property, q.2.property.1, h⟩⟩
-  have eq₁ : f ⁻¹' (U ×ˢ Icc c b) = {q : U × Icc a b | cut ≤ q.2} := by
-    ext q
-    exact ⟨fun h ↦ h.2.1, fun h ↦ ⟨q.1.property, h, q.2.property.2⟩⟩
-  let H₀ := restrictedChartCongr eq₀ (pullbackRestrictedChart hf hp hs₀ h₀)
-  let H₁ := restrictedChartCongr eq₁ (pullbackRestrictedChart hf hp hs₁ h₁)
-  have HP₀ (z) : (H₀ z).1.val = z.val.proj :=
-    pullbackRestrictedChart_fst hf hp hs₀ h₀ hp₀ ⟨z.val, eq₀.symm ▸ z.property⟩
-  have HP₁ (z) : (H₁ z).1.val = z.val.proj :=
-    pullbackRestrictedChart_fst hf hp hs₁ h₁ hp₁ ⟨z.val, eq₁.symm ▸ z.property⟩
-  have HL₀ (q : U × Icc a b) (hq : q.2 ≤ cut) :
-      IsLinearMap K (fun v : (f *ᵖ E) q ↦ (H₀ ⟨⟨q, v⟩, hq⟩).2) :=
-    hl₀ (f q) ⟨q.1.property, q.2.property.1, hq⟩
-  have HL₁ (q : U × Icc a b) (hq : cut ≤ q.2) :
-      IsLinearMap K (fun v : (f *ᵖ E) q ↦ (H₁ ⟨⟨q, v⟩, hq⟩).2) :=
-    hl₁ (f q) ⟨q.1.property, hq, q.2.property.2⟩
-  let e := Trivialization.glueClosedCylinder cut (π F (f *ᵖ E)) H₀ H₁ HP₀ HP₁
-    (Pullback.continuous_proj F E f)
-  have : e.IsLinear K := Trivialization.glueClosedCylinder_isLinear cut H₀ H₁ HP₀ HP₁
-    (Pullback.continuous_proj F E f) HL₀ HL₁
-  have he : f ⁻¹' (U ×ˢ Icc a b) ⊆ e.baseSet := by
-    rw [Trivialization.glueClosedCylinder_baseSet]
-    exact subset_univ _
-  exact ⟨descendRestrictedChart hf hp hs e he, descendRestrictedChart_fst hf hp hs e he,
-    descendRestrictedChart_linear hf hp hs e he⟩
-
-end Slab
+  right_inv := fun _ ↦ rfl
 
 section OpenChart
 
@@ -266,70 +123,81 @@ theorem exists_trivialization_cylinder (x : X) :
     ∃ e : Trivialization F (π F E), e.IsLinear K ∧
       ∃ U : OpenNhdsOf x, (U : Set X) ×ˢ (univ : Set unitInterval) ⊆ e.baseSet := by
   classical
-  -- Linear atlas charts contain open product boxes along the central time slice.
-  have boxes (t : unitInterval) : ∃ U V, IsOpen U ∧ IsOpen V ∧
-      x ∈ U ∧ t ∈ V ∧ U ×ˢ V ⊆ (trivializationAt F E (x, t)).baseSet :=
-    isOpen_prod_iff.mp (trivializationAt F E (x, t)).open_baseSet x t
-      (mem_baseSet_trivializationAt F E (x, t))
-  choose U V hU hV hxU htV hUV using boxes
-  -- Only a finite prefix of the ordered subdivision is needed.
-  obtain ⟨t, ht0, hmono, ⟨N, hN⟩, hsub⟩ :=
-    exists_monotone_Icc_subset_open_cover_unitInterval hV
-      (fun t _ ↦ mem_iUnion.mpr ⟨t, htV t⟩)
-  choose i hi using hsub
-  let W : Set X := ⋂ j ∈ Finset.range (N + 1), U (i j)
-  have hW : IsOpen W := isOpen_biInter_finset fun j _ ↦ hU (i j)
-  have hxW : x ∈ W := by
-    simp only [W, mem_iInter]
-    intro j _
-    exact hxU (i j)
-  have hWj (j : ℕ) (hj : j ≤ N) : W ⊆ U (i j) :=
-    iInter₂_subset j (Finset.mem_range.mpr (Nat.lt_succ_of_le hj))
+  let q := fun b : X × unitInterval ↦ totalSpaceProjectionFiberEquiv F E b
+  let rawAdd := fun b : X × unitInterval ↦ (q b).addCommMonoid
+  let rawModule := fun b : X × unitInterval ↦ (q b).addEquiv.module K
+  let rho := fun b : X × unitInterval ↦ (q b).addEquiv.linearEquiv K
+  let C := fun j : X × unitInterval ↦ trivializationAt F E j
+  let W := fun j : X × unitInterval ↦ (C j).baseSet
+  let charts := fun j : X × unitInterval ↦
+    (C j).preimageHomeomorph (subset_rfl : W j ⊆ (C j).baseSet)
+  let L := fun (j b : X × unitInterval) (hb : b ∈ W j) ↦
+    (rho b).trans ((C j).continuousLinearEquivAt K b hb).toLinearEquiv
   have hp := FiberBundle.continuous_proj F E
-  have cell (j : ℕ) (hj : j ≤ N) :
-      ∃ h : ((π F E) ⁻¹' (W ×ˢ Icc (t j) (t (j + 1)))) ≃ₜ
-          (W ×ˢ Icc (t j) (t (j + 1))) × F,
-        (∀ z, (h z).1.val = z.val.proj) ∧
-        ∀ q (hq : q ∈ W ×ˢ Icc (t j) (t (j + 1))),
-          IsLinearMap K (fun v : E q ↦ (h ⟨⟨q, v⟩, hq⟩).2) := by
-    let e := trivializationAt F E (x, i j)
-    have hs : W ×ˢ Icc (t j) (t (j + 1)) ⊆ e.baseSet :=
-      fun q hq ↦ hUV (i j) ⟨hWj j hj hq.1, hi j hq.2⟩
-    refine ⟨e.preimageHomeomorph hs, ?_, ?_⟩
-    · intro z
-      simp only [Trivialization.preimageHomeomorph_apply]
-    · intro q hq
-      simpa only [Trivialization.preimageHomeomorph_apply] using e.linear K (hs hq)
-  -- Every induction step glues closed restrictions, including their inverses.
-  have accumulated : ∀ n, n ≤ N →
-      ∃ h : ((π F E) ⁻¹' (W ×ˢ Icc 0 (t (n + 1)))) ≃ₜ
-          (W ×ˢ Icc 0 (t (n + 1))) × F,
-        (∀ z, (h z).1.val = z.val.proj) ∧
-        ∀ q (hq : q ∈ W ×ˢ Icc 0 (t (n + 1))),
-          IsLinearMap K (fun v : E q ↦ (h ⟨⟨q, v⟩, hq⟩).2) := by
-    intro n
-    induction n with
-    | zero =>
-      intro _
-      rw [← ht0]
-      exact cell 0 (Nat.zero_le N)
-    | succ n ih =>
-      intro hn
-      obtain ⟨h₀, hp₀, hl₀⟩ := ih (Nat.le_of_succ_le hn)
-      obtain ⟨h₁, hp₁, hl₁⟩ := cell (n + 1) hn
-      exact exists_linearChart_union_slabs W bot_le (hmono (Nat.le_succ (n + 1))) hp
-        h₀ h₁ hp₀ hp₁ hl₀ hl₁
-  have whole : ∃ h : ((π F E) ⁻¹' (W ×ˢ (univ : Set unitInterval))) ≃ₜ
-        (W ×ˢ (univ : Set unitInterval)) × F,
-      (∀ z, (h z).1.val = z.val.proj) ∧
-      ∀ q (hq : q ∈ W ×ˢ (univ : Set unitInterval)),
-        IsLinearMap K (fun v : E q ↦ (h ⟨⟨q, v⟩, hq⟩).2) := by
-    rw [unitInterval.univ_eq_Icc, ← hN (N + 1) (Nat.le_succ N)]
-    exact accumulated N le_rfl
-  obtain ⟨h, hh, hl⟩ := whole
-  obtain ⟨e, he, hbase⟩ := exists_trivialization_of_open_chart (W ×ˢ (univ : Set unitInterval))
-    (hW.prod isOpen_univ) ⟨(x, 0), hxW, mem_univ _⟩ hp h hh hl
-  refine ⟨e, he, ⟨⟨⟨W, hW⟩, hxW⟩, ?_⟩⟩
+  have hW (j : X × unitInterval) : IsOpen (W j) := (C j).open_baseSet
+  have hcover (b : X × unitInterval) : ∃ j, b ∈ W j :=
+    ⟨b, mem_baseSet_trivializationAt F E b⟩
+  have he (j : X × unitInterval) (z : (π F E) ⁻¹' W j) :
+      (charts j z).1.val = z.val.proj := by
+    simp only [charts, Trivialization.preimageHomeomorph_apply]
+  have hL (j b : X × unitInterval) (hb : b ∈ W j)
+      (z : {z : TotalSpace F E // z.proj = b}) :
+      L j b hb z =
+        (charts j ⟨z.val,
+          Eq.mpr (congrArg (fun b ↦ b ∈ W j) z.property) hb⟩).2 := by
+    rcases z with ⟨⟨b', v⟩, hz⟩
+    change b' = b at hz
+    subst b
+    change (C j).continuousLinearEquivAt K b' hb v =
+      (charts j ⟨⟨b', v⟩, hb⟩).2
+    simp [charts, Trivialization.preimageHomeomorph_apply]
+  obtain ⟨U, _, _, H, Lambda, hU, hxU, hH, _, _, _, hLambda, _, _⟩ :=
+    @Bundle.Trivialization.exists_local_linear_cylinder_homeomorph_of_preimage_charts
+      X (TotalSpace F E) (X × unitInterval) K
+      ‹TopologicalSpace X› ‹TopologicalSpace (TotalSpace F E)› inferInstance
+      (π F E) (fun _ : X × unitInterval ↦ F)
+      (fun _ ↦ inferInstance)
+      (fun _ ↦ inferInstance)
+      (fun _ ↦ inferInstance)
+      rawAdd rawModule W charts L hp hW hcover he hL x
+  let sourceProduct :
+      ((π F E) ⁻¹' (U ×ˢ (univ : Set unitInterval))) ≃ₜ
+        {z : TotalSpace F E // z.proj.1 ∈ U} :=
+    (Homeomorph.refl (TotalSpace F E)).subtype
+      (fun _ ↦ ⟨fun hz ↦ hz.1, fun hz ↦ ⟨hz, mem_univ _⟩⟩)
+  let baseProduct : (U ×ˢ (univ : Set unitInterval)) ≃ₜ U × unitInterval :=
+    (Homeomorph.Set.prod U (univ : Set unitInterval)).trans
+      ((Homeomorph.refl U).prodCongr (Homeomorph.Set.univ unitInterval))
+  let h := sourceProduct.trans
+    (H.trans (baseProduct.symm.prodCongr (Homeomorph.refl F)))
+  have hh (z : (π F E) ⁻¹' (U ×ˢ (univ : Set unitInterval))) :
+      (h z).1.val = z.val.proj := by
+    change (((H (sourceProduct z)).1.1 : X), (H (sourceProduct z)).1.2) = z.val.proj
+    exact hH (sourceProduct z)
+  let originalLinear := fun (u : U) (t : unitInterval) ↦
+    (rho (u.val, t)).symm.trans (Lambda u t)
+  have hcoord (u : U) (t : unitInterval) (v : E (u.val, t)) :
+      (h ⟨⟨(u.val, t), v⟩, u.property, mem_univ t⟩).2 =
+        originalLinear u t v := by
+    change (H ⟨⟨(u.val, t), v⟩, u.property⟩).2 =
+      Lambda u t ((rho (u.val, t)).symm v)
+    exact (hLambda u t ((rho (u.val, t)).symm v)).symm
+  have hl (b : X × unitInterval) (hb : b ∈ U ×ˢ (univ : Set unitInterval)) :
+      IsLinearMap K (fun v : E b ↦ (h ⟨⟨b, v⟩, hb⟩).2) := by
+    rcases b with ⟨y, t⟩
+    let u : U := ⟨y, hb.1⟩
+    have heq : (fun v : E (y, t) ↦ (h ⟨⟨(y, t), v⟩, hb⟩).2) =
+        (fun v : E (y, t) ↦ originalLinear u t v) := by
+      funext v
+      exact hcoord u t v
+    rw [heq]
+    exact
+      { map_add := fun v w ↦ (originalLinear u t).toLinearMap.map_add v w
+        map_smul := fun c v ↦ (originalLinear u t).toLinearMap.map_smul c v }
+  obtain ⟨e, he, hbase⟩ := exists_trivialization_of_open_chart
+    (U ×ˢ (univ : Set unitInterval)) (hU.prod isOpen_univ)
+    ⟨(x, 0), hxU, mem_univ _⟩ hp h hh hl
+  refine ⟨e, he, ⟨⟨⟨U, hU⟩, hxU⟩, ?_⟩⟩
   rw [hbase]
   exact subset_rfl
 

@@ -93,6 +93,7 @@ jobs:
               finally:
                   os.close(fd)
           modules = (
+              "VectorBundles/Topology/VectorBundle/Cylinder",
               "VectorBundles/Analysis/Normed/Operator/Splitting",
               "VectorBundlesTest/Topology/VectorBundle/HermitianMetric/Invariant",
               "VectorBundles/Topology/Algebra/Module/Splitting",
@@ -210,6 +211,7 @@ jobs:
               baseline = {}
           # Static whitelist, priority order; no discovery or dependency-module execution.
           modules = (
+              "VectorBundles/Topology/VectorBundle/Cylinder",
               "VectorBundles/Analysis/Normed/Operator/Splitting",
               "VectorBundlesTest/Topology/VectorBundle/HermitianMetric/Invariant",
               "VectorBundles/Topology/Algebra/Module/Splitting",
@@ -486,6 +488,16 @@ jobs:
             .own-ci-step-diagnostics/stage-outcomes.json
           include-hidden-files: true
           if-no-files-found: error
+          retention-days: 30
+      - name: Preserve independent cylinder Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.directory != ''
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: cylinder-lean-diagnostics
+          path: .own-lean-diagnostics/VectorBundles/Topology/VectorBundle/Cylinder
+          include-hidden-files: true
+          if-no-files-found: ignore
           retention-days: 30
       - name: Preserve independent own Lean diagnostics
         if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.directory != ''
