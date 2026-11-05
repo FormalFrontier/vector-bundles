@@ -120,6 +120,7 @@ globs = [
   "VectorBundles.Topology.Maps.FiniteChartReconstruction",
   "VectorBundles.Topology.Maps.FiniteChartReconstructionContinuity",
   "VectorBundles.Topology.Maps.CompactOpen",
+  "VectorBundles.Topology.Maps.Homotopy",
   "VectorBundles.Topology.Maps.Proper",
   "VectorBundles.Topology.VectorBundle.CoordinateMap",
   "VectorBundles.Topology.VectorBundle.FiniteSum",

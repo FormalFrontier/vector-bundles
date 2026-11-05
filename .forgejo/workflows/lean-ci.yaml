@@ -126,6 +126,7 @@ jobs:
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Compactness",
               "VectorBundlesTest/JointEvaluation",
               "VectorBundles/Topology/Maps/CompactOpen",
+              "VectorBundles/Topology/Maps/Homotopy",
               "VectorBundles/Topology/VectorBundle/Isomorphism",
               "VectorBundles/Analysis/Normed/Operator/Idempotent",
               "VectorBundles/Topology/VectorBundle/ProjectorAtlas/Kernel",
@@ -242,6 +243,7 @@ jobs:
               "VectorBundles/Topology/Module/FiniteCoordinates/FiniteDimensional/Compactness",
               "VectorBundlesTest/JointEvaluation",
               "VectorBundles/Topology/Maps/CompactOpen",
+              "VectorBundles/Topology/Maps/Homotopy",
               "VectorBundles/Topology/VectorBundle/Isomorphism",
               "VectorBundles/Analysis/Normed/Operator/Idempotent",
               "VectorBundles/Topology/VectorBundle/ProjectorAtlas/Kernel",
@@ -731,6 +733,24 @@ jobs:
             .own-lean-diagnostics/VectorBundles/Analysis/Normed/Algebra/Units/stdout.jsonl
             .own-lean-diagnostics/VectorBundles/Analysis/Normed/Algebra/Units/stderr.log
             .own-lean-diagnostics/VectorBundles/Analysis/Normed/Algebra/Units/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Preserve independent vector-bundle homotopy Lean diagnostics
+        if: >-
+          always() && steps.build.outcome == 'failure' &&
+          steps.own_diagnostics.outputs.directory != '' &&
+          hashFiles('.own-lean-diagnostics/VectorBundles/Topology/Maps/Homotopy/stdout.jsonl') != '' &&
+          hashFiles('.own-lean-diagnostics/VectorBundles/Topology/Maps/Homotopy/stderr.log') != '' &&
+          hashFiles('.own-lean-diagnostics/VectorBundles/Topology/Maps/Homotopy/exit-code.txt') != ''
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: vector-bundle-homotopy-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/VectorBundles/Topology/Maps/Homotopy/stdout.jsonl
+            .own-lean-diagnostics/VectorBundles/Topology/Maps/Homotopy/stderr.log
+            .own-lean-diagnostics/VectorBundles/Topology/Maps/Homotopy/exit-code.txt
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 30
